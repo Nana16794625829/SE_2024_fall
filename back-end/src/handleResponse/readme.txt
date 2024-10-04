@@ -1,6 +1,2 @@
-1. 使用前要先取得授權憑證，如何取得的文件之後會補上，憑證失效需要再申請一次
-2. API 每日有使用額度上限(300)
-3. 目前的做法是讀取一次表單，就會刪除所有不合法資料，可以考慮蒐集完回覆後再刪除
-4. 此 API 不允許刪除表單的 row，只能刪除 value，因此被刪除的回覆會留下一個空白行
-5. 用 getGoogleSheet() 執行表單操作，如果擔心操作失誤，可以先建立表單的副本，再執行 getGoogleSheet() 函式
-6. 使用前要在 getGoogleSheet() 檔案裡更改表單 ID，在 isValid 裡依據當周報告人數更改允許的 A、C  數量
+說明參考以下 hackmd
+https://hackmd.io/6CVB4vIETP-CHSEg_2XBHg?view
