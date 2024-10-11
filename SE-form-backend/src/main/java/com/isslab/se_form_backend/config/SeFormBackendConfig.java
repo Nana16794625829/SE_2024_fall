@@ -1,13 +1,7 @@
 package com.isslab.se_form_backend.config;
 
-import com.isslab.se_form_backend.controller.FormController;
-import com.isslab.se_form_backend.controller.GradeController;
-import com.isslab.se_form_backend.controller.PresenterController;
-import com.isslab.se_form_backend.controller.StudentController;
-import com.isslab.se_form_backend.service.FormService;
-import com.isslab.se_form_backend.service.GradeService;
-import com.isslab.se_form_backend.service.PresenterService;
-import com.isslab.se_form_backend.service.StudentService;
+import com.isslab.se_form_backend.controller.*;
+import com.isslab.se_form_backend.service.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 //import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -47,14 +41,20 @@ public class SeFormBackendConfig {
     }
 
     @Bean
-    public GradeService gradeService() {
-        return new GradeService();
+    public GradesToCSVService gradesToCSVService() {
+        return new GradesToCSVService();
+    }
+
+    @Bean
+    public GradeService gradeService(GradesToCSVService gradesToCSVService, FormService formService) {
+        return new GradeService(gradesToCSVService, formService);
     }
 
     @Bean
     public GradeController gradeController(GradeService gradeService) {
         return new GradeController(gradeService);
     }
+
 }
 
 

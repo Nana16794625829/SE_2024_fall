@@ -1,7 +1,14 @@
 package com.isslab.se_form_backend.entity;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Date;
 
+@Getter
+@Setter
+@Builder
 public class ScoreEntity {
 
     private Long id;
@@ -12,10 +19,10 @@ public class ScoreEntity {
     private String reviewerId;
     private String score;
     private int grade;
-    private int standardDeviation;
-    private int zScore;
-    private int presenterGrade;
-    private int reviewerGrade;
+    private double standardDeviation;
+    private double zScore;
+    private double reviewerGrade;
+    private double presenterGrade;
     private boolean outlier;
     private int round;
 }

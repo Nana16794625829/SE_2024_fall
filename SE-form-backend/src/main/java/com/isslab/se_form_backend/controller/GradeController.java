@@ -1,11 +1,10 @@
 package com.isslab.se_form_backend.controller;
 
 import com.isslab.se_form_backend.model.Grade;
+import com.isslab.se_form_backend.model.Status;
 import com.isslab.se_form_backend.service.GradeService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,15 +18,24 @@ public class GradeController {
         this.gradeService = gradeService;
     }
 
-    @GetMapping("/undergraduate")
-    public ResponseEntity<?> getAllUndergraduatesGrades() {
-        List<Grade> grades = this.gradeService.getAllUndergraduatesGrades();
-        return ResponseEntity.ok(grades);
+    @GetMapping("/undergraduate/{week}")
+    public ResponseEntity<?> getAllUndergraduatesGrades(@PathVariable String week) {
+        gradeService.getAllUndergraduatesGrades(week);
+        Status status = Status.builder().status("200").response("ok").build();
+        return ResponseEntity.ok(status);
     }
 
-    @GetMapping("/onService")
-    public ResponseEntity<?> getAllOnServiceGrades() {
-        List<Grade> grades = this.gradeService.getAllOnServiceGrades();
-        return ResponseEntity.ok(grades);
+    @GetMapping("/onService/{week}")
+    public ResponseEntity<?> getAllOnServiceGrades(@PathVariable String week) {
+        gradeService.getAllOnServiceGrades(week);
+        Status status = Status.builder().status("200").response("ok").build();
+        return ResponseEntity.ok(status);
+    }
+
+    @PostMapping("")
+    public ResponseEntity<?> createGradeTable() {
+        gradeService.createGradeTable();
+        Status status = Status.builder().status("200").response("ok").build();
+        return ResponseEntity.ok(status);
     }
 }
