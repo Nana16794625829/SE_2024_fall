@@ -4,10 +4,13 @@ import com.isslab.se_form_backend.entity.FormEntity;
 import com.isslab.se_form_backend.entity.ReviewEntity;
 import com.isslab.se_form_backend.entity.ScoreEntity;
 import com.isslab.se_form_backend.model.Grade;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
+@Slf4j
 public class GradeService {
 
     private final GradesToCSVService gradesToCSVService;
@@ -78,30 +81,46 @@ public class GradeService {
         return stats;
     }
 
-    private void calculateReviewersGrades(ScoreEntity scoreDetail, double presenterScore, double standardDeviation) {
+    private void calculateReviewersGrades(ScoreEntity scoreDetail, double standardDeviation) {
         int grade = scoreDetail.getGrade();
+        double presenterScore = scoreDetail.getPresenterGrade();
         double zScore = (grade - presenterScore) / standardDeviation;
         double reviewerGrade = 100 - (Math.abs(zScore) / 3) * 20;
+
         scoreDetail.setZScore(zScore);
         scoreDetail.setReviewerGrade(reviewerGrade);
         scoreDetail.setOutlier(Math.abs(zScore) > 2.5);
+        scoreDetail.setRound(1);
     }
 
+    // 將 ScoreEntity 依照 presenterId 分組並計算成績
     private List<ScoreEntity> calculateGrades(List<ScoreEntity> scoreList) {
-        DescriptiveStatistics stats = setStatistics(scoreList);
-        double presenterScore = stats.getMean();
-        double standardDeviation = stats.getStandardDeviation();
+        // 使用 Map 根據 presenterId 進行分組
+        Map<String, List<ScoreEntity>> scoresByPresenter = scoreList.stream()
+                .collect(Collectors.groupingBy(ScoreEntity::getPresenterId));
 
-        // 避免除以 0 的情況
-        if (standardDeviation == 0) {
-            standardDeviation = 1;
-        }
+        // 遍歷每個 presenter 的分數，分別計算 Z-Score 和其他統計數據
+        for (Map.Entry<String, List<ScoreEntity>> entry : scoresByPresenter.entrySet()) {
+            List<ScoreEntity> scoreListByPresenter = entry.getValue();
 
-        // 計算每位日間部同學的成績
-        for (ScoreEntity scoreDetail : scoreList) {
-            calculateReviewersGrades(scoreDetail, presenterScore, standardDeviation);
+            // 計算該報告者的的統計數據
+            DescriptiveStatistics stats = setStatistics(scoreListByPresenter);
+            double presenterScore = stats.getMean();
+            double standardDeviation = stats.getStandardDeviation();
+
+            // 避免除以 0 的情況
+            if (standardDeviation == 0) {
+                standardDeviation = 1;
+            }
+
+            // 計算每位 reviewer 的成績
+            for (ScoreEntity scoreDetail : scoreListByPresenter) {
+                scoreDetail.setPresenterGrade(presenterScore); // 設定 presenter 的平均分數
+                calculateReviewersGrades(scoreDetail, standardDeviation); // 計算 Z-Score 等數據
+            }
         }
 
         return scoreList;
     }
+
 }

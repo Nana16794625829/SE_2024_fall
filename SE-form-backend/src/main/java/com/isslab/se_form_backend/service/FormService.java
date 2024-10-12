@@ -26,10 +26,10 @@ public class FormService {
 
     public List<ReviewEntity> getFormReviewByFormId(Long formId) {
         ReviewEntity review1 = ReviewEntity.builder().id(1L).formId(1L).reviewerId("113522010").score("A").presenterId("113500001").build();
-        ReviewEntity review2 = ReviewEntity.builder().id(2L).formId(1L).reviewerId("113522010").score("B").presenterId("113500002").build();
+        ReviewEntity review2 = ReviewEntity.builder().id(2L).formId(1L).reviewerId("113522010").score("C").presenterId("113500002").build();
         ReviewEntity review3 = ReviewEntity.builder().id(3L).formId(1L).reviewerId("113522010").score("B").presenterId("113500003").build();
-        ReviewEntity review4= ReviewEntity.builder().id(4L).formId(2L).reviewerId("113522099").score("B").presenterId("113500001").build();
-        ReviewEntity review5= ReviewEntity.builder().id(5L).formId(2L).reviewerId("113522099").score("C").presenterId("113500002").build();
+        ReviewEntity review4= ReviewEntity.builder().id(4L).formId(2L).reviewerId("113522099").score("C").presenterId("113500001").build();
+        ReviewEntity review5= ReviewEntity.builder().id(5L).formId(2L).reviewerId("113522099").score("B").presenterId("113500002").build();
         ReviewEntity review6= ReviewEntity.builder().id(6L).formId(2L).reviewerId("113522099").score("B").presenterId("113500003").build();
 
         List<ReviewEntity> reviewEntities = new ArrayList<>();
