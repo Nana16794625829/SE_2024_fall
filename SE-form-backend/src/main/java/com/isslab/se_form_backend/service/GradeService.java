@@ -83,13 +83,16 @@ public class GradeService {
 
     private void calculateReviewersGrades(ScoreEntity scoreDetail, double standardDeviation) {
         int grade = scoreDetail.getGrade();
+        int gradeGap = 20;
+        double zScoreThreshold = 2.5;
+
         double presenterScore = scoreDetail.getPresenterGrade();
         double zScore = (grade - presenterScore) / standardDeviation;
-        double reviewerGrade = 100 - (Math.abs(zScore) / 3) * 20;
+        double reviewerGrade = 100 - (Math.abs(zScore) / 3) * gradeGap;
 
         scoreDetail.setZScore(zScore);
         scoreDetail.setReviewerGrade(reviewerGrade);
-        scoreDetail.setOutlier(Math.abs(zScore) > 2.5);
+        scoreDetail.setOutlier(Math.abs(zScore) > zScoreThreshold);
         scoreDetail.setRound(1);
     }
 
@@ -99,11 +102,11 @@ public class GradeService {
         Map<String, List<ScoreEntity>> scoresByPresenter = scoreList.stream()
                 .collect(Collectors.groupingBy(ScoreEntity::getPresenterId));
 
-        // 遍歷每個 presenter 的分數，分別計算 Z-Score 和其他統計數據
+        // 遍歷每個 presenter 的分數，分別計算所有計算成績需要的統計數據
         for (Map.Entry<String, List<ScoreEntity>> entry : scoresByPresenter.entrySet()) {
             List<ScoreEntity> scoreListByPresenter = entry.getValue();
 
-            // 計算該報告者的的統計數據
+            // 計算該報告者的標準差與平均
             DescriptiveStatistics stats = setStatistics(scoreListByPresenter);
             double presenterScore = stats.getMean();
             double standardDeviation = stats.getStandardDeviation();
