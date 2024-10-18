@@ -1,7 +1,6 @@
 package com.isslab.se_form_backend.controller;
 
-import com.isslab.se_form_backend.entity.ScoreEntity;
-import com.isslab.se_form_backend.model.Grade;
+import com.isslab.se_form_backend.entity.GradeEntity;
 import com.isslab.se_form_backend.model.Status;
 import com.isslab.se_form_backend.service.GradeService;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +34,7 @@ public class GradeController {
 
     @PostMapping("")
     public ResponseEntity<?> createGradeTable() {
-        List<ScoreEntity> gradeTable = gradeService.createGradeTable();
+        List<GradeEntity> gradeTable = gradeService.createGradeTable();
 //        Status status = Status.builder().status("200").response("ok").build();
         return ResponseEntity.ok(gradeTable);
     }

@@ -2,8 +2,9 @@ package com.isslab.se_form_backend.service;
 
 import com.isslab.se_form_backend.entity.FormEntity;
 import com.isslab.se_form_backend.entity.ReviewEntity;
-import com.isslab.se_form_backend.entity.ScoreEntity;
+import com.isslab.se_form_backend.entity.GradeEntity;
 import com.isslab.se_form_backend.model.Grade;
+import com.isslab.se_form_backend.repository.GradeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
@@ -15,6 +16,7 @@ public class GradeService {
 
     private final GradesToCSVService gradesToCSVService;
     private final FormService formService;
+    private final GradeRepository gradeRepository;
 
     private static final Map<String, Integer> SCORE_MAP = Map.of(
             "A", 90,
@@ -22,9 +24,12 @@ public class GradeService {
             "C", 70
     );
 
-    public GradeService(GradesToCSVService gradesToCSVService, FormService formService) {
+    public GradeService(GradesToCSVService gradesToCSVService,
+                        FormService formService,
+                        GradeRepository gradeRepository) {
         this.gradesToCSVService = gradesToCSVService;
         this.formService = formService;
+        this.gradeRepository = gradeRepository;
     }
 
     public void getAllUndergraduatesGrades(String week) {
@@ -47,15 +52,15 @@ public class GradeService {
         gradesToCSVService.createGradeCSV(grades, "onService", week);
     }
 
-    public List<ScoreEntity> createGradeTable() {
+    public List<GradeEntity> createGradeTable() {
         List<ReviewEntity> reviews = formService.getFormReviewByFormId(1L);
-        List<ScoreEntity> scoreList = createScoreList(reviews);
-        return calculateGrades(scoreList);
+        List<GradeEntity> gradeList = createGradeList(reviews);
+        return calculateGrades(gradeList);
     }
 
-    private List<ScoreEntity> createScoreList(List<ReviewEntity> reviews) {
+    private List<GradeEntity> createGradeList(List<ReviewEntity> reviews) {
         Map<Long, FormEntity> formCache = new HashMap<>();
-        List<ScoreEntity> scoreEntities = new ArrayList<>();
+        List<GradeEntity> gradeEntities = new ArrayList<>();
 
         for (ReviewEntity review : reviews) {
             Long formId = review.getFormId();
@@ -67,48 +72,55 @@ public class GradeService {
             String score = review.getScore();
             int grade = SCORE_MAP.getOrDefault(score, 0);
 
-            ScoreEntity scoreEntity = ScoreEntity.builder().reviewDate(reviewDate).presenterId(presenterId).reviewerId(reviewerId).score(score).grade(grade).build();
-            scoreEntities.add(scoreEntity);
+            GradeEntity gradeEntity = new GradeEntity(null, reviewDate, presenterId, 1, reviewerId, score, grade, 0, 0, 0, 0 , false, 0);
+            gradeRepository.save(gradeEntity);
+            gradeEntities.add(gradeEntity);
         }
-        return scoreEntities;
+        return gradeEntities;
     }
 
-    private DescriptiveStatistics setStatistics(List<ScoreEntity> scoreList) {
+    private DescriptiveStatistics setStatistics(List<GradeEntity> gradeList) {
         DescriptiveStatistics stats = new DescriptiveStatistics();
-        for (ScoreEntity scoreDetail : scoreList) {
-            stats.addValue(scoreDetail.getGrade());
+        for (GradeEntity gradeDetail : gradeList) {
+            stats.addValue(gradeDetail.getGrade());
         }
         return stats;
     }
 
-    private void calculateReviewersGrades(ScoreEntity scoreDetail, double standardDeviation) {
-        int grade = scoreDetail.getGrade();
+    protected void calculateReviewersGrades(GradeEntity gradeDetail, double standardDeviation) {
+        int grade = gradeDetail.getGrade();
+        double presenterGrade = gradeDetail.getPresenterGrade();
+        double zScore = (grade - presenterGrade) / standardDeviation;
+
         int gradeGap = 20;
         double zScoreThreshold = 2.5;
-
-        double presenterScore = scoreDetail.getPresenterGrade();
-        double zScore = (grade - presenterScore) / standardDeviation;
         double reviewerGrade = 100 - (Math.abs(zScore) / 3) * gradeGap;
+        Boolean outlier = Math.abs(zScore) > zScoreThreshold;
 
-        scoreDetail.setZScore(zScore);
-        scoreDetail.setReviewerGrade(reviewerGrade);
-        scoreDetail.setOutlier(Math.abs(zScore) > zScoreThreshold);
-        scoreDetail.setRound(1);
+        String presenterId = gradeDetail.getPresenterId();
+        String reviewerId = gradeDetail.getReviewerId();
+
+        gradeDetail.setZScore(zScore);
+        gradeDetail.setReviewerGrade(reviewerGrade);
+        gradeDetail.setOutlier(Math.abs(zScore) > zScoreThreshold);
+        gradeDetail.setRound(1);
+
+        gradeRepository.updateReviewerDetailByReviewerIdAndPresenterId(reviewerId, presenterId, standardDeviation, zScore, reviewerGrade, outlier, 1);
     }
 
-    // 將 ScoreEntity 依照 presenterId 分組並計算成績
-    private List<ScoreEntity> calculateGrades(List<ScoreEntity> scoreList) {
+    // 將 GradeEntity 依照 presenterId 分組並計算成績
+    protected List<GradeEntity> calculateGrades(List<GradeEntity> gradeList) {
         // 使用 Map 根據 presenterId 進行分組
-        Map<String, List<ScoreEntity>> scoresByPresenter = scoreList.stream()
-                .collect(Collectors.groupingBy(ScoreEntity::getPresenterId));
+        Map<String, List<GradeEntity>> gradesByPresenter = gradeList.stream()
+                .collect(Collectors.groupingBy(GradeEntity::getPresenterId));
 
         // 遍歷每個 presenter 的分數，分別計算所有計算成績需要的統計數據
-        for (Map.Entry<String, List<ScoreEntity>> entry : scoresByPresenter.entrySet()) {
-            List<ScoreEntity> scoreListByPresenter = entry.getValue();
+        for (Map.Entry<String, List<GradeEntity>> entry : gradesByPresenter.entrySet()) {
+            List<GradeEntity> gradeListByPresenter = entry.getValue();
 
             // 計算該報告者的標準差與平均
-            DescriptiveStatistics stats = setStatistics(scoreListByPresenter);
-            double presenterScore = stats.getMean();
+            DescriptiveStatistics stats = setStatistics(gradeListByPresenter);
+            double presenterGrade = stats.getMean();
             double standardDeviation = stats.getStandardDeviation();
 
             // 避免除以 0 的情況
@@ -117,13 +129,16 @@ public class GradeService {
             }
 
             // 計算每位 reviewer 的成績
-            for (ScoreEntity scoreDetail : scoreListByPresenter) {
-                scoreDetail.setPresenterGrade(presenterScore); // 設定 presenter 的平均分數
-                calculateReviewersGrades(scoreDetail, standardDeviation); // 計算 Z-Score 等數據
+            for (GradeEntity gradeDetail : gradeListByPresenter) {
+                String presenterId = gradeDetail.getPresenterId();
+                gradeRepository.updatePresenterGradeByPresenterId(presenterGrade, presenterId);
+                gradeDetail.setPresenterGrade(presenterGrade); // 設定 presenter 的平均分數
+                gradeDetail.setStandardDeviation(standardDeviation);
+                calculateReviewersGrades(gradeDetail, standardDeviation); // 計算 Z-Score 等數據
             }
         }
 
-        return scoreList;
+        return gradeList;
     }
 
 }

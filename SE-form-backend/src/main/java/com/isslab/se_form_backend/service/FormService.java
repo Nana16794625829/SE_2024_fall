@@ -2,11 +2,9 @@ package com.isslab.se_form_backend.service;
 
 import com.isslab.se_form_backend.entity.FormEntity;
 import com.isslab.se_form_backend.entity.ReviewEntity;
-import com.isslab.se_form_backend.entity.ScoreEntity;
 import com.isslab.se_form_backend.model.Form;
 import com.isslab.se_form_backend.model.FormLog;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,16 +19,16 @@ public class FormService {
 
     public FormEntity getFormById(Long id) {
         Date now = new Date();
-        return FormEntity.builder().id(id).reviewerId("113522010").reviewDate(now).comment(null).build();
+        return new FormEntity(id, "113522010", now, null);
     }
 
     public List<ReviewEntity> getFormReviewByFormId(Long formId) {
-        ReviewEntity review1 = ReviewEntity.builder().id(1L).formId(1L).reviewerId("113522010").score("A").presenterId("113500001").build();
-        ReviewEntity review2 = ReviewEntity.builder().id(2L).formId(1L).reviewerId("113522010").score("C").presenterId("113500002").build();
-        ReviewEntity review3 = ReviewEntity.builder().id(3L).formId(1L).reviewerId("113522010").score("B").presenterId("113500003").build();
-        ReviewEntity review4= ReviewEntity.builder().id(4L).formId(2L).reviewerId("113522099").score("C").presenterId("113500001").build();
-        ReviewEntity review5= ReviewEntity.builder().id(5L).formId(2L).reviewerId("113522099").score("B").presenterId("113500002").build();
-        ReviewEntity review6= ReviewEntity.builder().id(6L).formId(2L).reviewerId("113522099").score("B").presenterId("113500003").build();
+        ReviewEntity review1 = new ReviewEntity(1L, 1L, "113522010", "A", "113500001");
+        ReviewEntity review2 = new ReviewEntity(2L, 1L, "113522010", "C", "113500002");
+        ReviewEntity review3 = new ReviewEntity(3L, 1L, "113522010", "B", "113500003");
+        ReviewEntity review4 = new ReviewEntity(4L, 1L, "113522099", "C", "113500001");
+        ReviewEntity review5 = new ReviewEntity(5L, 1L, "113522099", "B", "113500002");
+        ReviewEntity review6 = new ReviewEntity(6L, 1L, "113522099", "B", "113500003");
 
         List<ReviewEntity> reviewEntities = new ArrayList<>();
         reviewEntities.add(review1);
