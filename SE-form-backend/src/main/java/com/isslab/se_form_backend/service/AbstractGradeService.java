@@ -4,6 +4,8 @@ import com.isslab.se_form_backend.entity.FormEntity;
 import com.isslab.se_form_backend.entity.GradeEntity;
 import com.isslab.se_form_backend.entity.ReviewEntity;
 import com.isslab.se_form_backend.model.Grade;
+import com.isslab.se_form_backend.model.Statistic;
+import com.isslab.se_form_backend.service.impl.GradeHelper;
 import com.isslab.se_form_backend.service.impl.GradesToCSVService;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
@@ -14,6 +16,10 @@ public abstract class AbstractGradeService {
     private final GradesToCSVService gradesToCSVService;
     private final IFormService formService;
 
+    //zScore 的閾值
+    private static final double zScoreThreshold = 2.5;
+
+    //score 對照 grade
     private static final Map<String, Integer> SCORE_MAP = Map.of(
             "A", 90,
             "B", 80,
@@ -50,6 +56,9 @@ public abstract class AbstractGradeService {
 
     protected abstract void save(GradeEntity gradeEntity);
 
+    /*
+    *
+    * */
     private List<GradeEntity> createGradeList(List<ReviewEntity> reviews) {
         Map<Long, FormEntity> formCache = new HashMap<>();
         List<GradeEntity> gradeEntities = new ArrayList<>();
@@ -88,32 +97,38 @@ public abstract class AbstractGradeService {
            Boolean outlier,
            int round);
 
-    private void calculateReviewersGrades(GradeEntity gradeDetail, double standardDeviation) {
-        int grade = gradeDetail.getGrade();
-        double presenterGrade = gradeDetail.getPresenterGrade();
-        double zScore = (grade - presenterGrade) / standardDeviation;
+    private Statistic calculateReviewersGrades(GradeEntity gradeDetail, double standardDeviation) {
+        double zScore = GradeHelper.calculateZScore(gradeDetail.getGrade(),
+                gradeDetail.getPresenterGrade(),
+                standardDeviation);
 
-        int gradeGap = 20;
-        double zScoreThreshold = 2.5;
-        double reviewerGrade = 100 - (Math.abs(zScore) / 3) * gradeGap;
-        Boolean outlier = Math.abs(zScore) > zScoreThreshold;
+        int gradeGap = GradeHelper.getGradeGap(SCORE_MAP);
+
+        double reviewerGrade = GradeHelper.calculateReviewerGrade(zScore, gradeGap);
+
+        Boolean outlier = GradeHelper.isOutlier(zScore, zScoreThreshold);
 
         String presenterId = gradeDetail.getPresenterId();
         String reviewerId = gradeDetail.getReviewerId();
 
-        gradeDetail.setZScore(zScore);
-        gradeDetail.setReviewerGrade(reviewerGrade);
-        gradeDetail.setOutlier(Math.abs(zScore) > zScoreThreshold);
-        gradeDetail.setRound(1);
-
         updateReviewerDetailByReviewerIdAndPresenterId(reviewerId, presenterId, standardDeviation, zScore, reviewerGrade, outlier, 1);
+
+        //回傳統計值
+        return Statistic.builder()
+                .zScore(zScore)
+                .gradeGap(gradeGap)
+                .reviewerGrade(reviewerGrade)
+                .outlier(outlier)
+                .build();
     }
 
 
     protected abstract void updatePresenterGradeByPresenterId(double presenterGrade, String presenterId);
 
     // 將 GradeEntity 依照 presenterId 分組並計算成績
-    private List<GradeEntity> calculateGrades(List<GradeEntity> gradeList) {
+    public List<GradeEntity> calculateGrades(List<GradeEntity> gradeList) {
+        List<GradeEntity> result = new ArrayList<>();
+
         // 使用 Map 根據 presenterId 進行分組
         Map<String, List<GradeEntity>> gradesByPresenter = gradeList.stream()
                 .collect(Collectors.groupingBy(GradeEntity::getPresenterId));
@@ -138,10 +153,19 @@ public abstract class AbstractGradeService {
                 updatePresenterGradeByPresenterId(presenterGrade, presenterId);
                 gradeDetail.setPresenterGrade(presenterGrade); // 設定 presenter 的平均分數
                 gradeDetail.setStandardDeviation(standardDeviation);
-                calculateReviewersGrades(gradeDetail, standardDeviation); // 計算 Z-Score 等數據
+
+                Statistic statistic = calculateReviewersGrades(gradeDetail, standardDeviation); // 計算 Z-Score 等數據
+
+                gradeDetail.setZScore(statistic.getZScore());
+                gradeDetail.setGrade(statistic.getGradeGap());
+                gradeDetail.setReviewerGrade(statistic.getReviewerGrade());
+                gradeDetail.setOutlier(statistic.getOutlier());
+
+                result.add(gradeDetail);
             }
         }
 
-        return gradeList;
+        result.sort(Comparator.comparingLong(GradeEntity::getId));
+        return result;
     }
 }
