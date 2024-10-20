@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = "com.isslab.se_form_backend.repository")
 public class SeFormBackendConfig {
 
-    private Boolean MOCK = Boolean.FALSE;
+    private Boolean MOCK = Boolean.TRUE;
 
     @Bean
     public IFormService formService() {
@@ -57,11 +57,12 @@ public class SeFormBackendConfig {
 
     @Bean
     public AbstractGradeService gradeService(GradesToCSVService gradesToCSVService, IFormService formService, GradeRepository gradeRepository) {
-        if(MOCK.equals(Boolean.TRUE)){
-            return new MockGradeService(gradesToCSVService, formService);
-        }else{
+//        if(MOCK.equals(Boolean.TRUE)){
+//            return new MockGradeService(gradesToCSVService, formService);
+//        }else{
+//            return new GradeService(gradesToCSVService, formService, gradeRepository);
+//        }
             return new GradeService(gradesToCSVService, formService, gradeRepository);
-        }
     }
 
     @Bean
