@@ -1,21 +1,18 @@
 package com.isslab.se_form_backend.controller;
 
 import com.isslab.se_form_backend.model.Form;
-import com.isslab.se_form_backend.model.FormLog;
 import com.isslab.se_form_backend.model.Status;
-import com.isslab.se_form_backend.service.FormService;
+import com.isslab.se_form_backend.service.IFormService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 public class FormController {
 
-    private final FormService formService;
+    private final IFormService formService;
 
-    public FormController(FormService formService) {
+    public FormController(IFormService formService) {
         this.formService = formService;
     }
 

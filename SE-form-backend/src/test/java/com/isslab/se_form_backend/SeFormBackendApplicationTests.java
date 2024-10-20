@@ -1,7 +1,7 @@
 package com.isslab.se_form_backend;
 
 import com.isslab.se_form_backend.model.Grade;
-import com.isslab.se_form_backend.service.GradesToCSVService;
+import com.isslab.se_form_backend.service.impl.GradesToCSVService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -26,7 +26,7 @@ class SeFormBackendApplicationTests {
 
     @Test
     void gradesToCSVServiceTest() throws Exception {
-        GradesToCSVService gradesToCSVService = new GradesToCSVService();
+        GradesToCSVService gradesToCSVService = new GradesToCSVService("");
         gradesToCSVService.createGradeCSV(undergraduates, "undergraduates", "week3");
         gradesToCSVService.createGradeCSV(onService, "onService", "week2");
     }

@@ -1,22 +1,18 @@
 package com.isslab.se_form_backend.service;
 
 import com.isslab.se_form_backend.entity.FormEntity;
-import com.isslab.se_form_backend.entity.ReviewEntity;
 import com.isslab.se_form_backend.entity.GradeEntity;
+import com.isslab.se_form_backend.entity.ReviewEntity;
 import com.isslab.se_form_backend.model.Grade;
-import com.isslab.se_form_backend.repository.GradeRepository;
-import lombok.extern.slf4j.Slf4j;
+import com.isslab.se_form_backend.service.impl.GradesToCSVService;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Slf4j
-public class GradeService {
-
+public abstract class AbstractGradeService {
     private final GradesToCSVService gradesToCSVService;
-    private final FormService formService;
-    private final GradeRepository gradeRepository;
+    private final IFormService formService;
 
     private static final Map<String, Integer> SCORE_MAP = Map.of(
             "A", 90,
@@ -24,31 +20,25 @@ public class GradeService {
             "C", 70
     );
 
-    public GradeService(GradesToCSVService gradesToCSVService,
-                        FormService formService,
-                        GradeRepository gradeRepository) {
+    public AbstractGradeService(GradesToCSVService gradesToCSVService,
+                        IFormService formService) {
         this.gradesToCSVService = gradesToCSVService;
         this.formService = formService;
-        this.gradeRepository = gradeRepository;
     }
 
-    public void getAllUndergraduatesGrades(String week) {
-        Grade grade1 = Grade.builder().studentId("113000001").grade(86.41).build();
-        Grade grade2 = Grade.builder().studentId("113000002").grade(93.22).build();
-        Grade grade3 = Grade.builder().studentId("113000003").grade(93.22).build();
-        Grade grade4 = Grade.builder().studentId("113000004").grade(75).build();
-        Grade grade5 = Grade.builder().studentId("113000005").grade(60).build();
+    //拿出日間部同學的資料
+    protected abstract List<Grade> getUndergraduatesGradesByWeek(String week);
 
-        List<Grade> grades = List.of(grade1, grade2, grade3, grade4, grade5);
+    public void getAllUndergraduatesGrades(String week) {
+        List<Grade> grades = getUndergraduatesGradesByWeek(week);
         gradesToCSVService.createGradeCSV(grades, "undergraduates", week);
     }
 
-    public void getAllOnServiceGrades(String week) {
-        Grade grade1 = Grade.builder().studentId("113500001").grade(80).build();
-        Grade grade2 = Grade.builder().studentId("113500002").grade(78.41).build();
-        Grade grade3 = Grade.builder().studentId("113500003").grade(88.5).build();
+    //拿出在職班同學的資料
+    protected abstract List<Grade> getOnServiceGradesByWeek(String week);
 
-        List<Grade> grades = List.of(grade1, grade2, grade3);
+    public void getAllOnServiceGrades(String week) {
+        List<Grade> grades = getOnServiceGradesByWeek(week);
         gradesToCSVService.createGradeCSV(grades, "onService", week);
     }
 
@@ -57,6 +47,9 @@ public class GradeService {
         List<GradeEntity> gradeList = createGradeList(reviews);
         return calculateGrades(gradeList);
     }
+
+    //gradeRepository.save(gradeEntity);
+    protected abstract void save(GradeEntity gradeEntity);
 
     private List<GradeEntity> createGradeList(List<ReviewEntity> reviews) {
         Map<Long, FormEntity> formCache = new HashMap<>();
@@ -73,7 +66,7 @@ public class GradeService {
             int grade = SCORE_MAP.getOrDefault(score, 0);
 
             GradeEntity gradeEntity = new GradeEntity(null, reviewDate, presenterId, 1, reviewerId, score, grade, 0, 0, 0, 0 , false, 0);
-            gradeRepository.save(gradeEntity);
+            save(gradeEntity);
             gradeEntities.add(gradeEntity);
         }
         return gradeEntities;
@@ -87,7 +80,16 @@ public class GradeService {
         return stats;
     }
 
-    protected void calculateReviewersGrades(GradeEntity gradeDetail, double standardDeviation) {
+    protected abstract void updateReviewerDetailByReviewerIdAndPresenterId(
+           String reviewerId,
+           String presenterId,
+           double standardDeviation,
+           double zScore,
+           double reviewerGrade,
+           Boolean outlier,
+           int round);
+
+    private void calculateReviewersGrades(GradeEntity gradeDetail, double standardDeviation) {
         int grade = gradeDetail.getGrade();
         double presenterGrade = gradeDetail.getPresenterGrade();
         double zScore = (grade - presenterGrade) / standardDeviation;
@@ -105,11 +107,14 @@ public class GradeService {
         gradeDetail.setOutlier(Math.abs(zScore) > zScoreThreshold);
         gradeDetail.setRound(1);
 
-        gradeRepository.updateReviewerDetailByReviewerIdAndPresenterId(reviewerId, presenterId, standardDeviation, zScore, reviewerGrade, outlier, 1);
+        updateReviewerDetailByReviewerIdAndPresenterId(reviewerId, presenterId, standardDeviation, zScore, reviewerGrade, outlier, 1);
     }
 
+
+    protected abstract void updatePresenterGradeByPresenterId(double presenterGrade, String presenterId);
+
     // 將 GradeEntity 依照 presenterId 分組並計算成績
-    protected List<GradeEntity> calculateGrades(List<GradeEntity> gradeList) {
+    private List<GradeEntity> calculateGrades(List<GradeEntity> gradeList) {
         // 使用 Map 根據 presenterId 進行分組
         Map<String, List<GradeEntity>> gradesByPresenter = gradeList.stream()
                 .collect(Collectors.groupingBy(GradeEntity::getPresenterId));
@@ -131,7 +136,7 @@ public class GradeService {
             // 計算每位 reviewer 的成績
             for (GradeEntity gradeDetail : gradeListByPresenter) {
                 String presenterId = gradeDetail.getPresenterId();
-                gradeRepository.updatePresenterGradeByPresenterId(presenterGrade, presenterId);
+                updatePresenterGradeByPresenterId(presenterGrade, presenterId);
                 gradeDetail.setPresenterGrade(presenterGrade); // 設定 presenter 的平均分數
                 gradeDetail.setStandardDeviation(standardDeviation);
                 calculateReviewersGrades(gradeDetail, standardDeviation); // 計算 Z-Score 等數據
@@ -140,5 +145,4 @@ public class GradeService {
 
         return gradeList;
     }
-
 }

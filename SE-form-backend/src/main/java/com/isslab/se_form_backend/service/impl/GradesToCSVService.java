@@ -1,4 +1,4 @@
-package com.isslab.se_form_backend.service;
+package com.isslab.se_form_backend.service.impl;
 
 import com.isslab.se_form_backend.model.Grade;
 import lombok.extern.slf4j.Slf4j;
@@ -13,11 +13,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+/*
+* 此 Service 不需要使用 DB
+* */
 @Slf4j
 public class GradesToCSVService {
+    private final String csvDir;
+
+    public GradesToCSVService(String csvDir){
+        this.csvDir = csvDir;
+    }
 
     public void createGradeCSV(List<Grade> grades, String fileName, String week) {
-        String filePath = "src/main/resources/output/" + week  + "/" + fileName + ".csv";
+        //csvDir="src/main/resources/output/"
+        String filePath = csvDir + week  + "/" + fileName + ".csv";
         createDirectoriesIfNotExist(filePath);
         writeGradesToCsv(filePath, grades);
     }

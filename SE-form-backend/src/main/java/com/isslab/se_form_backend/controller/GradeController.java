@@ -2,7 +2,8 @@ package com.isslab.se_form_backend.controller;
 
 import com.isslab.se_form_backend.entity.GradeEntity;
 import com.isslab.se_form_backend.model.Status;
-import com.isslab.se_form_backend.service.GradeService;
+import com.isslab.se_form_backend.service.AbstractGradeService;
+import com.isslab.se_form_backend.service.impl.MockGradeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,10 +12,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/grades")
 public class GradeController {
+    private final AbstractGradeService gradeService;
 
-    private final GradeService gradeService;
-
-    public GradeController(GradeService gradeService) {
+    public GradeController(AbstractGradeService gradeService) {
         this.gradeService = gradeService;
     }
 

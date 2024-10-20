@@ -1,7 +1,7 @@
 package com.isslab.se_form_backend.controller;
 
 import com.isslab.se_form_backend.model.StudentInformation;
-import com.isslab.se_form_backend.service.StudentService;
+import com.isslab.se_form_backend.service.impl.StudentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

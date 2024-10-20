@@ -2,7 +2,9 @@ package com.isslab.se_form_backend.config;
 
 import com.isslab.se_form_backend.controller.*;
 import com.isslab.se_form_backend.repository.GradeRepository;
-import com.isslab.se_form_backend.service.*;
+import com.isslab.se_form_backend.service.AbstractGradeService;
+import com.isslab.se_form_backend.service.IFormService;
+import com.isslab.se_form_backend.service.impl.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -11,13 +13,19 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = "com.isslab.se_form_backend.repository")
 public class SeFormBackendConfig {
 
+    private Boolean MOCK = Boolean.FALSE;
+
     @Bean
-    public FormService formService() {
-        return new FormService();
+    public IFormService formService() {
+        if(MOCK.equals(Boolean.TRUE)){
+            return new MockFormService();
+        }else{
+            return new FormService();
+        }
     }
 
     @Bean
-    public FormController formController(FormService formService) {
+    public FormController formController(IFormService formService) {
         return new FormController(formService);
     }
 
@@ -43,16 +51,21 @@ public class SeFormBackendConfig {
 
     @Bean
     public GradesToCSVService gradesToCSVService() {
-        return new GradesToCSVService();
+        String  csvDir = "src/main/resources/output/";
+        return new GradesToCSVService(csvDir);
     }
 
     @Bean
-    public GradeService gradeService(GradesToCSVService gradesToCSVService, FormService formService, GradeRepository gradeRepository) {
-        return new GradeService(gradesToCSVService, formService, gradeRepository);
+    public AbstractGradeService gradeService(GradesToCSVService gradesToCSVService, IFormService formService, GradeRepository gradeRepository) {
+        if(MOCK.equals(Boolean.TRUE)){
+            return new MockGradeService(gradesToCSVService, formService);
+        }else{
+            return new GradeService(gradesToCSVService, formService, gradeRepository);
+        }
     }
 
     @Bean
-    public GradeController gradeController(GradeService gradeService) {
+    public GradeController gradeController(AbstractGradeService gradeService) {
         return new GradeController(gradeService);
     }
 
