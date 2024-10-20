@@ -18,18 +18,22 @@ public class GradeController {
         this.gradeService = gradeService;
     }
 
-    @GetMapping("/undergraduate/{week}")
-    public ResponseEntity<?> getAllUndergraduatesGrades(@PathVariable String week) {
-        gradeService.getAllUndergraduatesGrades(week);
-        Status status = Status.builder().status("200").response("ok").build();
-        return ResponseEntity.ok(status);
+    /*
+     * 匯出日間部同學成績
+     * */
+    @GetMapping("/export/undergraduate/{week}")
+    public ResponseEntity<?> exportAllUndergraduatesGrades(@PathVariable String week) {
+        gradeService.exportAllUndergraduatesGrades(week);
+        return ResponseEntity.ok(statusOk());
     }
 
-    @GetMapping("/onService/{week}")
-    public ResponseEntity<?> getAllOnServiceGrades(@PathVariable String week) {
-        gradeService.getAllOnServiceGrades(week);
-        Status status = Status.builder().status("200").response("ok").build();
-        return ResponseEntity.ok(status);
+    /*
+    * 匯出在職同學成績
+    * */
+    @GetMapping("/export/onService/{week}")
+    public ResponseEntity<?> exportAllOnServiceGrades(@PathVariable String week) {
+        gradeService.exportAllOnServiceGrades(week);
+        return ResponseEntity.ok(statusOk());
     }
 
     @PostMapping("")
@@ -37,5 +41,9 @@ public class GradeController {
         List<GradeEntity> gradeTable = gradeService.createGradeTable();
 //        Status status = Status.builder().status("200").response("ok").build();
         return ResponseEntity.ok(gradeTable);
+    }
+
+    private static Status statusOk(){
+        return Status.builder().status("200").response("ok").build();
     }
 }

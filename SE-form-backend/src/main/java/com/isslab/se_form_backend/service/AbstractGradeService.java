@@ -29,7 +29,7 @@ public abstract class AbstractGradeService {
     //拿出日間部同學的資料
     protected abstract List<Grade> getUndergraduatesGradesByWeek(String week);
 
-    public void getAllUndergraduatesGrades(String week) {
+    public void exportAllUndergraduatesGrades(String week) {
         List<Grade> grades = getUndergraduatesGradesByWeek(week);
         gradesToCSVService.createGradeCSV(grades, "undergraduates", week);
     }
@@ -37,7 +37,7 @@ public abstract class AbstractGradeService {
     //拿出在職班同學的資料
     protected abstract List<Grade> getOnServiceGradesByWeek(String week);
 
-    public void getAllOnServiceGrades(String week) {
+    public void exportAllOnServiceGrades(String week) {
         List<Grade> grades = getOnServiceGradesByWeek(week);
         gradesToCSVService.createGradeCSV(grades, "onService", week);
     }
@@ -48,7 +48,6 @@ public abstract class AbstractGradeService {
         return calculateGrades(gradeList);
     }
 
-    //gradeRepository.save(gradeEntity);
     protected abstract void save(GradeEntity gradeEntity);
 
     private List<GradeEntity> createGradeList(List<ReviewEntity> reviews) {
