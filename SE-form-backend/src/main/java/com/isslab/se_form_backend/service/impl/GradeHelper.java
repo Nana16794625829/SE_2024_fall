@@ -3,8 +3,8 @@ package com.isslab.se_form_backend.service.impl;
 import java.util.Map;
 
 public class GradeHelper {
-    public static double calculateZScore(int grade, double presenterGrade, double standardDeviation){
-        return (grade - presenterGrade) / standardDeviation;
+    public static double calculateZScore(int gradeByScore, double presenterGrade, double standardDeviation){
+        return (gradeByScore - presenterGrade) / standardDeviation;
     }
 
     public static int getGradeGap(Map<String, Integer> SCORE_MAP){

@@ -50,16 +50,15 @@ public abstract class AbstractGradeService {
 
     public List<GradeEntity> createGradeTable() {
         List<ReviewEntity> reviews = formService.getFormReviewByFormId(1L);
-        List<GradeEntity> gradeList = createGradeList(reviews);
-        return calculateGrades(gradeList);
+        List<GradeEntity> tmpGradeList = calculateGradesRoundOne(reviews);
+//        List<GradeEntity> finalGradeList = calculateGradesRoundTwo(tmpGradeList);
+
+        return calculateGrades(tmpGradeList);
     }
 
     protected abstract void save(GradeEntity gradeEntity);
 
-    /*
-    *
-    * */
-    private List<GradeEntity> createGradeList(List<ReviewEntity> reviews) {
+    private List<GradeEntity> mapScoresToGradesFromReviews(List<ReviewEntity> reviews) {
         Map<Long, FormEntity> formCache = new HashMap<>();
         List<GradeEntity> gradeEntities = new ArrayList<>();
 
@@ -73,13 +72,115 @@ public abstract class AbstractGradeService {
             String score = review.getScore();
             int grade = SCORE_MAP.getOrDefault(score, 0);
 
-            GradeEntity gradeEntity = new GradeEntity(null, reviewDate, presenterId, 1, reviewerId, score, grade, 0, 0, 0, 0 , false, 0);
+            GradeEntity gradeEntity = GradeEntity
+                    .builder()
+                    .reviewDate(reviewDate)
+                    .presenterId(presenterId)
+                    .presentOrder(1)
+                    .reviewerId(reviewerId)
+                    .score(score)
+                    .grade(grade)
+                    .build();
+
             save(gradeEntity);
             gradeEntities.add(gradeEntity);
         }
         return gradeEntities;
     }
 
+    private List<GradeEntity> calculateGradesRoundOne(List<ReviewEntity> reviews) {
+        List<GradeEntity> gradeEntities = mapScoresToGradesFromReviews(reviews);
+
+        return gradeEntities;
+    }
+
+    //  為了提供 test 測試，所以先設定為 public
+    public List<GradeEntity> calculateGrades(List<GradeEntity> gradeList) {
+        List<GradeEntity> result = new ArrayList<>();
+
+        // 使用 Map 根據 presenterId 進行分組
+        Map<String, List<GradeEntity>> gradesByPresenter = gradeList.stream()
+                .collect(Collectors.groupingBy(GradeEntity::getPresenterId));
+
+        // 遍歷每個 presenter 的分數，分別計算所有計算成績需要的統計數據
+        for (Map.Entry<String, List<GradeEntity>> entry : gradesByPresenter.entrySet()) {
+            List<GradeEntity> gradeListByPresenter = entry.getValue();
+
+            // 計算該報告者的標準差與平均
+            double presenterGrade = calculateMean(gradeListByPresenter);
+            double standardDeviation = calculateStandardDeviation(gradeListByPresenter);
+
+            // 避免除以 0 的情況
+            if (standardDeviation == 0) {
+                standardDeviation = 1;
+            }
+
+            // 計算每位 reviewer 的成績
+            calculateReviewersGrades(gradeListByPresenter, presenterGrade, standardDeviation);
+
+            result.addAll(gradeListByPresenter);
+        }
+
+        result.sort(Comparator.comparingLong(GradeEntity::getId));
+        return result;
+    }
+
+    private double calculateMean(List<GradeEntity> gradeList) {
+        DescriptiveStatistics stats = new DescriptiveStatistics();
+        for (GradeEntity grade : gradeList) {
+            stats.addValue(grade.getGrade());
+        }
+        return stats.getMean();
+    }
+
+    private double calculateStandardDeviation(List<GradeEntity> gradeList) {
+        DescriptiveStatistics stats = new DescriptiveStatistics();
+        for (GradeEntity grade : gradeList) {
+            stats.addValue(grade.getGrade());
+        }
+        return stats.getStandardDeviation();
+    }
+
+    private void calculateReviewersGrades(List<GradeEntity> gradeListByPresenter, double presenterGrade, double standardDeviation) {
+        for (GradeEntity gradeDetail : gradeListByPresenter) {
+            String presenterId = gradeDetail.getPresenterId();
+            updatePresenterGradeByPresenterId(presenterGrade, presenterId);
+            gradeDetail.setPresenterGrade(presenterGrade); // 設定 presenter 的平均分數
+            gradeDetail.setStandardDeviation(standardDeviation);
+
+            //  計算 Z-Score, reviewer's grade 以及判定是否為 outlier
+            Statistic statistic = calculateReviewersStatistics(gradeDetail);
+
+            gradeDetail.setZScore(statistic.getZScore());
+            gradeDetail.setGrade(statistic.getGradeGap());
+            gradeDetail.setReviewerGrade(statistic.getReviewerGrade());
+            gradeDetail.setOutlier(statistic.getOutlier());
+        }
+    }
+
+    private Statistic calculateReviewersStatistics(GradeEntity gradeDetail) {
+        double presenterGrade = gradeDetail.getPresenterGrade();
+        double standardDeviation = gradeDetail.getStandardDeviation();
+        int gradeByScore = gradeDetail.getGrade();
+
+        double zScore = GradeHelper.calculateZScore(gradeByScore, presenterGrade, standardDeviation);
+        int gradeGap = GradeHelper.getGradeGap(SCORE_MAP);
+        double reviewerGrade = GradeHelper.calculateReviewerGrade(zScore, gradeGap);
+        boolean outlier = GradeHelper.isOutlier(zScore, 2.5);
+
+        return Statistic.builder()
+                .zScore(zScore)
+                .gradeGap(gradeGap)
+                .reviewerGrade(reviewerGrade)
+                .outlier(outlier)
+                .build();
+    }
+
+    /*
+     * TODO:
+     *  1. 忘記這個用在哪了
+     *  2. 把 grade calculate round 2 完成
+     */
     private DescriptiveStatistics setStatistics(List<GradeEntity> gradeList) {
         DescriptiveStatistics stats = new DescriptiveStatistics();
         for (GradeEntity gradeDetail : gradeList) {
@@ -95,77 +196,8 @@ public abstract class AbstractGradeService {
            double zScore,
            double reviewerGrade,
            Boolean outlier,
-           int round);
-
-    private Statistic calculateReviewersGrades(GradeEntity gradeDetail, double standardDeviation) {
-        double zScore = GradeHelper.calculateZScore(gradeDetail.getGrade(),
-                gradeDetail.getPresenterGrade(),
-                standardDeviation);
-
-        int gradeGap = GradeHelper.getGradeGap(SCORE_MAP);
-
-        double reviewerGrade = GradeHelper.calculateReviewerGrade(zScore, gradeGap);
-
-        Boolean outlier = GradeHelper.isOutlier(zScore, zScoreThreshold);
-
-        String presenterId = gradeDetail.getPresenterId();
-        String reviewerId = gradeDetail.getReviewerId();
-
-        updateReviewerDetailByReviewerIdAndPresenterId(reviewerId, presenterId, standardDeviation, zScore, reviewerGrade, outlier, 1);
-
-        //回傳統計值
-        return Statistic.builder()
-                .zScore(zScore)
-                .gradeGap(gradeGap)
-                .reviewerGrade(reviewerGrade)
-                .outlier(outlier)
-                .build();
-    }
-
+           int round
+    );
 
     protected abstract void updatePresenterGradeByPresenterId(double presenterGrade, String presenterId);
-
-    // 將 GradeEntity 依照 presenterId 分組並計算成績
-    public List<GradeEntity> calculateGrades(List<GradeEntity> gradeList) {
-        List<GradeEntity> result = new ArrayList<>();
-
-        // 使用 Map 根據 presenterId 進行分組
-        Map<String, List<GradeEntity>> gradesByPresenter = gradeList.stream()
-                .collect(Collectors.groupingBy(GradeEntity::getPresenterId));
-
-        // 遍歷每個 presenter 的分數，分別計算所有計算成績需要的統計數據
-        for (Map.Entry<String, List<GradeEntity>> entry : gradesByPresenter.entrySet()) {
-            List<GradeEntity> gradeListByPresenter = entry.getValue();
-
-            // 計算該報告者的標準差與平均
-            DescriptiveStatistics stats = setStatistics(gradeListByPresenter);
-            double presenterGrade = stats.getMean();
-            double standardDeviation = stats.getStandardDeviation();
-
-            // 避免除以 0 的情況
-            if (standardDeviation == 0) {
-                standardDeviation = 1;
-            }
-
-            // 計算每位 reviewer 的成績
-            for (GradeEntity gradeDetail : gradeListByPresenter) {
-                String presenterId = gradeDetail.getPresenterId();
-                updatePresenterGradeByPresenterId(presenterGrade, presenterId);
-                gradeDetail.setPresenterGrade(presenterGrade); // 設定 presenter 的平均分數
-                gradeDetail.setStandardDeviation(standardDeviation);
-
-                Statistic statistic = calculateReviewersGrades(gradeDetail, standardDeviation); // 計算 Z-Score 等數據
-
-                gradeDetail.setZScore(statistic.getZScore());
-                gradeDetail.setGrade(statistic.getGradeGap());
-                gradeDetail.setReviewerGrade(statistic.getReviewerGrade());
-                gradeDetail.setOutlier(statistic.getOutlier());
-
-                result.add(gradeDetail);
-            }
-        }
-
-        result.sort(Comparator.comparingLong(GradeEntity::getId));
-        return result;
-    }
 }
