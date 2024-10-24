@@ -51,12 +51,34 @@ public abstract class AbstractGradeService {
     public List<GradeEntity> createGradeTable() {
         List<ReviewEntity> reviews = formService.getFormReviewByFormId(1L);
         List<GradeEntity> tmpGradeList = calculateGradesRoundOne(reviews);
-//        List<GradeEntity> finalGradeList = calculateGradesRoundTwo(tmpGradeList);
-
-        return calculateGrades(tmpGradeList);
+        return calculateGradesRoundTwo(tmpGradeList);
     }
 
-    protected abstract void save(GradeEntity gradeEntity);
+    private List<GradeEntity> calculateGradesRoundOne(List<ReviewEntity> reviews) {
+        List<GradeEntity> gradeList = mapScoresToGradesFromReviews(reviews);
+        gradeList.sort(Comparator.comparingLong(GradeEntity::getId));
+        return listGradesByPresenter(gradeList);
+    }
+
+    private List<GradeEntity> calculateGradesRoundTwo(List<GradeEntity> tmpGradeList) {
+        List<GradeEntity> outlierList = new ArrayList<>();
+        List<GradeEntity> nonOutlierList = new ArrayList<>();
+
+        for(GradeEntity tmpGrade : tmpGradeList) {
+            tmpGrade.setRound(tmpGrade.getRound() + 1);
+
+            if(tmpGrade.isOutlier()) {
+                tmpGrade.setReviewerGrade(60);
+                outlierList.add(tmpGrade);
+            }
+            else nonOutlierList.add(tmpGrade);
+        }
+
+        List<GradeEntity> gradeList = listGradesByPresenter(nonOutlierList);
+        gradeList.addAll(outlierList);
+        gradeList.sort(Comparator.comparingLong(GradeEntity::getId));
+        return gradeList;
+    }
 
     private List<GradeEntity> mapScoresToGradesFromReviews(List<ReviewEntity> reviews) {
         Map<Long, FormEntity> formCache = new HashMap<>();
@@ -80,6 +102,7 @@ public abstract class AbstractGradeService {
                     .reviewerId(reviewerId)
                     .score(score)
                     .grade(grade)
+                    .round(1)
                     .build();
 
             save(gradeEntity);
@@ -88,14 +111,7 @@ public abstract class AbstractGradeService {
         return gradeEntities;
     }
 
-    private List<GradeEntity> calculateGradesRoundOne(List<ReviewEntity> reviews) {
-        List<GradeEntity> gradeEntities = mapScoresToGradesFromReviews(reviews);
-
-        return gradeEntities;
-    }
-
-    //  為了提供 test 測試，所以先設定為 public
-    public List<GradeEntity> calculateGrades(List<GradeEntity> gradeList) {
+    private List<GradeEntity> listGradesByPresenter(List<GradeEntity> gradeList) {
         List<GradeEntity> result = new ArrayList<>();
 
         // 使用 Map 根據 presenterId 進行分組
@@ -106,42 +122,25 @@ public abstract class AbstractGradeService {
         for (Map.Entry<String, List<GradeEntity>> entry : gradesByPresenter.entrySet()) {
             List<GradeEntity> gradeListByPresenter = entry.getValue();
 
-            // 計算該報告者的標準差與平均
-            double presenterGrade = calculateMean(gradeListByPresenter);
-            double standardDeviation = calculateStandardDeviation(gradeListByPresenter);
+            // 計算報告者的標準差與平均
+            DescriptiveStatistics stats = setStatistics(gradeListByPresenter);
+            double presenterGrade = stats.getMean();
+            double standardDeviation = GradeHelper.calculatePopulationStandardDeviation(stats);
 
             // 避免除以 0 的情況
-            if (standardDeviation == 0) {
-                standardDeviation = 1;
-            }
+            if (standardDeviation == 0) standardDeviation = 1;
 
             // 計算每位 reviewer 的成績
-            calculateReviewersGrades(gradeListByPresenter, presenterGrade, standardDeviation);
+            calculateGrades(gradeListByPresenter, presenterGrade, standardDeviation);
 
             result.addAll(gradeListByPresenter);
         }
 
-        result.sort(Comparator.comparingLong(GradeEntity::getId));
+//        result.sort(Comparator.comparingLong(GradeEntity::getId));
         return result;
     }
 
-    private double calculateMean(List<GradeEntity> gradeList) {
-        DescriptiveStatistics stats = new DescriptiveStatistics();
-        for (GradeEntity grade : gradeList) {
-            stats.addValue(grade.getGrade());
-        }
-        return stats.getMean();
-    }
-
-    private double calculateStandardDeviation(List<GradeEntity> gradeList) {
-        DescriptiveStatistics stats = new DescriptiveStatistics();
-        for (GradeEntity grade : gradeList) {
-            stats.addValue(grade.getGrade());
-        }
-        return stats.getStandardDeviation();
-    }
-
-    private void calculateReviewersGrades(List<GradeEntity> gradeListByPresenter, double presenterGrade, double standardDeviation) {
+    private void calculateGrades(List<GradeEntity> gradeListByPresenter, double presenterGrade, double standardDeviation) {
         for (GradeEntity gradeDetail : gradeListByPresenter) {
             String presenterId = gradeDetail.getPresenterId();
             updatePresenterGradeByPresenterId(presenterGrade, presenterId);
@@ -152,9 +151,10 @@ public abstract class AbstractGradeService {
             Statistic statistic = calculateReviewersStatistics(gradeDetail);
 
             gradeDetail.setZScore(statistic.getZScore());
-            gradeDetail.setGrade(statistic.getGradeGap());
             gradeDetail.setReviewerGrade(statistic.getReviewerGrade());
-            gradeDetail.setOutlier(statistic.getOutlier());
+
+            //  只有第一輪計算成績才需判斷是否為 outlier
+            if(gradeDetail.getRound() == 1) gradeDetail.setOutlier(statistic.getOutlier());
         }
     }
 
@@ -176,11 +176,6 @@ public abstract class AbstractGradeService {
                 .build();
     }
 
-    /*
-     * TODO:
-     *  1. 忘記這個用在哪了
-     *  2. 把 grade calculate round 2 完成
-     */
     private DescriptiveStatistics setStatistics(List<GradeEntity> gradeList) {
         DescriptiveStatistics stats = new DescriptiveStatistics();
         for (GradeEntity gradeDetail : gradeList) {
@@ -188,6 +183,8 @@ public abstract class AbstractGradeService {
         }
         return stats;
     }
+
+    protected abstract void save(GradeEntity gradeEntity);
 
     protected abstract void updateReviewerDetailByReviewerIdAndPresenterId(
            String reviewerId,
