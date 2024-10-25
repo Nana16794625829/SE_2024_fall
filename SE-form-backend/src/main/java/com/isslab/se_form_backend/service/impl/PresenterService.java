@@ -1,26 +1,35 @@
 package com.isslab.se_form_backend.service.impl;
 
+import com.isslab.se_form_backend.entity.PresenterEntity;
 import com.isslab.se_form_backend.model.Presenter;
+import com.isslab.se_form_backend.repository.PresenterRepository;
+import com.isslab.se_form_backend.service.IPresenterService;
 
+import java.util.Date;
 import java.util.List;
 
-public class PresenterService {
+public class PresenterService implements IPresenterService {
 
-    public List<Presenter> getPresenters() {
-        Presenter presenter1 = Presenter
+    private final PresenterRepository presenterRepository;
+
+    public PresenterService(PresenterRepository presenterRepository) {
+        this.presenterRepository = presenterRepository;
+    }
+
+    @Override
+    public void savePresenter(Presenter presenter) {
+        PresenterEntity presenterEntity = PresenterEntity
                 .builder()
-                .index(1)
-                .name("Peter")
-                .studentId("0000001")
+                .presenterId(presenter.getPresenterId())
+                .presentOrder(presenter.getOrder())
+                .week(presenter.getPresentWeek())
                 .build();
 
-        Presenter presenter2 = Presenter
-                .builder()
-                .index(2)
-                .name("Ruby")
-                .studentId("0000002")
-                .build();
+        presenterRepository.save(presenterEntity);
+    }
 
-        return List.of(presenter1, presenter2);
+    @Override
+    public String getPresenterIdByWeekAndOrder(String week, int presentOrder) {
+        return presenterRepository.findPresenterIdByWeekAndOrder(week, presentOrder);
     }
 }

@@ -39,12 +39,17 @@ public class MockGradeService extends AbstractGradeService {
 
     }
 
+//    @Override
+//    protected void updateReviewerDetailByReviewerIdAndPresenterId(String reviewerId, String presenterId, double standardDeviation, double zScore, double reviewerGrade, Boolean outlier, int round) {
+//    }
+
     @Override
-    protected void updateReviewerDetailByReviewerIdAndPresenterId(String reviewerId, String presenterId, double standardDeviation, double zScore, double reviewerGrade, Boolean outlier, int round) {
+    protected void updatePresenterGradeByPresenterId(GradeEntity grade) {
+
     }
 
     @Override
-    protected void updatePresenterGradeByPresenterId(double presenterGrade, String presenterId) {
+    protected void updateReviewerGradesByReviewerId(GradeEntity grade) {
 
     }
 

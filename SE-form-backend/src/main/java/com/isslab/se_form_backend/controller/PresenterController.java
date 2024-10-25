@@ -1,11 +1,10 @@
 package com.isslab.se_form_backend.controller;
 
 import com.isslab.se_form_backend.model.Presenter;
+import com.isslab.se_form_backend.model.Status;
 import com.isslab.se_form_backend.service.impl.PresenterService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,9 +18,10 @@ public class PresenterController {
         this.presenterService = presenterService;
     }
 
-    @GetMapping("")
-    public ResponseEntity<?> getPresenters() {
-        List<Presenter> presenters = presenterService.getPresenters();
-        return ResponseEntity.ok(presenters);
+    @PostMapping("/save")
+    public ResponseEntity<?> savePresenter(@RequestBody Presenter presenter) {
+        presenterService.savePresenter(presenter);
+        Status status = Status.builder().status("200").response("ok").build();
+        return ResponseEntity.ok(status);
     }
 }

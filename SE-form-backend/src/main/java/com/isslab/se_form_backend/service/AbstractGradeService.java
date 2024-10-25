@@ -48,10 +48,12 @@ public abstract class AbstractGradeService {
         gradesToCSVService.createGradeCSV(grades, "onService", week);
     }
 
-    public List<GradeEntity> createGradeTable() {
-        List<ReviewEntity> reviews = formService.getFormReviewByFormId(1L);
+    public void createGradeTable() {
+        List<ReviewEntity> reviews = formService.getFormReviews();
         List<GradeEntity> tmpGradeList = calculateGradesRoundOne(reviews);
-        return calculateGradesRoundTwo(tmpGradeList);
+        List<GradeEntity> finalGradeList = calculateGradesRoundTwo(tmpGradeList);
+
+        for(GradeEntity grade : finalGradeList) save(grade);
     }
 
     private List<GradeEntity> calculateGradesRoundOne(List<ReviewEntity> reviews) {
@@ -89,16 +91,17 @@ public abstract class AbstractGradeService {
             FormEntity form = formCache.computeIfAbsent(formId, formService::getFormById);
 
             Date reviewDate = form.getReviewDate();
+            String reviewerId = form.getReviewerId();
             String presenterId = review.getPresenterId();
-            String reviewerId = review.getReviewerId();
             String score = review.getScore();
+            int presentOrder = review.getPresentOrder();
             int grade = SCORE_MAP.getOrDefault(score, 0);
 
             GradeEntity gradeEntity = GradeEntity
                     .builder()
                     .reviewDate(reviewDate)
                     .presenterId(presenterId)
-                    .presentOrder(1)
+                    .presentOrder(presentOrder)
                     .reviewerId(reviewerId)
                     .score(score)
                     .grade(grade)
@@ -136,14 +139,11 @@ public abstract class AbstractGradeService {
             result.addAll(gradeListByPresenter);
         }
 
-//        result.sort(Comparator.comparingLong(GradeEntity::getId));
         return result;
     }
 
     private void calculateGrades(List<GradeEntity> gradeListByPresenter, double presenterGrade, double standardDeviation) {
         for (GradeEntity gradeDetail : gradeListByPresenter) {
-            String presenterId = gradeDetail.getPresenterId();
-            updatePresenterGradeByPresenterId(presenterGrade, presenterId);
             gradeDetail.setPresenterGrade(presenterGrade); // 設定 presenter 的平均分數
             gradeDetail.setStandardDeviation(standardDeviation);
 
@@ -186,15 +186,17 @@ public abstract class AbstractGradeService {
 
     protected abstract void save(GradeEntity gradeEntity);
 
-    protected abstract void updateReviewerDetailByReviewerIdAndPresenterId(
-           String reviewerId,
-           String presenterId,
-           double standardDeviation,
-           double zScore,
-           double reviewerGrade,
-           Boolean outlier,
-           int round
-    );
+//    protected abstract void updateReviewerDetailByReviewerIdAndPresenterId(
+//           String reviewerId,
+//           String presenterId,
+//           double standardDeviation,
+//           double zScore,
+//           double reviewerGrade,
+//           Boolean outlier,
+//           int round
+//    );
 
-    protected abstract void updatePresenterGradeByPresenterId(double presenterGrade, String presenterId);
+    protected abstract void updatePresenterGradeByPresenterId(GradeEntity grade);
+
+    protected abstract void updateReviewerGradesByReviewerId(GradeEntity grade);
 }

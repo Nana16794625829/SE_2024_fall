@@ -38,9 +38,8 @@ public class GradeController {
 
     @PostMapping("")
     public ResponseEntity<?> createGradeTable() {
-        List<GradeEntity> gradeTable = gradeService.createGradeTable();
-//        return ResponseEntity.ok(statusOk());
-        return ResponseEntity.ok(gradeTable);
+        gradeService.createGradeTable();
+        return ResponseEntity.ok(statusOk());
     }
 
     private static Status statusOk(){

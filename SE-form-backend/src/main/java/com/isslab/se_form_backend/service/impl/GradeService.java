@@ -41,13 +41,18 @@ public class GradeService extends AbstractGradeService {
         gradeRepository.save(gradeEntity);
     }
 
+//    @Override
+//    protected void updateReviewerDetailByReviewerIdAndPresenterId(String reviewerId, String presenterId, double standardDeviation, double zScore, double reviewerGrade, Boolean outlier, int round) {
+//        gradeRepository.updateReviewerDetailByReviewerIdAndPresenterId(reviewerId, presenterId, standardDeviation, zScore, reviewerGrade, outlier, 1);
+//    }
+
     @Override
-    protected void updateReviewerDetailByReviewerIdAndPresenterId(String reviewerId, String presenterId, double standardDeviation, double zScore, double reviewerGrade, Boolean outlier, int round) {
-        gradeRepository.updateReviewerDetailByReviewerIdAndPresenterId(reviewerId, presenterId, standardDeviation, zScore, reviewerGrade, outlier, 1);
+    protected void updatePresenterGradeByPresenterId(GradeEntity grade) {
+        gradeRepository.updatePresenterGradeByPresenterId(grade.getPresenterGrade(), grade.getPresenterId());
     }
 
     @Override
-    protected void updatePresenterGradeByPresenterId(double presenterGrade, String presenterId) {
-        gradeRepository.updatePresenterGradeByPresenterId(presenterGrade, presenterId);
+    protected void updateReviewerGradesByReviewerId(GradeEntity grade) {
+        gradeRepository.updatePresenterGradeByPresenterId(grade.getReviewerGrade(), grade.getReviewerId());
     }
 }

@@ -6,24 +6,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 
-/**
- * 用來分別記錄表單內每位presenter所得到的評分(score)
- */
-
 @Entity
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReviewEntity {
+public class PresenterEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long formId;
-    private String score;
-    private int presentOrder;
+    private String week;
     private String presenterId;
+    private int presentOrder;
+    private double grade;
 }

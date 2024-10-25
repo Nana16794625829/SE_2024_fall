@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -12,7 +13,7 @@ import java.util.List;
 @Builder
 @ToString
 public class Form {
-    private String studentId;  // 評分者學
-    private List<Review> reviews;  // 對各個報告者的評分(A,B,C)，為一陣列
-    private String comment;  // 其他回饋
+    private String reviewerId;
+    private Date reviewDate;
+    private String comment;
 }
