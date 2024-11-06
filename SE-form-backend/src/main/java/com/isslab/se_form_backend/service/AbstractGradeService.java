@@ -5,6 +5,8 @@ import com.isslab.se_form_backend.entity.GradeEntity;
 import com.isslab.se_form_backend.entity.ReviewEntity;
 import com.isslab.se_form_backend.model.Grade;
 import com.isslab.se_form_backend.model.Statistic;
+import com.isslab.se_form_backend.model.StudentGrade;
+import com.isslab.se_form_backend.model.WeeklyGrade;
 import com.isslab.se_form_backend.service.impl.GradeHelper;
 import com.isslab.se_form_backend.service.impl.GradesToCSVService;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -32,20 +34,25 @@ public abstract class AbstractGradeService {
         this.formService = formService;
     }
 
-    //拿出日間部同學的資料
-    protected abstract List<Grade> getUndergraduatesGradesByWeek(String week);
+    //存入日間部同學的每週成績
+    protected abstract void addUndergraduatesWeeklyGrades(String week, List<StudentGrade> studentGrades);
+
+    //存入在職班同學的每週成績
+    protected abstract void addOnServiceWeeklyGrades(String week, StudentGrade studentGrades);
+
+    //以週次拿出同學的成績（不分班都可以使用）
+    protected abstract WeeklyGrade getGradesByWeek(String week);
 
     public void exportAllUndergraduatesGrades(String week) {
-        List<Grade> grades = getUndergraduatesGradesByWeek(week);
-        gradesToCSVService.createGradeCSV(grades, "undergraduates", week);
+        WeeklyGrade grades = getGradesByWeek(week);
+        // TODO: 輸出當周多個成績的CSV //
+//        gradesToCSVService.createGradeCSV(grades, "undergraduates", week);
     }
 
-    //拿出在職班同學的資料
-    protected abstract List<Grade> getOnServiceGradesByWeek(String week);
-
     public void exportAllOnServiceGrades(String week) {
-        List<Grade> grades = getOnServiceGradesByWeek(week);
-        gradesToCSVService.createGradeCSV(grades, "onService", week);
+        WeeklyGrade grades = getGradesByWeek(week);
+        // TODO: 輸出當周成績的CSV //
+//        gradesToCSVService.createGradeCSV(grades, "onService", week);
     }
 
     public void createGradeTable() {
