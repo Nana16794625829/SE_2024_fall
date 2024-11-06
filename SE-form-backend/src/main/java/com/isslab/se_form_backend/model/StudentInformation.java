@@ -8,7 +8,9 @@ import lombok.Setter;
 @Setter
 @Builder
 public class StudentInformation {
+
     private String studentId;
     private String name;
     private String email;
+    private ClassType classType;
 }
