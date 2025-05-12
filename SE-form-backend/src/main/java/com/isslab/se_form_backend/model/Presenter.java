@@ -1,6 +1,5 @@
 package com.isslab.se_form_backend.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +11,8 @@ import java.util.Date;
 @Builder
 public class Presenter {
 
+    private Student presenter;
     private String presentWeek;
-    private String presenterId;
-    private int order;
+    private int presentOrder;
+    private PresenterGradeSummary grade;
 }
