@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 @SpringBootTest
-class SeFormBackendApplicationTests {
+class SeFormSubmissionBackendApplicationTests {
 
     Grade grade1 = Grade.builder().studentId("113000001").grade(86.41).build();
     Grade grade2 = Grade.builder().studentId("113000002").grade(93.22).build();

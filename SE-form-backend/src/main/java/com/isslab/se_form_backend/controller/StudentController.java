@@ -1,7 +1,7 @@
 package com.isslab.se_form_backend.controller;
 
 import com.isslab.se_form_backend.model.Status;
-import com.isslab.se_form_backend.model.StudentInformation;
+import com.isslab.se_form_backend.model.Student;
 import com.isslab.se_form_backend.service.impl.StudentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +18,13 @@ public class StudentController {
 
     @GetMapping("/{studentId}")
     public ResponseEntity<?> getStudentInformation(@PathVariable String studentId) {
-        StudentInformation studentInfo = studentService.getStudentInformation(studentId);
+        Student studentInfo = studentService.getStudentInformation(studentId);
         return ResponseEntity.ok(studentInfo);
     }
 
     @PostMapping("/addStudents")
-    public ResponseEntity<?> addStudents(@RequestBody StudentInformation studentInformation) {
-        studentService.addStudents(studentInformation);
+    public ResponseEntity<?> addStudents(@RequestBody Student student) {
+        studentService.addStudents(student);
         return ResponseEntity.ok(statusOk());
     }
 

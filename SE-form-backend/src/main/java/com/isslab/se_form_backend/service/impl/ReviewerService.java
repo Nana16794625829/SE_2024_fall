@@ -1,7 +1,6 @@
 package com.isslab.se_form_backend.service.impl;
 
-import com.isslab.se_form_backend.entity.ReviewerEntity;
-import com.isslab.se_form_backend.model.StudentInformation;
+import com.isslab.se_form_backend.model.Student;
 import com.isslab.se_form_backend.repository.ReviewerRepository;
 
 public class ReviewerService {
@@ -12,13 +11,13 @@ public class ReviewerService {
         this.reviewerRepository = reviewerRepository;
     }
 
-    public void addReviewer(StudentInformation studentInformation) {
+    public void addReviewer(Student student) {
 //        reviewerRepository.save(reviewerEntity);
     }
 
-    private ReviewerEntity fromStudentInformation(StudentInformation studentInformation) {
+    private ReviewerEntity fromStudentInformation(Student student) {
         return ReviewerEntity.builder()
-                .reviewerId(studentInformation.getStudentId())
+                .reviewerId(student.getStudentId())
                 .build();
     }
 }

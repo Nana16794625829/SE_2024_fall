@@ -1,8 +1,6 @@
 package com.isslab.se_form_backend.controller;
 
-import com.isslab.se_form_backend.entity.FormEntity;
-import com.isslab.se_form_backend.model.Form;
-import com.isslab.se_form_backend.model.FormResponse;
+import com.isslab.se_form_backend.model.FormScoreRecord;
 import com.isslab.se_form_backend.model.Status;
 import com.isslab.se_form_backend.service.IFormService;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +19,7 @@ public class FormController {
     }
 
     @PostMapping("/form")
-    public ResponseEntity<?> submitForm(@RequestBody FormResponse body) throws ParseException {
+    public ResponseEntity<?> submitForm(@RequestBody FormScoreRecord body) throws ParseException {
         formService.saveFormAndReviews(body);
         Status status = Status.builder().status("200").response("ok").build();
         return ResponseEntity.ok(status);

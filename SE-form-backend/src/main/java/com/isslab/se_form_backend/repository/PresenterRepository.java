@@ -1,6 +1,5 @@
 package com.isslab.se_form_backend.repository;
 
-import com.isslab.se_form_backend.entity.PresenterEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

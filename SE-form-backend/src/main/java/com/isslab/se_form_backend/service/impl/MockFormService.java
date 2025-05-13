@@ -1,11 +1,6 @@
 package com.isslab.se_form_backend.service.impl;
 
-import com.isslab.se_form_backend.entity.FormEntity;
-import com.isslab.se_form_backend.entity.GradeEntity;
-import com.isslab.se_form_backend.entity.ReviewEntity;
-import com.isslab.se_form_backend.model.Form;
-import com.isslab.se_form_backend.model.FormLog;
-import com.isslab.se_form_backend.model.FormResponse;
+import com.isslab.se_form_backend.model.FormScoreRecord;
 import com.isslab.se_form_backend.service.IFormService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +23,7 @@ public class MockFormService implements IFormService {
     private static final ReviewEntity review10 = new ReviewEntity(10L, 1L,"C", 1, "113522999");
 
     @Override
-    public void saveFormAndReviews(FormResponse form) {
+    public void saveFormAndReviews(FormScoreRecord form) {
         log.info(form.toString());
     }
 

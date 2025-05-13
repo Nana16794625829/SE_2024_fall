@@ -1,10 +1,6 @@
 package com.isslab.se_form_backend.service;
 
-import com.isslab.se_form_backend.entity.FormEntity;
-import com.isslab.se_form_backend.entity.GradeEntity;
-import com.isslab.se_form_backend.entity.ReviewEntity;
-import com.isslab.se_form_backend.model.Grade;
-import com.isslab.se_form_backend.model.Statistic;
+import com.isslab.se_form_backend.model.PresenterGradeSummary;
 import com.isslab.se_form_backend.model.StudentGrade;
 import com.isslab.se_form_backend.model.WeeklyGrade;
 import com.isslab.se_form_backend.service.impl.GradeHelper;
@@ -155,17 +151,17 @@ public abstract class AbstractGradeService {
             gradeDetail.setStandardDeviation(standardDeviation);
 
             //  計算 Z-Score, reviewer's grade 以及判定是否為 outlier
-            Statistic statistic = calculateReviewersStatistics(gradeDetail);
+            PresenterGradeSummary presenterGradeSummary = calculateReviewersStatistics(gradeDetail);
 
-            gradeDetail.setZScore(statistic.getZScore());
-            gradeDetail.setReviewerGrade(statistic.getReviewerGrade());
+            gradeDetail.setZScore(presenterGradeSummary.getZScore());
+            gradeDetail.setReviewerGrade(presenterGradeSummary.getReviewerGrade());
 
             //  只有第一輪計算成績才需判斷是否為 outlier
-            if(gradeDetail.getRound() == 1) gradeDetail.setOutlier(statistic.getOutlier());
+            if(gradeDetail.getRound() == 1) gradeDetail.setOutlier(presenterGradeSummary.getOutlier());
         }
     }
 
-    private Statistic calculateReviewersStatistics(GradeEntity gradeDetail) {
+    private PresenterGradeSummary calculateReviewersStatistics(GradeEntity gradeDetail) {
         double presenterGrade = gradeDetail.getPresenterGrade();
         double standardDeviation = gradeDetail.getStandardDeviation();
         int gradeByScore = gradeDetail.getGrade();
@@ -175,7 +171,7 @@ public abstract class AbstractGradeService {
         double reviewerGrade = GradeHelper.calculateReviewerGrade(zScore, gradeGap);
         boolean outlier = GradeHelper.isOutlier(zScore, 2.5);
 
-        return Statistic.builder()
+        return PresenterGradeSummary.builder()
                 .zScore(zScore)
                 .gradeGap(gradeGap)
                 .reviewerGrade(reviewerGrade)

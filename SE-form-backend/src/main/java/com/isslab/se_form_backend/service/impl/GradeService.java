@@ -1,9 +1,5 @@
 package com.isslab.se_form_backend.service.impl;
 
-import com.isslab.se_form_backend.entity.GradeEntity;
-import com.isslab.se_form_backend.entity.StudentGradeEntity;
-import com.isslab.se_form_backend.entity.WeeklyGradeEntity;
-import com.isslab.se_form_backend.model.Grade;
 import com.isslab.se_form_backend.model.StudentGrade;
 import com.isslab.se_form_backend.model.WeeklyGrade;
 import com.isslab.se_form_backend.repository.GradeRepository;

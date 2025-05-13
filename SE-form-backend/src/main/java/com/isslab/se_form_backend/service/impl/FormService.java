@@ -1,17 +1,11 @@
 package com.isslab.se_form_backend.service.impl;
 
-import com.isslab.se_form_backend.entity.FormEntity;
-import com.isslab.se_form_backend.entity.ReviewEntity;
-import com.isslab.se_form_backend.model.Form;
-import com.isslab.se_form_backend.model.FormLog;
-import com.isslab.se_form_backend.model.FormResponse;
+import com.isslab.se_form_backend.model.FormScoreRecord;
 import com.isslab.se_form_backend.repository.FormRepository;
 import com.isslab.se_form_backend.repository.ReviewRepository;
 import com.isslab.se_form_backend.service.IFormService;
-import com.isslab.se_form_backend.util.DateFormatter;
 
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
 public class FormService implements IFormService {
@@ -27,7 +21,7 @@ public class FormService implements IFormService {
     }
 
     @Override
-    public void saveFormAndReviews(FormResponse form) throws ParseException {
+    public void saveFormAndReviews(FormScoreRecord form) throws ParseException {
         String week = form.getWeek();
 
         FormEntity formEntity = FormEntity

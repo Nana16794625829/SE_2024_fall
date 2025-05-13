@@ -1,8 +1,6 @@
 package com.isslab.se_form_backend.service.impl;
 
-import com.isslab.se_form_backend.entity.StudentsEntity;
-import com.isslab.se_form_backend.model.ClassType;
-import com.isslab.se_form_backend.model.StudentInformation;
+import com.isslab.se_form_backend.model.Student;
 import com.isslab.se_form_backend.repository.StudentRepository;
 
 public class StudentService {
@@ -15,8 +13,8 @@ public class StudentService {
         this.reviewerService = reviewerService;
     }
 
-    public StudentInformation getStudentInformation(String studentId) {
-        return StudentInformation
+    public Student getStudentInformation(String studentId) {
+        return Student
                 .builder()
                 .studentId(studentId)
                 .name("Nana-test")
@@ -24,14 +22,14 @@ public class StudentService {
                 .build();
     }
 
-    public void addStudents(StudentInformation studentInformation) {
-//        if (studentInformation.getClassType() == ClassType.REGULAR) reviewerService.addReviewers(studentInformation);
+    public void addStudents(Student student) {
+//        if (studentInformation.getClassType() == ClassType.DAY) reviewerService.addReviewers(studentInformation);
 
-        StudentsEntity studentsEntity = fromStudentInformation(studentInformation);
+        StudentsEntity studentsEntity = fromStudentInformation(student);
         studentRepository.save(studentsEntity);
     }
 
-    private static StudentsEntity fromStudentInformation(StudentInformation info) {
+    private static StudentsEntity fromStudentInformation(Student info) {
         return StudentsEntity.builder()
                 .studentId(info.getStudentId())
                 .name(info.getName())

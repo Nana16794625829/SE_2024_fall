@@ -1,12 +1,8 @@
 package com.isslab.se_form_backend.service.impl;
 
-import com.isslab.se_form_backend.entity.PresenterEntity;
 import com.isslab.se_form_backend.model.Presenter;
 import com.isslab.se_form_backend.repository.PresenterRepository;
 import com.isslab.se_form_backend.service.IPresenterService;
-
-import java.util.Date;
-import java.util.List;
 
 public class PresenterService implements IPresenterService {
 
