@@ -1,25 +1,17 @@
 package com.isslab.se_form_backend.entity;
 
+import com.isslab.se_form_backend.entity.id.PresenterEntityId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.*;
+import jakarta.persistence.IdClass;
 
 @Entity
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@IdClass(PresenterEntityId.class)
 public class PresenterEntity {
-
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String week;
     private String presenterId;
-    private int presentOrder;
-    private double grade;
+    @Id
+    private String week;
+
+
 }
