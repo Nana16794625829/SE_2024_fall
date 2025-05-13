@@ -5,30 +5,27 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.Objects;
-
-/*
-* 用於 PresenterEntity 的複合主鍵
-*/
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PresenterEntityId {
-    private String presenterId;
+public class ReviewerEntityId implements Serializable {
+    private String reviewerId;
     private String week;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof PresenterEntityId that)) return false;
-        return Objects.equals(presenterId, that.presenterId) &&
+        if (!(o instanceof ReviewerEntityId that)) return false;
+        return Objects.equals(reviewerId, that.reviewerId) &&
                 Objects.equals(week, that.week);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(presenterId, week);
+        return Objects.hash(reviewerId, week);
     }
 }

@@ -1,18 +1,18 @@
 package com.isslab.se_form_backend.entity;
 
-import com.isslab.se_form_backend.entity.id.PresenterEntityId;
+import com.isslab.se_form_backend.entity.id.ReviewerEntityId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 
 @Entity
-@IdClass(PresenterEntityId.class)
-public class PresenterEntity {
+@IdClass(ReviewerEntityId.class)
+public class ReviewerEntity {
     @Id
-    private String presenterId;
+    private String reviewerId;
     @Id
     private String week;
 
-    private int presentOrder;
     private double grade;
+
 }
