@@ -14,7 +14,7 @@ public class MockGradeService extends AbstractGradeService {
     }
 
     @Override
-    protected List<Grade> getUndergraduatesGradesByWeek(String week) {
+    protected List<Grade> getDayClassGradesByWeek(String week) {
         Grade grade1 = Grade.builder().studentId("113000001").grade(86.41).build();
         Grade grade2 = Grade.builder().studentId("113000002").grade(93.22).build();
         Grade grade3 = Grade.builder().studentId("113000003").grade(93.22).build();

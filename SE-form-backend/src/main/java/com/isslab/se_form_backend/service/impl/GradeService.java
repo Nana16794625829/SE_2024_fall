@@ -20,7 +20,7 @@ public class GradeService extends AbstractGradeService {
     }
 
     @Override
-    protected void addUndergraduatesWeeklyGrades(String week, List<StudentGrade> studentGrades) {
+    protected void addDayClassWeeklyGrades(String week, List<StudentGrade> studentGrades) {
         WeeklyGradeEntity weeklyGrade = WeeklyGradeEntity.builder()
                 .week(week)
                 .build();
