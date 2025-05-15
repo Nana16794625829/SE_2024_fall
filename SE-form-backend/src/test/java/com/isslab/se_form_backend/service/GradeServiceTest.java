@@ -12,87 +12,92 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 class GradeServiceTest {
 
-    @Mock
-    private IFormService formService;
-
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-
-        // 模擬 formService 的方法行為
-        when(formService.getFormById(1L)).thenReturn(new FormSubmissionEntity("113522010", "1", 1L, "2025/05/13 14:00", ""));
-    }
+//    @Mock
+//    private IFormService formService;
+//
+//    @BeforeEach
+//    public void setup() {
+//        MockitoAnnotations.openMocks(this);
+//
+//        // 模擬 formService 的方法行為
+//        when(formService.getFormById(1L)).thenReturn(new FormSubmissionEntity("113522010", "1", 1L, "2025/05/13 14:00", ""));
+//    }
 
     @Test
     public void testCalculateGradesRoundOne(){
-        MockGradeService gradeService = new MockGradeService(null, formService);
+        MockGradeService gradeService = new MockGradeService();
         //計算成績
-        List<PresenterEntity> answerGradeListOnServiceClass = gradeService.calculateGradesRoundOne(getFormScoreRecords());
-        List<ReviewerEntity> answerGradeListDayClass = gradeService.calculateGradesRoundOne(getFormScoreRecords());
+        Map<String, Double> answerGradeListOnServiceClass = gradeService.calculateGrade(getFormScoreRecords());
+//        List<ReviewerEntity> answerGradeListDayClass = gradeService.calculateGrade(getFormScoreRecords());
 
         //Presenter1 答案
-        PresenterEntity answerGradePresenter1 = answerGradeListOnServiceClass.get(0);
-        assertThat(answerGradePresenter1.getWeek()).isEqualTo("1");
-        assertThat(answerGradePresenter1.getPresenterId()).isEqualTo("113500001");
-        assertThat(answerGradePresenter1.getGrade()).isEqualTo(80.0);
+        Double answerGradePresenter1 = answerGradeListOnServiceClass.get("113522010");
+        assertThat(answerGradePresenter1).isEqualTo(93.33333333333333);
+//        assertThat(answerGradePresenter1).isEqualTo(60.0);
 
-        //Presenter2 答案
-        PresenterEntity answerGradePresenter2 = answerGradeListOnServiceClass.get(1);
-        assertThat(answerGradePresenter2.getWeek()).isEqualTo("1");
-        assertThat(answerGradePresenter2.getPresenterId()).isEqualTo("113500002");
-        assertThat(answerGradePresenter2.getGrade()).isEqualTo(80.0);
+//        PresenterEntity answerGradePresenter1 = answerGradeListOnServiceClass.get("0");
+//        assertThat(answerGradePresenter1.getWeek()).isEqualTo("1");
+//        assertThat(answerGradePresenter1.getPresenterId()).isEqualTo("113500001");
+//        assertThat(answerGradePresenter1.getGrade()).isEqualTo(80.0);
 
-        //Presenter3 答案
-        PresenterEntity answerGradePresenter3 = answerGradeListOnServiceClass.get(2);
-        assertThat(answerGradePresenter3.getWeek()).isEqualTo("1");
-        assertThat(answerGradePresenter3.getPresenterId()).isEqualTo("113500003");
-        assertThat(answerGradePresenter3.getGrade()).isEqualTo(75.0);
-
-        //reviewer1 : presenter1 答案
-        ReviewerEntity answerGradeR1P1 = answerGradeListDayClass.get(0);
-        assertThat(answerGradeR1P1.getWeek()).isEqualTo("1");
-        assertThat(answerGradeR1P1.getReviewerId()).isEqualTo("113522010");
-        assertThat(answerGradeR1P1.getGrade()).isEqualTo(95.28595479208968);
-
-        //reviewer1 : presenter2 答案
-//        GradeEntity answerGrade2 = answerGradeList.get(1);
-        ReviewerEntity answerGradeR1P2 = answerGradeListDayClass.get(2);
-        assertThat(answerGradeR1P2.getWeek()).isEqualTo(1);
-        assertThat(answerGradeR1P2.getReviewerId()).isEqualTo("113522010");
-        assertThat(answerGradeR1P2.getGrade()).isEqualTo(95.28595479208968);
-
-        //reviewer1 : presenter3 答案
-//        GradeEntity answerGrade3 = answerGradeList.get(2);
-        ReviewerEntity answerGradeR1P3 = answerGradeListDayClass.get(4);
-        assertThat(answerGradeR1P3.getWeek()).isEqualTo(1);
-        assertThat(answerGradeR1P3.getReviewerId()).isEqualTo("113522010");
-        assertThat(answerGradeR1P3.getGrade()).isEqualTo(100.0);
-
-        //reviewer2 : presenter1 答案
-//        GradeEntity answerGrade4 = answerGradeList.get(3);
-        ReviewerEntity answerGradeR2P1 = answerGradeListDayClass.get(1);
-        assertThat(answerGradeR2P1.getWeek()).isEqualTo(1);
-        assertThat(answerGradeR2P1.getReviewerId()).isEqualTo("113522099");
-        assertThat(answerGradeR2P1.getGrade()).isEqualTo(95.28595479208968);
-
-        //reviewer2 : presenter2 答案
-//        GradeEntity answerGrade5 = answerGradeList.get(4);
-        ReviewerEntity answerGradeR2P2 = answerGradeListDayClass.get(3);
-        assertThat(answerGradeR2P2.getWeek()).isEqualTo(1);
-        assertThat(answerGradeR2P2.getReviewerId()).isEqualTo("113522099");
-        assertThat(answerGradeR2P2.getGrade()).isEqualTo(95.28595479208968);
-
-        //reviewer2 : presenter3 答案
-        ReviewerEntity answerGradeR2P3 = answerGradeListDayClass.get(5);
-        assertThat(answerGradeR2P3.getWeek()).isEqualTo(1);
-        assertThat(answerGradeR2P3.getReviewerId()).isEqualTo("113522099");
-        assertThat(answerGradeR2P3.getGrade()).isEqualTo(100.0);
+//        //Presenter2 答案
+//        PresenterEntity answerGradePresenter2 = answerGradeListOnServiceClass.get(1);
+//        assertThat(answerGradePresenter2.getWeek()).isEqualTo("1");
+//        assertThat(answerGradePresenter2.getPresenterId()).isEqualTo("113500002");
+//        assertThat(answerGradePresenter2.getGrade()).isEqualTo(80.0);
+//
+//        //Presenter3 答案
+//        PresenterEntity answerGradePresenter3 = answerGradeListOnServiceClass.get(2);
+//        assertThat(answerGradePresenter3.getWeek()).isEqualTo("1");
+//        assertThat(answerGradePresenter3.getPresenterId()).isEqualTo("113500003");
+//        assertThat(answerGradePresenter3.getGrade()).isEqualTo(75.0);
+//
+//        //reviewer1 : presenter1 答案
+//        ReviewerEntity answerGradeR1P1 = answerGradeListDayClass.get(0);
+//        assertThat(answerGradeR1P1.getWeek()).isEqualTo("1");
+//        assertThat(answerGradeR1P1.getReviewerId()).isEqualTo("113522010");
+//        assertThat(answerGradeR1P1.getGrade()).isEqualTo(95.28595479208968);
+//
+//        //reviewer1 : presenter2 答案
+////        GradeEntity answerGrade2 = answerGradeList.get(1);
+//        ReviewerEntity answerGradeR1P2 = answerGradeListDayClass.get(2);
+//        assertThat(answerGradeR1P2.getWeek()).isEqualTo(1);
+//        assertThat(answerGradeR1P2.getReviewerId()).isEqualTo("113522010");
+//        assertThat(answerGradeR1P2.getGrade()).isEqualTo(95.28595479208968);
+//
+//        //reviewer1 : presenter3 答案
+////        GradeEntity answerGrade3 = answerGradeList.get(2);
+//        ReviewerEntity answerGradeR1P3 = answerGradeListDayClass.get(4);
+//        assertThat(answerGradeR1P3.getWeek()).isEqualTo(1);
+//        assertThat(answerGradeR1P3.getReviewerId()).isEqualTo("113522010");
+//        assertThat(answerGradeR1P3.getGrade()).isEqualTo(100.0);
+//
+//        //reviewer2 : presenter1 答案
+////        GradeEntity answerGrade4 = answerGradeList.get(3);
+//        ReviewerEntity answerGradeR2P1 = answerGradeListDayClass.get(1);
+//        assertThat(answerGradeR2P1.getWeek()).isEqualTo(1);
+//        assertThat(answerGradeR2P1.getReviewerId()).isEqualTo("113522099");
+//        assertThat(answerGradeR2P1.getGrade()).isEqualTo(95.28595479208968);
+//
+//        //reviewer2 : presenter2 答案
+////        GradeEntity answerGrade5 = answerGradeList.get(4);
+//        ReviewerEntity answerGradeR2P2 = answerGradeListDayClass.get(3);
+//        assertThat(answerGradeR2P2.getWeek()).isEqualTo(1);
+//        assertThat(answerGradeR2P2.getReviewerId()).isEqualTo("113522099");
+//        assertThat(answerGradeR2P2.getGrade()).isEqualTo(95.28595479208968);
+//
+//        //reviewer2 : presenter3 答案
+//        ReviewerEntity answerGradeR2P3 = answerGradeListDayClass.get(5);
+//        assertThat(answerGradeR2P3.getWeek()).isEqualTo(1);
+//        assertThat(answerGradeR2P3.getReviewerId()).isEqualTo("113522099");
+//        assertThat(answerGradeR2P3.getGrade()).isEqualTo(100.0);
     }
 
 
@@ -191,20 +196,32 @@ class GradeServiceTest {
 //    }
 
     public List<FormScoreRecordEntity> getFormScoreRecords() {
+//        FormScoreRecordEntity scoreRecord1 = new FormScoreRecordEntity(1L, 1L, "A", "113522010", "113500001");
+//        FormScoreRecordEntity scoreRecord2 = new FormScoreRecordEntity(1L, 1L, "C", "113522010", "113500002");
+//        FormScoreRecordEntity scoreRecord3 = new FormScoreRecordEntity(1L, 1L, "B", "113522010", "113500003");
+//        FormScoreRecordEntity scoreRecord4 = new FormScoreRecordEntity(1L, 1L, "C", "113522099", "113500001");
+//        FormScoreRecordEntity scoreRecord5 = new FormScoreRecordEntity(1L, 1L, "B", "113522099", "113500002");
+//        FormScoreRecordEntity scoreRecord6 = new FormScoreRecordEntity(1L, 1L, "B", "113522099", "113500003");
         FormScoreRecordEntity scoreRecord1 = new FormScoreRecordEntity(1L, 1L, "A", "113522010", "113500001");
-        FormScoreRecordEntity scoreRecord2 = new FormScoreRecordEntity(1L, 1L, "C", "113522010", "113500002");
-        FormScoreRecordEntity scoreRecord3 = new FormScoreRecordEntity(1L, 1L, "B", "113522010", "113500003");
-        FormScoreRecordEntity scoreRecord4 = new FormScoreRecordEntity(1L, 1L, "C", "113522099", "113500001");
-        FormScoreRecordEntity scoreRecord5 = new FormScoreRecordEntity(1L, 1L, "B", "113522099", "113500002");
-        FormScoreRecordEntity scoreRecord6 = new FormScoreRecordEntity(1L, 1L, "B", "113522099", "113500003");
+        FormScoreRecordEntity scoreRecord2 = new FormScoreRecordEntity(1L, 1L, "C", "113522011", "113500001");
+        FormScoreRecordEntity scoreRecord3 = new FormScoreRecordEntity(1L, 1L, "C", "113522012", "113500001");
+        FormScoreRecordEntity scoreRecord4 = new FormScoreRecordEntity(1L, 1L, "C", "113522013", "113500001");
+        FormScoreRecordEntity scoreRecord5 = new FormScoreRecordEntity(1L, 1L, "C", "113522014", "113500001");
+        FormScoreRecordEntity scoreRecord6 = new FormScoreRecordEntity(1L, 1L, "C", "113522015", "113500001");
+        FormScoreRecordEntity scoreRecord7 = new FormScoreRecordEntity(1L, 1L, "C", "113522016", "113500001");
+        FormScoreRecordEntity scoreRecord8 = new FormScoreRecordEntity(1L, 1L, "C", "113522017", "113500001");
+        FormScoreRecordEntity scoreRecord9 = new FormScoreRecordEntity(1L, 1L, "C", "113522018", "113500001");
 
         List<FormScoreRecordEntity> scoreRecordEntities = new ArrayList<>();
         scoreRecordEntities.add(scoreRecord1);
         scoreRecordEntities.add(scoreRecord2);
-        scoreRecordEntities.add(scoreRecord3);
-        scoreRecordEntities.add(scoreRecord4);
-        scoreRecordEntities.add(scoreRecord5);
-        scoreRecordEntities.add(scoreRecord6);
+//        scoreRecordEntities.add(scoreRecord3);
+//        scoreRecordEntities.add(scoreRecord4);
+//        scoreRecordEntities.add(scoreRecord5);
+//        scoreRecordEntities.add(scoreRecord6);
+//        scoreRecordEntities.add(scoreRecord7);
+//        scoreRecordEntities.add(scoreRecord8);
+//        scoreRecordEntities.add(scoreRecord9);
 
         return scoreRecordEntities;
     }

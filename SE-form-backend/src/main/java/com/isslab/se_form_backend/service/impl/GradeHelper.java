@@ -9,7 +9,7 @@ public class GradeHelper {
         return (gradeByScore - presenterGrade) / standardDeviation;
     }
 
-    public static int getGradeGap(Map<String, Integer> SCORE_MAP){
+    public static double getGradeGap(Map<String, Double> SCORE_MAP){
         return SCORE_MAP.get("A") - SCORE_MAP.get("C");
     }
 
