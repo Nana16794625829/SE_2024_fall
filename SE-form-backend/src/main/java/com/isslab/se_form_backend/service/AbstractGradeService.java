@@ -31,7 +31,10 @@ public abstract class AbstractGradeService {
     private double presenterAvgGrade;
     private double stdDev;
 
-    //TODO: 建立存取資料的方法
+    public Map<String, Double> calculateGrade() {
+        List<FormScoreRecordEntity> records = loadFormScoreRecords();
+        return calculateGrade(records);
+    }
 
     public Map<String, Double> calculateGrade(List<FormScoreRecordEntity> formScoreRecordList) {
 
@@ -58,11 +61,6 @@ public abstract class AbstractGradeService {
         assignReviewerGradesByRound(2);
 
         return reviewerGradeMap;
-    }
-
-    public Map<String, Double> calculateGrade() {
-        List<FormScoreRecordEntity> records = loadFormScoreRecords();
-        return calculateGrade(records);
     }
 
     protected abstract List<FormScoreRecordEntity> loadFormScoreRecords();

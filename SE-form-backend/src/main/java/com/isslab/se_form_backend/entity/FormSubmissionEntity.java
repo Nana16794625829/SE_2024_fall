@@ -8,17 +8,17 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@IdClass(FormSubmissionEntityId.class)
+@Table(
+        name = "form_submission",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"submitterId", "week"})
+)
 public class FormSubmissionEntity {
     @Id
-    private String submitterId;
-    @Id
-    private String week;
-
-    @Column(unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;  // 提供給 FormScoreRecordEntity 的 fk
+    private Long id;
 
+    private String submitterId;
+    private String week;
     private String submitDateTime;
     private String comment;
 }
