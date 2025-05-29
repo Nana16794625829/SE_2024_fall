@@ -1,34 +1,23 @@
 package com.isslab.se_form_backend.service;
 
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
-import com.isslab.se_form_backend.entity.FormSubmissionEntity;
-import com.isslab.se_form_backend.entity.PresenterEntity;
-import com.isslab.se_form_backend.entity.ReviewerEntity;
 import com.isslab.se_form_backend.service.impl.MockGradeService;
 import com.isslab.se_form_backend.service.util.FormScoreRecordLoader;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GradeServiceTest {
 
-//    @Mock
-//    private IFormService formService;
-//
     private List<FormScoreRecordEntity> allRecords;
     private List<FormScoreRecordEntity> allRecordsNoOutlier;
     private List<FormScoreRecordEntity> bScoreRecords;

@@ -11,61 +11,14 @@ public class SeFormBackendConfig {
 
     private final Boolean MOCK = Boolean.FALSE;
 
-//    @Bean
-//    public IFormService formService(PresenterService presenterService, FormRepository formRepository, ReviewRepository reviewRepository) {
-//        if(MOCK.equals(Boolean.TRUE)){
-//            return new MockFormService();
-//        }else{
-//            return new FormService(presenterService, formRepository, reviewRepository);
-//        }
-//    }
-//
-//    @Bean
-//    public FormController formController(IFormService formService) {
-//        return new FormController(formService);
-//    }
-//
-//    @Bean
-//    public StudentService studentService() {
-//        return new StudentService();
-//    }
-//
-//    @Bean
-//    public StudentController studentController(StudentService studentService) {
-//        return new StudentController(studentService);
-//    }
-//
-//    @Bean
-//    public PresenterService presenterService(PresenterRepository presenterRepository) {
-//        return new PresenterService(presenterRepository);
-//    }
-//
-//    @Bean
-//    public PresenterController presenterController(PresenterService presenterService) {
-//        return new PresenterController(presenterService);
-//    }
-//
-//    @Bean
-//    public GradesToCSVService gradesToCSVService() {
-//        String  csvDir = "src/main/resources/output/";
-//        return new GradesToCSVService(csvDir);
-//    }
-
     @Bean
     public AbstractGradeService gradeService() {
-//        if(MOCK.equals(Boolean.TRUE)){
+        if (MOCK) {
             return new MockGradeService();
-//        }else{
-//            return new GradeService(gradesToCSVService, formService, gradeRepository);
-//        }
-//            return new GradeService(gradesToCSVService, formService, gradeRepository);
+        } else {
+            return new GradeService();
+        }
     }
-
-//    @Bean
-//    public GradeController gradeController(AbstractGradeService gradeService) {
-//        return new GradeController(gradeService);
-//    }
-
 }
 
 

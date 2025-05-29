@@ -60,12 +60,19 @@ public abstract class AbstractGradeService {
         return reviewerGradeMap;
     }
 
-    private double calculateZScore(Map.Entry<String, Double> entry) {
+    public Map<String, Double> calculateGrade() {
+        List<FormScoreRecordEntity> records = loadFormScoreRecords();
+        return calculateGrade(records);
+    }
+
+    protected abstract List<FormScoreRecordEntity> loadFormScoreRecords();
+
+    protected double calculateZScore(Map.Entry<String, Double> entry) {
         double gradeByReviewer = entry.getValue();
         return (gradeByReviewer - presenterAvgGrade) / stdDev;
     }
 
-    private void setPresenterGradeMap(List<FormScoreRecordEntity> formScoreRecordList) {
+    protected void setPresenterGradeMap(List<FormScoreRecordEntity> formScoreRecordList) {
         for(FormScoreRecordEntity formScoreRecord : formScoreRecordList) {
             String presenterScore = formScoreRecord.getScore();
             String reviewerId = formScoreRecord.getReviewerId();
@@ -75,7 +82,7 @@ public abstract class AbstractGradeService {
         }
     }
 
-    private void setPresenterGradeStatics() {
+    protected void setPresenterGradeStatics() {
         DescriptiveStatistics presenterGradeStatics = new DescriptiveStatistics();
         for (double grade : presenterGradeMap.values()) {
             presenterGradeStatics.addValue(grade);
@@ -85,7 +92,7 @@ public abstract class AbstractGradeService {
         if (stdDev == 0) stdDev = 1; // 避免除以 0 的狀況
     }
 
-    private void setReviewerZScoreMap() {
+    protected void setReviewerZScoreMap() {
         for(Map.Entry<String, Double> entry : presenterGradeMap.entrySet()) {
             String studentId = entry.getKey();
             double zScore = calculateZScore(entry);
@@ -93,7 +100,7 @@ public abstract class AbstractGradeService {
         }
     }
 
-    private double calculateReviewerGrade(double zScore) {
+    protected double calculateReviewerGrade(double zScore) {
         double scoreGap = GradeHelper.getGradeGap(SCORE_MAP);
         double reviewerGrade = 100 - (Math.abs(zScore) / 3) * scoreGap;
 
@@ -104,7 +111,7 @@ public abstract class AbstractGradeService {
         return bd.doubleValue();
     }
 
-    private void assignReviewerGradesByRound(int round) {
+    protected void assignReviewerGradesByRound(int round) {
         for (Map.Entry<String, Double> entry : reviewerZScoreMap.entrySet()) {
             String studentId = entry.getKey();
             double zScore = entry.getValue();
@@ -120,7 +127,7 @@ public abstract class AbstractGradeService {
         }
     }
 
-    private void removeOutliersForRound2() {
+    protected void removeOutliersForRound2() {
         // 收集要被移除的 students
         Set<String> keysToRemove = new HashSet<>();
         for (Map.Entry<String, Double> entry : reviewerGradeMap.entrySet()) {
