@@ -63,6 +63,9 @@ public abstract class AbstractGradeService {
         return reviewerGradeMap;
     }
 
+    public abstract void saveGradeToStudent(String studentId, String week, double grade);
+    public abstract double getGradeByIdAndWeek(String studentId, String week);
+
     protected abstract List<FormScoreRecordEntity> loadFormScoreRecords();
 
     protected double calculateZScore(Map.Entry<String, Double> entry) {

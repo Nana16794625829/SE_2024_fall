@@ -7,6 +7,16 @@ import java.util.List;
 
 public class GradeService extends AbstractGradeService {
     @Override
+    public void saveGradeToStudent(String studentId, String week, double grade) {
+
+    }
+
+    @Override
+    public double getGradeByIdAndWeek(String studentId, String week) {
+        return 0;
+    }
+
+    @Override
     protected List<FormScoreRecordEntity> loadFormScoreRecords() {
         return List.of();
     }
