@@ -2,9 +2,9 @@ package com.isslab.se_form_backend.config;
 
 import com.isslab.se_form_backend.helper.FormScoreCsvImporter;
 import com.isslab.se_form_backend.repository.FormScoreRecordRepository;
+import com.isslab.se_form_backend.repository.ReviewerRepository;
 import com.isslab.se_form_backend.service.AbstractGradeService;
-import com.isslab.se_form_backend.service.AbstractPresenterService;
-import com.isslab.se_form_backend.service.AbstractReviewerService;
+import com.isslab.se_form_backend.service.AbstractStudentRoleService;
 import com.isslab.se_form_backend.service.AbstractStudentService;
 import com.isslab.se_form_backend.service.impl.*;
 import com.isslab.se_form_backend.service.impl.mock.MockGradeService;
@@ -19,7 +19,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = "com.isslab.se_form_backend.repository")
 public class SeFormBackendConfig {
 
-    private final Boolean MOCK = Boolean.FALSE;
+    private final Boolean MOCK = Boolean.TRUE;
 
     @Bean
     public AbstractStudentService studentService(){
@@ -31,15 +31,15 @@ public class SeFormBackendConfig {
     }
 
     @Bean
-    public AbstractReviewerService reviewerService(){
-        if (MOCK) {
-            return new MockReviewerService();
-        }
-        return new ReviewerService();
+    public AbstractStudentRoleService reviewerService(ReviewerRepository reviewerRepository){
+//        if (MOCK) {
+//            return new MockReviewerService();
+//        }
+        return new ReviewerService(reviewerRepository);
     }
 
     @Bean
-    public AbstractPresenterService presenterService(){
+    public AbstractStudentRoleService presenterService(){
         if (MOCK) {
             return new MockPresenterService();
         }
@@ -47,7 +47,7 @@ public class SeFormBackendConfig {
     }
 
     @Bean
-    public AbstractGradeService gradeService(AbstractReviewerService reviewerService, AbstractPresenterService presenterService, AbstractStudentService studentService){
+    public AbstractGradeService gradeService(AbstractStudentRoleService reviewerService, AbstractStudentRoleService presenterService, AbstractStudentService studentService){
         if (MOCK) {
             return new MockGradeService(reviewerService, presenterService, studentService);
         } else {

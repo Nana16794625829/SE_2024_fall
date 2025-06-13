@@ -2,16 +2,21 @@ package com.isslab.se_form_backend;
 
 import com.isslab.se_form_backend.helper.FormScoreCsvImporter;
 import com.isslab.se_form_backend.repository.FormScoreRecordRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import javax.sql.DataSource;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
 @SpringBootApplication
 public class SeFormBackendApplication {
+
+    @Autowired
+    private DataSource dataSource;
 
     public static void main(String[] args) {
         SpringApplication.run(SeFormBackendApplication.class, args);
@@ -28,6 +33,7 @@ public class SeFormBackendApplication {
             } else {
                 System.out.println("已有資料，跳過匯入");
             }
+            System.out.println(dataSource.getConnection().getMetaData().getURL());
         };
     }
 }

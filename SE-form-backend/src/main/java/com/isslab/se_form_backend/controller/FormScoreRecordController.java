@@ -1,6 +1,7 @@
 package com.isslab.se_form_backend.controller;
 
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
+import com.isslab.se_form_backend.helper.ResponseStatus;
 import com.isslab.se_form_backend.model.Status;
 import com.isslab.se_form_backend.service.impl.FormScoreRecordService;
 import org.springframework.http.ResponseEntity;
@@ -41,11 +42,6 @@ public class FormScoreRecordController {
     @DeleteMapping("{id}")
     public ResponseEntity<Status> deleteFormScoreRecordById(@PathVariable Long id) {
         formScoreRecordService.delete(id);
-        return ResponseEntity.ok(statusOk());
+        return ResponseEntity.ok(ResponseStatus.statusOk());
     }
-
-    private static Status statusOk() {
-        return Status.builder().status("200").response("ok").build();
-    }
-
 }

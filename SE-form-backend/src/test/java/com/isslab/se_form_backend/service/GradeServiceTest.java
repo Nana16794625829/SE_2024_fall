@@ -33,6 +33,9 @@ class GradeServiceTest {
         MockPresenterService presenterService = new MockPresenterService();
         MockStudentService studentService = new MockStudentService();
         gradeService = new MockGradeService(reviewerService, presenterService, studentService);
+
+        // prepare for testGetGradeByIdAndWeek()
+        gradeService.saveGradeToStudent("113525009", "1", 60);
     }
 
     @Test
@@ -70,12 +73,17 @@ class GradeServiceTest {
 
     @Test
     public void testSaveGradesToStudent(){
-        String week = "1";
+        gradeService.saveGradeToStudent("113525009", "1", 60);
+    }
 
-        double grade = gradeService.calculateGrade(allRecordsNoOutlier).get("113525009");
-        gradeService.saveGradeToStudent("113525009", week, grade);
+    @Test
+    public void testGetGradeByIdAndWeek(){
+        double answer = gradeService.getGradeByIdAndWeek("113525009", "1");
+        assertThat(answer).isEqualTo(60);
+    }
 
-        double answer = gradeService.getGradeByIdAndWeek("113525009", week);
-        assertThat(answer).isEqualTo(96.2);
+    @Test
+    public void testUpdateGradeToStudent(){
+        gradeService.updateGradeByIdAndWeek("113525009", "1", 70);
     }
 }

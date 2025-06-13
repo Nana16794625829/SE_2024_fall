@@ -5,7 +5,8 @@ import com.isslab.se_form_backend.service.AbstractStudentService;
 public class MockStudentService extends AbstractStudentService {
     @Override
     public boolean isReviewer(String studentId) {
-        return studentId.equals("113525009");
+//        return studentId.equals("113525009");
+        return true;
     }
 
     @Override

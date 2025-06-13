@@ -31,6 +31,10 @@ public abstract class AbstractGradeService {
     private double presenterAvgGrade;
     private double stdDev;
 
+    protected AbstractStudentService studentService;
+    protected AbstractStudentRoleService reviewerService;
+    protected AbstractStudentRoleService presenterService;
+
     public Map<String, Double> calculateGrade() {
         List<FormScoreRecordEntity> records = loadFormScoreRecords();
         return calculateGrade(records);
@@ -65,6 +69,14 @@ public abstract class AbstractGradeService {
 
     public abstract void saveGradeToStudent(String studentId, String week, double grade);
     public abstract double getGradeByIdAndWeek(String studentId, String week);
+    public abstract void updateGradeByIdAndWeek(String studentId, String week, double grade);
+
+    public void saveAllGradesByWeek(String week, Map<String, Double> grades){
+        for(Map.Entry<String, Double> entry : grades.entrySet()){
+            AbstractStudentRoleService roleService = getServiceByRole(entry.getKey());
+            roleService.saveGradeToStudent(entry.getKey(), week, entry.getValue());
+        }
+    };
 
     protected abstract List<FormScoreRecordEntity> loadFormScoreRecords();
 
@@ -142,5 +154,11 @@ public abstract class AbstractGradeService {
             presenterGradeMap.remove(key);
             reviewerZScoreMap.remove(key);
         }
+    }
+
+    protected AbstractStudentRoleService getServiceByRole(String studentId){
+        if(studentService.isPresenter(studentId)) return presenterService;
+        else if(studentService.isReviewer(studentId)) return reviewerService;
+        else throw new IllegalArgumentException("無法辨識學生身分: " + studentId);
     }
 }
