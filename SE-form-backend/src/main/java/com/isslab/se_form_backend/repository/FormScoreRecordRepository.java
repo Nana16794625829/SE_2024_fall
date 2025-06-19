@@ -4,4 +4,5 @@ import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FormScoreRecordRepository extends JpaRepository<FormScoreRecordEntity, Long> {
+    FormScoreRecordEntity findByFormId(Long formId);
 }

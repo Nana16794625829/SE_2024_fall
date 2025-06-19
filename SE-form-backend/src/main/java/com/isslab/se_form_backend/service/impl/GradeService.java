@@ -1,29 +1,40 @@
 package com.isslab.se_form_backend.service.impl;
 
-import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
 import com.isslab.se_form_backend.service.AbstractGradeService;
-
-import java.util.List;
-import java.util.Map;
+import com.isslab.se_form_backend.service.AbstractStudentRoleService;
+import com.isslab.se_form_backend.service.AbstractStudentService;
 
 public class GradeService extends AbstractGradeService {
+
+    public GradeService(AbstractStudentRoleService reviewerService, AbstractStudentRoleService presenterService, AbstractStudentService studentService, FormScoreRecordService formScoreRecordService) {
+        this.reviewerService = reviewerService;
+        this.presenterService = presenterService;
+        this.studentService = studentService;
+        this.formScoreRecordService = formScoreRecordService;
+    }
+
     @Override
     public void saveGradeToStudent(String studentId, String week, double grade) {
-
+        AbstractStudentRoleService roleService = getServiceByRole(studentId);
+        roleService.saveGradeToStudent(studentId, week, grade);
     }
 
     @Override
     public double getGradeByIdAndWeek(String studentId, String week) {
-        return 0;
+        AbstractStudentRoleService roleService = getServiceByRole(studentId);
+        return roleService.getGradeByIdAndWeek(studentId, week);
     }
 
     @Override
     public void updateGradeByIdAndWeek(String studentId, String week, double grade) {
-
+        AbstractStudentRoleService roleService = getServiceByRole(studentId);
+        roleService.updateGradeByIdAndWeek(studentId, week, grade);
     }
 
     @Override
-    protected List<FormScoreRecordEntity> loadFormScoreRecords() {
-        return List.of();
+    public void deleteGradeByIdAndWeek(String studentId, String week) {
+        AbstractStudentRoleService roleService = getServiceByRole(studentId);
+        roleService.deleteGradeByIdAndWeek(studentId, week);
     }
+
 }

@@ -1,23 +1,21 @@
 package com.isslab.se_form_backend.service.impl.mock;
 
-import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
-import com.isslab.se_form_backend.helper.GradeMockDataLoader;
+import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
 import com.isslab.se_form_backend.service.AbstractGradeService;
 import com.isslab.se_form_backend.service.AbstractStudentRoleService;
 import com.isslab.se_form_backend.service.AbstractStudentService;
+import com.isslab.se_form_backend.service.impl.FormScoreRecordService;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
-import java.util.Map;
 
 
 @Slf4j
 public class MockGradeService extends AbstractGradeService {
 
-    public MockGradeService(AbstractStudentRoleService reviewerService, AbstractStudentRoleService presenterService, AbstractStudentService studentService) {
+    public MockGradeService(AbstractStudentRoleService reviewerService, AbstractStudentRoleService presenterService, AbstractStudentService studentService, AbstractFormScoreRecordService formScoreRecordService) {
         this.reviewerService = reviewerService;
         this.presenterService = presenterService;
         this.studentService = studentService;
+        this.formScoreRecordService = formScoreRecordService;
     }
 
     @Override
@@ -39,8 +37,7 @@ public class MockGradeService extends AbstractGradeService {
     }
 
     @Override
-    protected List<FormScoreRecordEntity> loadFormScoreRecords() {
-        return GradeMockDataLoader.loadFromCsv("/mock/sample.csv");
-    }
+    public void deleteGradeByIdAndWeek(String studentId, String week) {
 
+    }
 }

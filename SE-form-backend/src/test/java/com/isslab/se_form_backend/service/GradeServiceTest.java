@@ -1,14 +1,13 @@
 package com.isslab.se_form_backend.service;
 
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
-import com.isslab.se_form_backend.service.impl.mock.MockGradeService;
-import com.isslab.se_form_backend.service.impl.mock.MockPresenterService;
-import com.isslab.se_form_backend.service.impl.mock.MockReviewerService;
-import com.isslab.se_form_backend.service.impl.mock.MockStudentService;
+import com.isslab.se_form_backend.repository.FormScoreRecordRepository;
+import com.isslab.se_form_backend.service.impl.mock.*;
 import com.isslab.se_form_backend.service.util.FormScoreRecordLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.Mock;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,6 +21,9 @@ class GradeServiceTest {
     private List<FormScoreRecordEntity> allRecordsNoOutlier;
     private List<FormScoreRecordEntity> bScoreRecords;
     private MockGradeService gradeService;
+    @Mock
+    FormScoreRecordRepository formScoreRecordRepository;
+
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -32,7 +34,9 @@ class GradeServiceTest {
         MockReviewerService reviewerService = new MockReviewerService();
         MockPresenterService presenterService = new MockPresenterService();
         MockStudentService studentService = new MockStudentService();
-        gradeService = new MockGradeService(reviewerService, presenterService, studentService);
+        AbstractFormSubmissionService formSubmissionService = new MockFormSubmissionService();
+        AbstractFormScoreRecordService formScoreRecordService = new MockFormScoreRecordService();
+        gradeService = new MockGradeService(reviewerService, presenterService, studentService, formScoreRecordService);
 
         // prepare for testGetGradeByIdAndWeek()
         gradeService.saveGradeToStudent("113525009", "1", 60);
@@ -40,7 +44,7 @@ class GradeServiceTest {
 
     @Test
     public void testCalculateGrades() throws IOException {
-        Map<String, Double> answerGradeListOnServiceClass = gradeService.calculateGrade();
+        Map<String, Double> answerGradeListOnServiceClass = gradeService.calculateGrade("1");
         assertThat(answerGradeListOnServiceClass.get("113525009")).isEqualTo(60);
     }
 

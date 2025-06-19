@@ -9,26 +9,33 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
-public class GradeMockDataLoader {
+public class MockFormScoreRecord {
 
-    public static List<FormScoreRecordEntity> loadFromCsv(String resourcePath) {
+    public static List<FormScoreRecordEntity> mockRecord(String week) {
+        String resourcePath = "/mock/sample.csv"; // 直接餵假資料，不用管參數
         List<FormScoreRecordEntity> records = new ArrayList<>();
 
-        try (InputStream inputStream = GradeMockDataLoader.class.getResourceAsStream(resourcePath);
+        try (InputStream inputStream = MockFormScoreRecord.class.getResourceAsStream(resourcePath);
              Reader reader = new InputStreamReader(Objects.requireNonNull(inputStream));
              CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT)) {
 
             for (CSVRecord csvRecord : csvParser) {
-                String studentId = csvRecord.get(0);
+                String reviewerId = csvRecord.get(0);
                 String score = csvRecord.get(1);
-                records.add(new FormScoreRecordEntity(1L, 1L, score, studentId, "113500001"));
+
+                Long formId = Math.abs(new Random().nextLong());
+                String presenterId = "113522000"; // 假的 presenter id
+
+                records.add(new FormScoreRecordEntity(null, formId, score, reviewerId, presenterId));
             }
 
         } catch (IOException e) {
-            throw new UncheckedIOException("讀取 mock 資料失敗", e);
+            throw new UncheckedIOException("讀取 mock score 資料失敗", e);
         }
 
         return records;
     }
 }
+

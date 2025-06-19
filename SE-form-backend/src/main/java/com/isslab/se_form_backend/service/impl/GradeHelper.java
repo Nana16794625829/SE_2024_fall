@@ -2,6 +2,7 @@ package com.isslab.se_form_backend.service.impl;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class GradeHelper {
@@ -9,8 +10,13 @@ public class GradeHelper {
         return (gradeByScore - presenterGrade) / standardDeviation;
     }
 
-    public static double getGradeGap(Map<String, Double> SCORE_MAP){
-        return SCORE_MAP.get("A") - SCORE_MAP.get("C");
+    public static double getGradeGap(Map<String, Double> scoreMap) {
+        if (scoreMap.isEmpty()) return 0.0;
+
+        double max = Collections.max(scoreMap.values());
+        double min = Collections.min(scoreMap.values());
+
+        return max - min;
     }
 
     public static double calculateReviewerGrade(double zScore, int gradeGap){

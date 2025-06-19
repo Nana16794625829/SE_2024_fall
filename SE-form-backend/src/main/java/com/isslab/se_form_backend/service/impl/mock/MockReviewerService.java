@@ -22,4 +22,9 @@ public class MockReviewerService extends AbstractStudentRoleService {
     public void updateGradeByIdAndWeek(String studentId, String week, double grade) {
 
     }
+
+    @Override
+    public void deleteGradeByIdAndWeek(String studentId, String week) {
+
+    }
 }

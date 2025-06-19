@@ -3,6 +3,7 @@ package com.isslab.se_form_backend.entity;
 import com.isslab.se_form_backend.entity.id.FormSubmissionEntityId;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 public class FormSubmissionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
     private String submitterId;

@@ -26,7 +26,7 @@ public class GradeController {
 
     @PostMapping("/save")
     public ResponseEntity<Status> saveAllGradesByWeek(@RequestBody Map<String, String> body){
-        Map<String, Double> gradesMap = gradeService.calculateGrade();
+        Map<String, Double> gradesMap = gradeService.calculateGrade(body.get("week"));
         gradeService.saveAllGradesByWeek(body.get("week"), gradesMap);
         return ResponseEntity.ok(ResponseStatus.statusOk());
     }
@@ -37,4 +37,9 @@ public class GradeController {
         return ResponseEntity.ok(ResponseStatus.statusOk());
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<Status> deleteGradeByIdAndWeek(@RequestBody Map<String, String> body){
+        gradeService.deleteGradeByIdAndWeek(body.get("id"), body.get("week"));
+        return ResponseEntity.ok(ResponseStatus.statusOk());
+    }
 }

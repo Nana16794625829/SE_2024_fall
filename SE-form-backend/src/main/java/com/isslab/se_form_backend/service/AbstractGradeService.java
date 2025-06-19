@@ -3,6 +3,7 @@ package com.isslab.se_form_backend.service;
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
 import com.isslab.se_form_backend.service.impl.GradeHelper;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
@@ -25,18 +26,21 @@ public abstract class AbstractGradeService {
             "C", 70.0
     );
 
-    private final Map<String, Double> presenterGradeMap = new HashMap<>();
-    private final Map<String, Double> reviewerGradeMap = new HashMap<>();
-    private final Map<String, Double> reviewerZScoreMap = new HashMap<>();
+    private final Map<String, Double> presenterGradeMap = new HashMap<>(); // reviewerId : presenterGradeByReviewer
+    private final Map<String, Double> reviewerGradeMap = new HashMap<>(); // reviewerId : reviewerGrade
+    private final Map<String, Double> reviewerZScoreMap = new HashMap<>(); // reviewerId : reviewerZScore
+
+    @Getter
     private double presenterAvgGrade;
     private double stdDev;
 
     protected AbstractStudentService studentService;
     protected AbstractStudentRoleService reviewerService;
     protected AbstractStudentRoleService presenterService;
+    protected AbstractFormScoreRecordService formScoreRecordService;
 
-    public Map<String, Double> calculateGrade() {
-        List<FormScoreRecordEntity> records = loadFormScoreRecords();
+    public Map<String, Double> calculateGrade(String week) {
+        List<FormScoreRecordEntity> records = formScoreRecordService.loadFormScoreRecordsByWeek(week);
         return calculateGrade(records);
     }
 
@@ -70,6 +74,7 @@ public abstract class AbstractGradeService {
     public abstract void saveGradeToStudent(String studentId, String week, double grade);
     public abstract double getGradeByIdAndWeek(String studentId, String week);
     public abstract void updateGradeByIdAndWeek(String studentId, String week, double grade);
+    public abstract void deleteGradeByIdAndWeek(String studentId, String week);
 
     public void saveAllGradesByWeek(String week, Map<String, Double> grades){
         for(Map.Entry<String, Double> entry : grades.entrySet()){
@@ -77,8 +82,6 @@ public abstract class AbstractGradeService {
             roleService.saveGradeToStudent(entry.getKey(), week, entry.getValue());
         }
     };
-
-    protected abstract List<FormScoreRecordEntity> loadFormScoreRecords();
 
     protected double calculateZScore(Map.Entry<String, Double> entry) {
         double gradeByReviewer = entry.getValue();
