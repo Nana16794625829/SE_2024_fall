@@ -1,12 +1,13 @@
 package com.isslab.se_form_backend.service.impl;
 
+import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
 import com.isslab.se_form_backend.service.AbstractGradeService;
 import com.isslab.se_form_backend.service.AbstractStudentRoleService;
 import com.isslab.se_form_backend.service.AbstractStudentService;
 
 public class GradeService extends AbstractGradeService {
 
-    public GradeService(AbstractStudentRoleService reviewerService, AbstractStudentRoleService presenterService, AbstractStudentService studentService, FormScoreRecordService formScoreRecordService) {
+    public GradeService(AbstractStudentRoleService reviewerService, AbstractStudentRoleService presenterService, AbstractStudentService studentService, AbstractFormScoreRecordService formScoreRecordService) {
         this.reviewerService = reviewerService;
         this.presenterService = presenterService;
         this.studentService = studentService;

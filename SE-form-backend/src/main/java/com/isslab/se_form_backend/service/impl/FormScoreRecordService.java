@@ -5,13 +5,11 @@ import com.isslab.se_form_backend.entity.FormSubmissionEntity;
 import com.isslab.se_form_backend.repository.FormScoreRecordRepository;
 import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
 import com.isslab.se_form_backend.service.AbstractFormSubmissionService;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Service
 public class FormScoreRecordService extends AbstractFormScoreRecordService {
 
     private final AbstractFormSubmissionService formSubmissionService;

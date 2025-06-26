@@ -17,7 +17,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = "com.isslab.se_form_backend.repository")
 public class SeFormBackendConfig {
 
-    private final Boolean MOCK = Boolean.TRUE;
+    private final Boolean MOCK = Boolean.FALSE;
 
     @Bean
     public AbstractStudentService studentService(){
@@ -47,7 +47,7 @@ public class SeFormBackendConfig {
     public AbstractGradeService gradeService(AbstractStudentRoleService reviewerService,
                                              AbstractStudentRoleService presenterService,
                                              AbstractStudentService studentService,
-                                             FormScoreRecordService formScoreRecordService){
+                                             AbstractFormScoreRecordService formScoreRecordService){
         if (MOCK) {
             return new MockGradeService(reviewerService, presenterService, studentService, formScoreRecordService);
         }

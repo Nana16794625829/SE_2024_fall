@@ -11,4 +11,29 @@ public class MockFormScoreRecordService extends AbstractFormScoreRecordService {
     public List<FormScoreRecordEntity> loadFormScoreRecordsByWeek(String week) {
         return MockFormScoreRecord.mockRecord(week);
     }
+
+    @Override
+    public List<FormScoreRecordEntity> getAll() {
+        return List.of();
+    }
+
+    @Override
+    public FormScoreRecordEntity getById(Long id) {
+        return null;
+    }
+
+    @Override
+    public FormScoreRecordEntity create(FormScoreRecordEntity record) {
+        return null;
+    }
+
+    @Override
+    public FormScoreRecordEntity update(Long id, FormScoreRecordEntity newRecord) {
+        return null;
+    }
+
+    @Override
+    public void delete(Long id) {
+
+    }
 }
