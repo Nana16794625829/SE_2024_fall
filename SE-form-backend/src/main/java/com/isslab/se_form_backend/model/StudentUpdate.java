@@ -7,8 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class FormLog {
+public class StudentUpdate {
 
-    private String studentId;  // 評分者學號
-    private String log;
+    private String studentId;
+    private String name;
+    private String email;
 }

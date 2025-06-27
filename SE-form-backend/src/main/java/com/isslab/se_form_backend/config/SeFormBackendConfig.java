@@ -2,10 +2,7 @@ package com.isslab.se_form_backend.config;
 
 import com.isslab.se_form_backend.controller.GradeController;
 import com.isslab.se_form_backend.helper.FormScoreCsvImporter;
-import com.isslab.se_form_backend.repository.FormScoreRecordRepository;
-import com.isslab.se_form_backend.repository.FormSubmissionRepository;
-import com.isslab.se_form_backend.repository.PresenterRepository;
-import com.isslab.se_form_backend.repository.ReviewerRepository;
+import com.isslab.se_form_backend.repository.*;
 import com.isslab.se_form_backend.service.*;
 import com.isslab.se_form_backend.service.impl.*;
 import com.isslab.se_form_backend.service.impl.mock.*;
@@ -20,11 +17,11 @@ public class SeFormBackendConfig {
     private final Boolean MOCK = Boolean.FALSE;
 
     @Bean
-    public AbstractStudentService studentService(){
+    public AbstractStudentService studentService(StudentRepository studentRepository){
         if (MOCK) {
             return new MockStudentService();
         }
-        return new StudentService();
+        return new StudentService(studentRepository);
     }
 
     @Bean
