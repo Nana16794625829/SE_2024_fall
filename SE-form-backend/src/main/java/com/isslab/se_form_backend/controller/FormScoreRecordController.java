@@ -2,6 +2,7 @@ package com.isslab.se_form_backend.controller;
 
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
 import com.isslab.se_form_backend.helper.ResponseStatus;
+import com.isslab.se_form_backend.model.FormScoreRecord;
 import com.isslab.se_form_backend.model.Status;
 import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
 import com.isslab.se_form_backend.service.impl.FormScoreRecordService;
@@ -22,24 +23,26 @@ public class FormScoreRecordController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<FormScoreRecordEntity>> getAllFormScoreRecords() {
+    public ResponseEntity<List<FormScoreRecord>> getAllFormScoreRecords() {
         return ResponseEntity.ok(formScoreRecordService.getAll());
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<FormScoreRecordEntity> getFormScoreRecordById(@PathVariable Long id) {
+    public ResponseEntity<FormScoreRecord> getFormScoreRecordById(@PathVariable Long id) {
         return ResponseEntity.ok(formScoreRecordService.getById(id));
     }
 
     @PostMapping("/")
-    public ResponseEntity<FormScoreRecordEntity> addFormScoreRecord(@RequestBody FormScoreRecordEntity newFormScoreRecord) {
-        return ResponseEntity.ok(formScoreRecordService.create(newFormScoreRecord));
+    public ResponseEntity<?> addFormScoreRecord(@RequestBody FormScoreRecord newFormScoreRecord) {
+        formScoreRecordService.create(newFormScoreRecord);
+        return ResponseEntity.ok(ResponseStatus.statusOk());
     }
 
     @PutMapping("/")
-    public ResponseEntity<FormScoreRecordEntity> updateFormScoreRecordById(@RequestBody FormScoreRecordEntity newFormScoreRecord) {
+    public ResponseEntity<?> updateFormScoreRecordById(@RequestBody FormScoreRecordEntity newFormScoreRecord) {
         Long id = newFormScoreRecord.getId();
-        return ResponseEntity.ok(formScoreRecordService.update(id, newFormScoreRecord));
+        formScoreRecordService.update(id, newFormScoreRecord);
+        return ResponseEntity.ok(ResponseStatus.statusOk());
     }
 
     @DeleteMapping("/")

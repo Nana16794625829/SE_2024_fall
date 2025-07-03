@@ -1,9 +1,6 @@
 package com.isslab.se_form_backend.model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
@@ -15,9 +12,11 @@ import java.util.List;
 
 @Getter
 @Setter
-@Builder
 @ToString
+@AllArgsConstructor
 public class FormScoreRecord {
-    private String presenterId;
+    private Long formId;
     private String score;
+    private String reviewerId;
+    private String presenterId;
 }

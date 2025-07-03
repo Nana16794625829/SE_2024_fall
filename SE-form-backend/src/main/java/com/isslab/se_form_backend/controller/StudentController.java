@@ -3,7 +3,6 @@ package com.isslab.se_form_backend.controller;
 import com.isslab.se_form_backend.helper.ResponseStatus;
 import com.isslab.se_form_backend.model.Student;
 import com.isslab.se_form_backend.model.StudentUpdate;
-import com.isslab.se_form_backend.service.AbstractStudentRoleService;
 import com.isslab.se_form_backend.service.AbstractStudentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +15,9 @@ import java.util.Map;
 public class StudentController {
 
     private final AbstractStudentService studentService;
-    private final AbstractStudentRoleService presenterService;
 
-    public StudentController(AbstractStudentService studentService, AbstractStudentRoleService presenterService) {
+    public StudentController(AbstractStudentService studentService) {
         this.studentService = studentService;
-        this.presenterService = presenterService;
     }
 
     @GetMapping("/{id}")

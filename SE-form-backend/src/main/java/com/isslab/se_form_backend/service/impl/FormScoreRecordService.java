@@ -2,6 +2,7 @@ package com.isslab.se_form_backend.service.impl;
 
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
 import com.isslab.se_form_backend.entity.FormSubmissionEntity;
+import com.isslab.se_form_backend.model.FormScoreRecord;
 import com.isslab.se_form_backend.repository.FormScoreRecordRepository;
 import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
 import com.isslab.se_form_backend.service.AbstractFormSubmissionService;
@@ -20,32 +21,63 @@ public class FormScoreRecordService extends AbstractFormScoreRecordService {
         this.formSubmissionService = formSubmissionService;
     }
 
-    public List<FormScoreRecordEntity> getAll() {
-        return repository.findAll();
+    public List<FormScoreRecord> getAll() {
+        List<FormScoreRecordEntity> entities = repository.findAll();
+        List<FormScoreRecord> records = new ArrayList<>();
+
+        for(FormScoreRecordEntity entity : entities) {
+            FormScoreRecord record = new FormScoreRecord(
+                    entity.getFormId(),
+                    entity.getScore(),
+                    entity.getReviewerId(),
+                    entity.getPresenterId()
+            );
+
+            records.add(record);
+        }
+
+        return records;
     }
 
-    public FormScoreRecordEntity getById(Long id) {
-        return repository.findById(id).orElse(null);
+    public FormScoreRecord getById(Long id) {
+        FormScoreRecordEntity entity = repository.findById(id).orElse(null);
+        if(entity == null) return null;
+
+        return new FormScoreRecord(
+                entity.getFormId(),
+                entity.getScore(),
+                entity.getReviewerId(),
+                entity.getPresenterId()
+        );
     }
 
-    public FormScoreRecordEntity create(FormScoreRecordEntity record) {
-        return repository.save(record);
+    public void create(FormScoreRecord record) {
+        FormScoreRecordEntity entity = FormScoreRecordEntity
+                .builder()
+                .formId(record.getFormId())
+                .score(record.getScore())
+                .reviewerId(record.getReviewerId())
+                .presenterId(record.getPresenterId())
+                .build();
+
+
+        repository.save(entity);
     }
 
-    public FormScoreRecordEntity update(Long id, FormScoreRecordEntity newRecord) {
+    public void update(Long id, FormScoreRecordEntity newRecord) {
         FormScoreRecordEntity record = repository.findById(id).orElse(null);
 
         if(record != null) {
 
             // 確認評分者是同一個人
-            if(!Objects.equals(record.getReviewerId(), newRecord.getReviewerId())) return null;
+            if(!Objects.equals(record.getReviewerId(), newRecord.getReviewerId())){
+                throw new IllegalArgumentException("Reviewer 必須相同\n" + "Recorded reviewer: " + record.getReviewerId() + "\n" + "New reviewer: " + newRecord.getReviewerId());
+            };
 
             // 只需要改 score 就好，表單 id、評分者跟被評者都沿用就可以了
             record.setScore(newRecord.getScore());
-            return repository.save(record);
+            repository.save(record);
         }
-
-        return null;
     }
 
     public void delete(Long id) {
