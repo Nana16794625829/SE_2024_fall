@@ -10,6 +10,7 @@ import com.isslab.se_form_backend.service.AbstractStudentService;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Set;
 
 public class StudentService extends AbstractStudentService {
 
@@ -17,6 +18,11 @@ public class StudentService extends AbstractStudentService {
 
     public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
+    }
+
+    @Override
+    public Set<String> getAllStudentIds() {
+        return studentRepository.getAllStudentIds();
     }
 
     @Override

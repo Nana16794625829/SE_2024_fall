@@ -44,14 +44,14 @@ class GradeServiceTest {
 
     @Test
     public void testCalculateGrades() throws IOException {
-        Map<String, Double> answerGradeListOnServiceClass = gradeService.calculateGrade("1");
+        Map<String, Double> answerGradeListOnServiceClass = gradeService.calculateGradeBySinglePresenter("1", 1);
         assertThat(answerGradeListOnServiceClass.get("113525009")).isEqualTo(60);
     }
 
     @Test
     public void testCalculateGradesNoOutliers(){
         //計算成績
-        Map<String, Double> answerGradeListOnServiceClass = gradeService.calculateGrade(allRecordsNoOutlier);
+        Map<String, Double> answerGradeListOnServiceClass = gradeService.calculateGradeBySinglePresenter(allRecordsNoOutlier);
 
         Double answerGradePresenter1 = answerGradeListOnServiceClass.get("113525009");
         assertThat(answerGradePresenter1).isEqualTo(96.2);
@@ -66,7 +66,7 @@ class GradeServiceTest {
     @Test
     public void testCalculateGradesAllB(){
         //計算成績
-        Map<String, Double> answerGradeListOnServiceClass = gradeService.calculateGrade(bScoreRecords);
+        Map<String, Double> answerGradeListOnServiceClass = gradeService.calculateGradeBySinglePresenter(bScoreRecords);
 
         Double answerGradePresenter1 = answerGradeListOnServiceClass.get("110502516");
         assertThat(answerGradePresenter1).isEqualTo(100);
@@ -82,12 +82,12 @@ class GradeServiceTest {
 
     @Test
     public void testGetGradeByIdAndWeek(){
-        double answer = gradeService.getGradeByIdAndWeek("113525009", "1");
+        double answer = gradeService.getGradesByIdAndWeek("113525009", "1").get(0);
         assertThat(answer).isEqualTo(60);
     }
 
-    @Test
-    public void testUpdateGradeToStudent(){
-        gradeService.updateGradeByIdAndWeek("113525009", "1", 70);
-    }
+//    @Test
+//    public void testUpdateGradeToStudent(){
+//        gradeService.updateGradeByIdAndWeek("113525009", "1", 70);
+//    }
 }

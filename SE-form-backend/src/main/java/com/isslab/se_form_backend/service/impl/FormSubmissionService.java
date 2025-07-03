@@ -21,6 +21,6 @@ public class FormSubmissionService extends AbstractFormSubmissionService {
 
     @Override
     public List<FormSubmissionEntity> fetchAllSubmissionsByWeek(String week) {
-        return List.of();
+        return formSubmissionRepository.getAllByWeek(week);
     }
 }

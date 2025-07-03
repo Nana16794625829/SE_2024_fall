@@ -4,8 +4,11 @@ import com.isslab.se_form_backend.model.Student;
 import com.isslab.se_form_backend.model.StudentUpdate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Set;
+
 public abstract class AbstractStudentService {
 
+    public abstract Set<String> getAllStudentIds();
     public abstract boolean isReviewer(String studentId);
     public abstract boolean isPresenter(String studentId);
     public abstract Student getStudentById(String studentId);

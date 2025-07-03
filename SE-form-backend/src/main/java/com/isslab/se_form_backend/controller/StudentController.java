@@ -3,6 +3,7 @@ package com.isslab.se_form_backend.controller;
 import com.isslab.se_form_backend.helper.ResponseStatus;
 import com.isslab.se_form_backend.model.Student;
 import com.isslab.se_form_backend.model.StudentUpdate;
+import com.isslab.se_form_backend.service.AbstractStudentRoleService;
 import com.isslab.se_form_backend.service.AbstractStudentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +12,15 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/students")
+@RequestMapping("/api/student")
 public class StudentController {
 
     private final AbstractStudentService studentService;
+    private final AbstractStudentRoleService presenterService;
 
-    public StudentController(AbstractStudentService studentService) {
+    public StudentController(AbstractStudentService studentService, AbstractStudentRoleService presenterService) {
         this.studentService = studentService;
+        this.presenterService = presenterService;
     }
 
     @GetMapping("/{id}")
@@ -26,13 +29,13 @@ public class StudentController {
         return ResponseEntity.ok(student);
     }
 
-    @PostMapping("/create")
+    @PostMapping("/")
     public ResponseEntity<?> createSingleStudent(@RequestBody Student studentInfo){
         studentService.createSingleStudent(studentInfo);
         return ResponseEntity.ok(ResponseStatus.statusOk());
     }
 
-    @PostMapping("/createMultiStudents")
+    @PostMapping("/batch")
     public ResponseEntity<?> createMultiStudents(@RequestParam("file") MultipartFile file){
         studentService.createMultiStudents(file);
         return ResponseEntity.ok(ResponseStatus.statusOk());

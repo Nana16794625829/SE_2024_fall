@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/form-scores")
+@RequestMapping("/api/form-score")
 public class FormScoreRecordController {
 
     private final AbstractFormScoreRecordService formScoreRecordService;

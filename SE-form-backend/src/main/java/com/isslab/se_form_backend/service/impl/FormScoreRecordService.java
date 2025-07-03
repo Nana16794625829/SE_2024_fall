@@ -52,13 +52,13 @@ public class FormScoreRecordService extends AbstractFormScoreRecordService {
         repository.deleteById(id);
     }
 
-    public List<FormScoreRecordEntity> loadFormScoreRecordsByWeek(String week) {
+    public List<FormScoreRecordEntity> loadFormScoreRecordsByWeekAndPresenter(String week, String presenterId) {
         List<FormSubmissionEntity> formSubmissions = formSubmissionService.fetchAllSubmissionsByWeek(week);
         List<FormScoreRecordEntity> formScoreRecords = new ArrayList<>();
 
         for(FormSubmissionEntity formSubmission : formSubmissions) {
             Long formId = formSubmission.getId();
-            FormScoreRecordEntity record = repository.findByFormId(formId);
+            FormScoreRecordEntity record = repository.findByFormIdAndPresenterId(formId, presenterId);
             formScoreRecords.add(record);
         }
 

@@ -6,17 +6,21 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor
+@Builder
 @Table(
-        name = "reviewer",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"reviewerId", "week"})
+        name = "presenter",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"presenterId", "week"})
 )
-public class ReviewerEntity {
+@NoArgsConstructor
+@AllArgsConstructor
+public class PresenterGradeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String reviewerId;
+    private String presenterId;
     private String week;
+    private int presentOrder;
     private double grade;
 }

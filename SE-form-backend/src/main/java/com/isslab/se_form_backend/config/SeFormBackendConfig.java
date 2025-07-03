@@ -1,7 +1,7 @@
 package com.isslab.se_form_backend.config;
 
-import com.isslab.se_form_backend.controller.GradeController;
 import com.isslab.se_form_backend.helper.FormScoreCsvImporter;
+import com.isslab.se_form_backend.helper.FormSubmissionImporter;
 import com.isslab.se_form_backend.repository.*;
 import com.isslab.se_form_backend.service.*;
 import com.isslab.se_form_backend.service.impl.*;
@@ -33,7 +33,7 @@ public class SeFormBackendConfig {
     }
 
     @Bean
-    public AbstractStudentRoleService presenterService(PresenterRepository presenterRepository){
+    public AbstractStudentRoleService presenterServiceAbstract(PresenterRepository presenterRepository){
         if (MOCK) {
             return new MockPresenterService();
         }
@@ -66,11 +66,21 @@ public class SeFormBackendConfig {
     }
 
     @Bean
+    public FormSubmissionImporter formSubmissionImporter(FormSubmissionRepository formSubmissionRepository){
+        return new FormSubmissionImporter(formSubmissionRepository);
+    }
+
+    @Bean
     public AbstractFormSubmissionService formSubmissionService(FormSubmissionRepository formSubmissionRepository){
         if (MOCK) {
             return new MockFormSubmissionService();
         }
         return new FormSubmissionService(formSubmissionRepository);
+    }
+
+    @Bean
+    public PresenterService presenterService(PresenterRepository presenterRepository) {
+        return new PresenterService(presenterRepository);
     }
 
 }

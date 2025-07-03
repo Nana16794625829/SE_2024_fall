@@ -6,7 +6,7 @@ import java.util.List;
 
 public abstract class AbstractFormScoreRecordService {
 
-    public abstract List<FormScoreRecordEntity> loadFormScoreRecordsByWeek(String week);
+    public abstract List<FormScoreRecordEntity> loadFormScoreRecordsByWeekAndPresenter(String week, String presenterId);
     public abstract List<FormScoreRecordEntity> getAll();
     public abstract FormScoreRecordEntity getById(Long id);
     public abstract FormScoreRecordEntity create(FormScoreRecordEntity record);

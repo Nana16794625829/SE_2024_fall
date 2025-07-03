@@ -8,7 +8,7 @@ import java.util.List;
 
 public class MockFormScoreRecordService extends AbstractFormScoreRecordService {
     @Override
-    public List<FormScoreRecordEntity> loadFormScoreRecordsByWeek(String week) {
+    public List<FormScoreRecordEntity> loadFormScoreRecordsByWeekAndPresenter(String week, String presenterId) {
         return MockDataBuilder.mockRecord(week);
     }
 

@@ -4,8 +4,10 @@ import com.isslab.se_form_backend.model.ClassType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor

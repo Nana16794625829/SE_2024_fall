@@ -6,7 +6,14 @@ import com.isslab.se_form_backend.model.StudentUpdate;
 import com.isslab.se_form_backend.service.AbstractStudentService;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Set;
+
 public class MockStudentService extends AbstractStudentService {
+    @Override
+    public Set<String> getAllStudentIds() {
+        return Set.of();
+    }
+
     @Override
     public boolean isReviewer(String studentId) {
 //        return studentId.equals("113525009");

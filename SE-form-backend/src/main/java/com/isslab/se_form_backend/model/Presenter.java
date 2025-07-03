@@ -11,8 +11,8 @@ import java.util.Date;
 @Builder
 public class Presenter {
 
-    private Student presenter;
+    private String presenterId;
     private String presentWeek;
-    private int presentOrder;
-    private PresenterGradeSummary grade;
+    private String presentOrder;
+//    private PresenterGradeSummary grade;
 }

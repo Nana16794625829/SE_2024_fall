@@ -4,8 +4,9 @@ import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
 import com.isslab.se_form_backend.service.AbstractGradeService;
 import com.isslab.se_form_backend.service.AbstractStudentRoleService;
 import com.isslab.se_form_backend.service.AbstractStudentService;
-import com.isslab.se_form_backend.service.impl.FormScoreRecordService;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 
 @Slf4j
@@ -25,15 +26,9 @@ public class MockGradeService extends AbstractGradeService {
     }
 
     @Override
-    public double getGradeByIdAndWeek(String studentId, String week) {
+    public List<Double> getGradesByIdAndWeek(String studentId, String week) {
         AbstractStudentRoleService roleService = getServiceByRole(studentId);
-        return roleService.getGradeByIdAndWeek(studentId, week);
-    }
-
-    @Override
-    public void updateGradeByIdAndWeek(String studentId, String week, double grade) {
-        AbstractStudentRoleService roleService = getServiceByRole(studentId);
-        roleService.updateGradeByIdAndWeek(studentId, week, grade);
+        return roleService.getGradesByIdAndWeek(studentId, week);
     }
 
     @Override

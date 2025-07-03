@@ -1,7 +1,11 @@
 package com.isslab.se_form_backend.service;
 
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
+import com.isslab.se_form_backend.entity.ReviewerGradeEntity;
+import com.isslab.se_form_backend.model.GradeInput;
 import com.isslab.se_form_backend.service.impl.GradeHelper;
+import com.isslab.se_form_backend.service.impl.PresenterService;
+import com.isslab.se_form_backend.service.impl.ReviewerService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +35,9 @@ public abstract class AbstractGradeService {
     private final Map<String, Double> reviewerZScoreMap = new HashMap<>(); // reviewerId : reviewerZScore
 
     @Getter
+    private String presenterId;
+
+    @Getter
     private double presenterAvgGrade;
     private double stdDev;
 
@@ -39,12 +46,15 @@ public abstract class AbstractGradeService {
     protected AbstractStudentRoleService presenterService;
     protected AbstractFormScoreRecordService formScoreRecordService;
 
-    public Map<String, Double> calculateGrade(String week) {
-        List<FormScoreRecordEntity> records = formScoreRecordService.loadFormScoreRecordsByWeek(week);
-        return calculateGrade(records);
+    public Map<String, Double> calculateGradeBySinglePresenter(String week, int presentOrder) {
+        if(presenterService instanceof PresenterService pService) {
+            presenterId = pService.getPresenterIdByWeekAndOrder(week, presentOrder);
+        }
+        List<FormScoreRecordEntity> records = formScoreRecordService.loadFormScoreRecordsByWeekAndPresenter(week, presenterId);
+        return calculateGradeBySinglePresenter(records);
     }
 
-    public Map<String, Double> calculateGrade(List<FormScoreRecordEntity> formScoreRecordList) {
+    public Map<String, Double> calculateGradeBySinglePresenter(List<FormScoreRecordEntity> formScoreRecordList) {
 
         // map the reviewers' id and the scores for the presenter.
         setPresenterGradeMap(formScoreRecordList);
@@ -68,20 +78,51 @@ public abstract class AbstractGradeService {
         // calculate the reviewers' grade for second time (without outliers.)
         assignReviewerGradesByRound(2);
 
-        return reviewerGradeMap;
+        // return the reviewers' grades with presenter's grade.
+        return concatReviewerGradeMapAndPresenterGrade();
     }
 
     public abstract void saveGradeToStudent(String studentId, String week, double grade);
-    public abstract double getGradeByIdAndWeek(String studentId, String week);
-    public abstract void updateGradeByIdAndWeek(String studentId, String week, double grade);
+    public abstract List<Double> getGradesByIdAndWeek(String studentId, String week);
     public abstract void deleteGradeByIdAndWeek(String studentId, String week);
 
-    public void saveAllGradesByWeek(String week, Map<String, Double> grades){
-        for(Map.Entry<String, Double> entry : grades.entrySet()){
-            AbstractStudentRoleService roleService = getServiceByRole(entry.getKey());
-            roleService.saveGradeToStudent(entry.getKey(), week, entry.getValue());
+    public void saveAllGradesByWeek(String week, Map<String, Double> grades) {
+        Map<AbstractStudentRoleService, List<GradeInput>> grouped = new HashMap<>();
+
+        Set<String> gradedStudentIds = grades.keySet();
+        Set<String> allStudentIds = getAllStudents();
+
+        for (String studentId : allStudentIds) {
+            AbstractStudentRoleService roleService = getServiceByRole(studentId);
+
+            double grade;
+            boolean graded = gradedStudentIds.contains(studentId);
+            if (graded) {
+                grade = grades.get(studentId);
+            } else {
+                grade = roleService.getBasicGrade(); // 未評分補基本分
+            }
+
+            if (roleService instanceof ReviewerService) {
+                // 如果是 reviewer 就要補上 presenter id
+                grouped.computeIfAbsent(roleService, k -> new ArrayList<>())
+                        .add(new GradeInput(studentId, this.presenterId, week, grade));
+
+            } else if (roleService instanceof PresenterService) {
+                // 記錄 presenter 成績時，studentId 就是 presenter id 了
+                grouped.computeIfAbsent(roleService, k -> new ArrayList<>())
+                        .add(new GradeInput(studentId, null, week, grade));
+            } else {
+                throw new IllegalStateException("未知角色：" + roleService.getClass());
+            }
         }
-    };
+
+        for (Map.Entry<AbstractStudentRoleService, List<GradeInput>> entry : grouped.entrySet()) {
+            entry.getKey().saveAllGrades(entry.getValue());
+        }
+    }
+
+
 
     protected double calculateZScore(Map.Entry<String, Double> entry) {
         double gradeByReviewer = entry.getValue();
@@ -159,9 +200,33 @@ public abstract class AbstractGradeService {
         }
     }
 
+    protected Map<String, Double> concatReviewerGradeMapAndPresenterGrade() {
+        Map<String, Double> studentGradeMap = new HashMap<>(reviewerGradeMap);
+        studentGradeMap.put(presenterId, presenterAvgGrade);
+
+        return studentGradeMap;
+    }
+
+    protected Set<String> getAllStudents() {
+        return studentService.getAllStudentIds();
+    }
+
     protected AbstractStudentRoleService getServiceByRole(String studentId){
         if(studentService.isPresenter(studentId)) return presenterService;
         else if(studentService.isReviewer(studentId)) return reviewerService;
         else throw new IllegalArgumentException("無法辨識學生身分: " + studentId);
+    }
+
+    protected void fillBasicGradeForNonAttendeeByWeek(String week) {
+        if(reviewerService instanceof ReviewerService rService){
+            List<ReviewerGradeEntity> nonAttendees = rService.findNonAttendeeByWeek(week);
+            for(ReviewerGradeEntity reviewerGradeEntity : nonAttendees) {
+                String reviewerId = reviewerGradeEntity.getReviewerId();
+                rService.saveGradeToStudent(reviewerId, week, 75.0);
+            }
+        }
+        else {
+            throw new UnsupportedOperationException("Only ReviewerService supports findNonAttendeeByWeek()");
+        }
     }
 }

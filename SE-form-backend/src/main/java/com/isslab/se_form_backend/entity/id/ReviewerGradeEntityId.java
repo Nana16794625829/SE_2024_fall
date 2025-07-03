@@ -12,20 +12,22 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReviewerEntityId implements Serializable {
+public class ReviewerGradeEntityId implements Serializable {
     private String reviewerId;
+    private String presenterId;
     private String week;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ReviewerEntityId that)) return false;
+        if (!(o instanceof ReviewerGradeEntityId that)) return false;
         return Objects.equals(reviewerId, that.reviewerId) &&
+                Objects.equals(presenterId, that.presenterId) &&
                 Objects.equals(week, that.week);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(reviewerId, week);
+        return Objects.hash(reviewerId, presenterId, week);
     }
 }
