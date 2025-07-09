@@ -2,13 +2,11 @@ package com.isslab.se_form_backend.entity;
 
 import com.isslab.se_form_backend.entity.id.FormSubmissionEntityId;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(

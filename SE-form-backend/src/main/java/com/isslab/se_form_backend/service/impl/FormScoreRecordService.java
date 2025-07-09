@@ -3,6 +3,7 @@ package com.isslab.se_form_backend.service.impl;
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
 import com.isslab.se_form_backend.entity.FormSubmissionEntity;
 import com.isslab.se_form_backend.model.FormScoreRecord;
+import com.isslab.se_form_backend.model.FormSubmission;
 import com.isslab.se_form_backend.repository.FormScoreRecordRepository;
 import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
 import com.isslab.se_form_backend.service.AbstractFormSubmissionService;
@@ -13,12 +14,10 @@ import java.util.Objects;
 
 public class FormScoreRecordService extends AbstractFormScoreRecordService {
 
-    private final AbstractFormSubmissionService formSubmissionService;
     private final FormScoreRecordRepository repository;
 
-    public FormScoreRecordService(FormScoreRecordRepository repository, AbstractFormSubmissionService formSubmissionService) {
+    public FormScoreRecordService(FormScoreRecordRepository repository) {
         this.repository = repository;
-        this.formSubmissionService = formSubmissionService;
     }
 
     public List<FormScoreRecord> getAll() {
@@ -27,9 +26,7 @@ public class FormScoreRecordService extends AbstractFormScoreRecordService {
 
         for(FormScoreRecordEntity entity : entities) {
             FormScoreRecord record = new FormScoreRecord(
-                    entity.getFormId(),
                     entity.getScore(),
-                    entity.getReviewerId(),
                     entity.getPresenterId()
             );
 
@@ -44,9 +41,7 @@ public class FormScoreRecordService extends AbstractFormScoreRecordService {
         if(entity == null) return null;
 
         return new FormScoreRecord(
-                entity.getFormId(),
                 entity.getScore(),
-                entity.getReviewerId(),
                 entity.getPresenterId()
         );
     }
@@ -54,9 +49,7 @@ public class FormScoreRecordService extends AbstractFormScoreRecordService {
     public void create(FormScoreRecord record) {
         FormScoreRecordEntity entity = FormScoreRecordEntity
                 .builder()
-                .formId(record.getFormId())
                 .score(record.getScore())
-                .reviewerId(record.getReviewerId())
                 .presenterId(record.getPresenterId())
                 .build();
 
@@ -84,16 +77,27 @@ public class FormScoreRecordService extends AbstractFormScoreRecordService {
         repository.deleteById(id);
     }
 
-    public List<FormScoreRecordEntity> loadFormScoreRecordsByWeekAndPresenter(String week, String presenterId) {
-        List<FormSubmissionEntity> formSubmissions = formSubmissionService.fetchAllSubmissionsByWeek(week);
-        List<FormScoreRecordEntity> formScoreRecords = new ArrayList<>();
+    @Override
+    public void saveByFormSubmission(Long formId, FormSubmission formSubmission) {
+        String reviewerId = formSubmission.getSubmitterId();
 
-        for(FormSubmissionEntity formSubmission : formSubmissions) {
-            Long formId = formSubmission.getId();
-            FormScoreRecordEntity record = repository.findByFormIdAndPresenterId(formId, presenterId);
-            formScoreRecords.add(record);
+        List<FormScoreRecord> records = formSubmission.getScores();
+        for(FormScoreRecord record : records) {
+            String score = record.getScore();
+            String presenterId = record.getPresenterId();
+
+            FormScoreRecordEntity entity = FormScoreRecordEntity.builder()
+                    .formId(formId)
+                    .reviewerId(reviewerId)
+                    .score(score)
+                    .presenterId(presenterId)
+                    .build();
+
+            repository.save(entity);
         }
+    }
 
-        return formScoreRecords;
+    public FormScoreRecordEntity findByFormIdAndPresenterId(Long formId, String presenterId) {
+        return repository.findByFormIdAndPresenterId(formId,presenterId);
     }
 }

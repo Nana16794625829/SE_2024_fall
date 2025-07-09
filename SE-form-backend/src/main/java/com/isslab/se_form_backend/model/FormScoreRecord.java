@@ -15,8 +15,6 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 public class FormScoreRecord {
-    private Long formId;
     private String score;
-    private String reviewerId;
     private String presenterId;
 }

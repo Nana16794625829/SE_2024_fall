@@ -71,11 +71,11 @@ public class SeFormBackendConfig {
     }
 
     @Bean
-    public AbstractFormSubmissionService formSubmissionService(FormSubmissionRepository formSubmissionRepository){
+    public AbstractFormSubmissionService formSubmissionService(AbstractFormScoreRecordService formScoreRecordService, FormSubmissionRepository formSubmissionRepository){
         if (MOCK) {
             return new MockFormSubmissionService();
         }
-        return new FormSubmissionService(formSubmissionRepository);
+        return new FormSubmissionService(formScoreRecordService, formSubmissionRepository);
     }
 
     @Bean
