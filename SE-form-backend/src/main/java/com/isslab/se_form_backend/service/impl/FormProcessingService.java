@@ -2,16 +2,18 @@ package com.isslab.se_form_backend.service.impl;
 
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
 import com.isslab.se_form_backend.entity.FormSubmissionEntity;
+import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
+import com.isslab.se_form_backend.service.AbstractFormSubmissionService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FormProcessingService {
 
-    private final FormSubmissionService formSubmissionService;
-    private final FormScoreRecordService formScoreRecordService;
+    private final AbstractFormSubmissionService formSubmissionService;
+    private final AbstractFormScoreRecordService formScoreRecordService;
 
-    public FormProcessingService(FormSubmissionService formSubmissionService, FormScoreRecordService formScoreRecordService) {
+    public FormProcessingService(AbstractFormSubmissionService formSubmissionService, AbstractFormScoreRecordService formScoreRecordService) {
         this.formSubmissionService = formSubmissionService;
         this.formScoreRecordService = formScoreRecordService;
     }

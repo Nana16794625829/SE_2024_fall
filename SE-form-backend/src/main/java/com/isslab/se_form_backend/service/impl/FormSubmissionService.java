@@ -10,18 +10,15 @@ import java.util.List;
 
 public class FormSubmissionService extends AbstractFormSubmissionService {
 
-    private final AbstractFormScoreRecordService formScoreRecordService;
     private final FormSubmissionRepository formSubmissionRepository;
 
-    public FormSubmissionService(AbstractFormScoreRecordService formScoreRecordService, FormSubmissionRepository formSubmissionRepository) {
-        this.formScoreRecordService = formScoreRecordService;
+    public FormSubmissionService(FormSubmissionRepository formSubmissionRepository) {
         this.formSubmissionRepository = formSubmissionRepository;
     }
 
     @Override
     public void save(FormSubmission formSubmission) {
-        Long formId = saveFormSubmission(formSubmission);
-        saveFormScoreRecords(formId, formSubmission);
+        saveFormSubmission(formSubmission);
     }
 
     @Override
@@ -29,7 +26,7 @@ public class FormSubmissionService extends AbstractFormSubmissionService {
         return formSubmissionRepository.getAllByWeek(week);
     }
 
-    private Long saveFormSubmission(FormSubmission formSubmission) {
+    private void saveFormSubmission(FormSubmission formSubmission) {
         FormSubmissionEntity formSubmissionEntity = FormSubmissionEntity.builder()
                 .submitterId(formSubmission.getSubmitterId())
                 .week(formSubmission.getWeek())
@@ -37,11 +34,6 @@ public class FormSubmissionService extends AbstractFormSubmissionService {
                 .comment(formSubmission.getComment())
                 .build();
 
-        FormSubmissionEntity entity = formSubmissionRepository.save(formSubmissionEntity);
-        return entity.getId();
-    }
-
-    private void saveFormScoreRecords(Long formId, FormSubmission formSubmission) {
-        formScoreRecordService.saveByFormSubmission(formId, formSubmission);
+        formSubmissionRepository.save(formSubmissionEntity);
     }
 }

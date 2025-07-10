@@ -2,6 +2,7 @@ package com.isslab.se_form_backend.service;
 
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
 import com.isslab.se_form_backend.repository.FormScoreRecordRepository;
+import com.isslab.se_form_backend.service.impl.FormProcessingService;
 import com.isslab.se_form_backend.service.impl.mock.*;
 import com.isslab.se_form_backend.service.util.FormScoreRecordLoader;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +37,8 @@ class GradeServiceTest {
         MockStudentService studentService = new MockStudentService();
         AbstractFormSubmissionService formSubmissionService = new MockFormSubmissionService();
         AbstractFormScoreRecordService formScoreRecordService = new MockFormScoreRecordService();
-        gradeService = new MockGradeService(reviewerService, presenterService, studentService, formScoreRecordService);
+        FormProcessingService formProcessingService = new FormProcessingService(formSubmissionService, formScoreRecordService);
+        gradeService = new MockGradeService(reviewerService, presenterService, studentService, formProcessingService);
 
         // prepare for testGetGradeByIdAndWeek()
         gradeService.saveGradeToStudent("113525009", "1", 60);

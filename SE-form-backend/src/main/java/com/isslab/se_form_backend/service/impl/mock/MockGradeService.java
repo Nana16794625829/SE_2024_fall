@@ -4,6 +4,7 @@ import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
 import com.isslab.se_form_backend.service.AbstractGradeService;
 import com.isslab.se_form_backend.service.AbstractStudentRoleService;
 import com.isslab.se_form_backend.service.AbstractStudentService;
+import com.isslab.se_form_backend.service.impl.FormProcessingService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -12,11 +13,11 @@ import java.util.List;
 @Slf4j
 public class MockGradeService extends AbstractGradeService {
 
-    public MockGradeService(AbstractStudentRoleService reviewerService, AbstractStudentRoleService presenterService, AbstractStudentService studentService, AbstractFormScoreRecordService formScoreRecordService) {
+    public MockGradeService(AbstractStudentRoleService reviewerService, AbstractStudentRoleService presenterService, AbstractStudentService studentService, FormProcessingService formProcessingService) {
         this.reviewerService = reviewerService;
         this.presenterService = presenterService;
         this.studentService = studentService;
-        this.formScoreRecordService = formScoreRecordService;
+        this.formProcessingService = formProcessingService;
     }
 
     @Override

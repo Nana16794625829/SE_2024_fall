@@ -2,7 +2,10 @@ package com.isslab.se_form_backend.service;
 
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
 import com.isslab.se_form_backend.entity.ReviewerGradeEntity;
+import com.isslab.se_form_backend.helper.exception.InvalidSaveGradeException;
 import com.isslab.se_form_backend.model.GradeInput;
+import com.isslab.se_form_backend.model.StudentGroupingContext;
+import com.isslab.se_form_backend.service.impl.FormProcessingService;
 import com.isslab.se_form_backend.service.impl.GradeHelper;
 import com.isslab.se_form_backend.service.impl.PresenterService;
 import com.isslab.se_form_backend.service.impl.ReviewerService;
@@ -44,13 +47,13 @@ public abstract class AbstractGradeService {
     protected AbstractStudentService studentService;
     protected AbstractStudentRoleService reviewerService;
     protected AbstractStudentRoleService presenterService;
-    protected AbstractFormScoreRecordService formScoreRecordService;
+    protected FormProcessingService formProcessingService;
 
     public Map<String, Double> calculateGradeBySinglePresenter(String week, int presentOrder) {
         if(presenterService instanceof PresenterService pService) {
             presenterId = pService.getPresenterIdByWeekAndOrder(week, presentOrder);
         }
-        List<FormScoreRecordEntity> records = formScoreRecordService.loadFormScoreRecordsByWeekAndPresenter(week, presenterId);
+        List<FormScoreRecordEntity> records = formProcessingService.loadFormScoreRecordsByWeekAndPresenter(week, presenterId);
         return calculateGradeBySinglePresenter(records);
     }
 
@@ -88,33 +91,13 @@ public abstract class AbstractGradeService {
 
     public void saveAllGradesByWeek(String week, Map<String, Double> grades) {
         Map<AbstractStudentRoleService, List<GradeInput>> grouped = new HashMap<>();
-
         Set<String> gradedStudentIds = grades.keySet();
         Set<String> allStudentIds = getAllStudents();
 
+        validateStudents(allStudentIds, gradedStudentIds);
+
         for (String studentId : allStudentIds) {
-            AbstractStudentRoleService roleService = getServiceByRole(studentId);
-
-            double grade;
-            boolean graded = gradedStudentIds.contains(studentId);
-            if (graded) {
-                grade = grades.get(studentId);
-            } else {
-                grade = roleService.getBasicGrade(); // 未評分補基本分
-            }
-
-            if (roleService instanceof ReviewerService) {
-                // 如果是 reviewer 就要補上 presenter id
-                grouped.computeIfAbsent(roleService, k -> new ArrayList<>())
-                        .add(new GradeInput(studentId, this.presenterId, week, grade));
-
-            } else if (roleService instanceof PresenterService) {
-                // 記錄 presenter 成績時，studentId 就是 presenter id 了
-                grouped.computeIfAbsent(roleService, k -> new ArrayList<>())
-                        .add(new GradeInput(studentId, null, week, grade));
-            } else {
-                throw new IllegalStateException("未知角色：" + roleService.getClass());
-            }
+            groupSingleStudentToRole(studentId, week, grades, gradedStudentIds, grouped);
         }
 
         for (Map.Entry<AbstractStudentRoleService, List<GradeInput>> entry : grouped.entrySet()) {
@@ -228,5 +211,58 @@ public abstract class AbstractGradeService {
         else {
             throw new UnsupportedOperationException("Only ReviewerService supports findNonAttendeeByWeek()");
         }
+    }
+
+    private void validateStudents(Set<String> allStudentIds, Set<String> gradedStudentIds) {
+        if(allStudentIds.isEmpty()) {
+            throw new InvalidSaveGradeException("請先登記完整學生名單再登記成績");
+        }
+
+        if (!allStudentIds.containsAll(gradedStudentIds)) {
+            Set<String> missing = new HashSet<>(gradedStudentIds);
+            missing.removeAll(allStudentIds);
+            missing.remove(presenterId);
+
+            if (!missing.isEmpty()) {
+                throw new IllegalArgumentException("評分者為不存在課程名單的學號，Invalid student IDs: " + missing);
+            }
+        }
+    }
+
+    private double assignGradesByParticipation(AbstractStudentRoleService roleService, Map<String, Double> grades, Set<String> gradedStudentIds, String studentId) {
+        double grade;
+
+        boolean graded = gradedStudentIds.contains(studentId);
+        if (graded) {
+            grade = grades.get(studentId);
+        } else {
+            grade = roleService.getBasicGrade(); // 未評分補基本分
+        }
+
+        return grade;
+    }
+
+    private void setGroupsByRoleService(AbstractStudentRoleService roleService, String week, double grade, String studentId, Map<AbstractStudentRoleService, List<GradeInput>> grouped) {
+        if (roleService instanceof ReviewerService) {
+            // 如果是 reviewer 就要補上 presenter id
+            grouped.computeIfAbsent(roleService, k -> new ArrayList<>())
+                    .add(new GradeInput(studentId, this.presenterId, week, grade));
+
+        } else if (roleService instanceof PresenterService) {
+            // 記錄 presenter 成績時，studentId 就是 presenter id 了
+            grouped.computeIfAbsent(roleService, k -> new ArrayList<>())
+                    .add(new GradeInput(studentId, null, week, grade));
+        } else {
+            throw new IllegalStateException("未知角色：" + roleService.getClass());
+        }
+    }
+
+    private void groupSingleStudentToRole(
+            String studentId, String week, Map<String, Double> grades,
+            Set<String> gradedStudentIds, Map<AbstractStudentRoleService, List<GradeInput>> grouped
+    ) {
+        AbstractStudentRoleService roleService = getServiceByRole(studentId);
+        double grade = assignGradesByParticipation(roleService, grades, gradedStudentIds, studentId);
+        setGroupsByRoleService(roleService, week, grade, studentId, grouped);
     }
 }

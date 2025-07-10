@@ -10,11 +10,11 @@ import java.util.List;
 
 public class GradeService extends AbstractGradeService {
 
-    public GradeService(AbstractStudentRoleService reviewerService, AbstractStudentRoleService presenterService, AbstractStudentService studentService, AbstractFormScoreRecordService formScoreRecordService) {
+    public GradeService(AbstractStudentRoleService reviewerService, AbstractStudentRoleService presenterService, AbstractStudentService studentService, FormProcessingService formProcessingService) {
         this.reviewerService = reviewerService;
         this.presenterService = presenterService;
         this.studentService = studentService;
-        this.formScoreRecordService = formScoreRecordService;
+        this.formProcessingService = formProcessingService;
     }
 
     @Override

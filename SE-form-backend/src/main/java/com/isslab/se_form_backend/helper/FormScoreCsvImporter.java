@@ -34,7 +34,7 @@ public class FormScoreCsvImporter {
 
                 FormScoreRecordEntity entity = new FormScoreRecordEntity();
                 entity.setFormId(submission.getId());
-                entity.setPresenterId("113522001");
+                entity.setPresenterId("112552008");
                 entity.setReviewerId(record.get(0));
                 entity.setScore(record.get(1));
 

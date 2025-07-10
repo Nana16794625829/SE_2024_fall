@@ -1,12 +1,10 @@
 package com.isslab.se_form_backend.service.impl;
 
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
-import com.isslab.se_form_backend.entity.FormSubmissionEntity;
 import com.isslab.se_form_backend.model.FormScoreRecord;
 import com.isslab.se_form_backend.model.FormSubmission;
 import com.isslab.se_form_backend.repository.FormScoreRecordRepository;
 import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
-import com.isslab.se_form_backend.service.AbstractFormSubmissionService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +44,7 @@ public class FormScoreRecordService extends AbstractFormScoreRecordService {
         );
     }
 
-    public void create(FormScoreRecord record) {
+    public void save(FormScoreRecord record) {
         FormScoreRecordEntity entity = FormScoreRecordEntity
                 .builder()
                 .score(record.getScore())
@@ -78,26 +76,28 @@ public class FormScoreRecordService extends AbstractFormScoreRecordService {
     }
 
     @Override
-    public void saveByFormSubmission(Long formId, FormSubmission formSubmission) {
-        String reviewerId = formSubmission.getSubmitterId();
-
-        List<FormScoreRecord> records = formSubmission.getScores();
-        for(FormScoreRecord record : records) {
-            String score = record.getScore();
-            String presenterId = record.getPresenterId();
-
-            FormScoreRecordEntity entity = FormScoreRecordEntity.builder()
-                    .formId(formId)
-                    .reviewerId(reviewerId)
-                    .score(score)
-                    .presenterId(presenterId)
-                    .build();
-
-            repository.save(entity);
-        }
-    }
-
     public FormScoreRecordEntity findByFormIdAndPresenterId(Long formId, String presenterId) {
-        return repository.findByFormIdAndPresenterId(formId,presenterId);
+        return repository.findByFormIdAndPresenterId(formId, presenterId);
     }
+
+//    @Override
+//    public void saveByFormSubmission(Long formId, FormSubmission formSubmission) {
+//        String reviewerId = formSubmission.getSubmitterId();
+//
+//        List<FormScoreRecord> records = formSubmission.getScores();
+//        for(FormScoreRecord record : records) {
+//            String score = record.getScore();
+//            String presenterId = record.getPresenterId();
+//
+//            FormScoreRecordEntity entity = FormScoreRecordEntity.builder()
+//                    .formId(formId)
+//                    .reviewerId(reviewerId)
+//                    .score(score)
+//                    .presenterId(presenterId)
+//                    .build();
+//
+//            repository.save(entity);
+//        }
+//    }
+
 }

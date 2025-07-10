@@ -5,7 +5,6 @@ import com.isslab.se_form_backend.helper.ResponseStatus;
 import com.isslab.se_form_backend.model.FormScoreRecord;
 import com.isslab.se_form_backend.model.Status;
 import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
-import com.isslab.se_form_backend.service.impl.FormScoreRecordService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +33,7 @@ public class FormScoreRecordController {
 
     @PostMapping("/")
     public ResponseEntity<?> addFormScoreRecord(@RequestBody FormScoreRecord newFormScoreRecord) {
-        formScoreRecordService.create(newFormScoreRecord);
+        formScoreRecordService.save(newFormScoreRecord);
         return ResponseEntity.ok(ResponseStatus.statusOk());
     }
 

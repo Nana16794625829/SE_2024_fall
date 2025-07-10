@@ -44,20 +44,19 @@ public class SeFormBackendConfig {
     public AbstractGradeService gradeService(AbstractStudentRoleService reviewerService,
                                              AbstractStudentRoleService presenterService,
                                              AbstractStudentService studentService,
-                                             AbstractFormScoreRecordService formScoreRecordService){
+                                             FormProcessingService formProcessingService){
         if (MOCK) {
-            return new MockGradeService(reviewerService, presenterService, studentService, formScoreRecordService);
+            return new MockGradeService(reviewerService, presenterService, studentService, formProcessingService);
         }
-        return new GradeService(reviewerService, presenterService, studentService, formScoreRecordService);
+        return new GradeService(reviewerService, presenterService, studentService, formProcessingService);
     }
 
     @Bean
-    public AbstractFormScoreRecordService formScoreRecordService(FormScoreRecordRepository formScoreRecordRepository,
-                                                                 AbstractFormSubmissionService formSubmissionService){
+    public AbstractFormScoreRecordService formScoreRecordService(FormScoreRecordRepository formScoreRecordRepository){
         if (MOCK) {
             return new MockFormScoreRecordService();
         }
-        return new FormScoreRecordService(formScoreRecordRepository, formSubmissionService);
+        return new FormScoreRecordService(formScoreRecordRepository);
     }
 
     @Bean
@@ -71,16 +70,21 @@ public class SeFormBackendConfig {
     }
 
     @Bean
-    public AbstractFormSubmissionService formSubmissionService(AbstractFormScoreRecordService formScoreRecordService, FormSubmissionRepository formSubmissionRepository){
+    public AbstractFormSubmissionService formSubmissionService(FormSubmissionRepository formSubmissionRepository){
         if (MOCK) {
             return new MockFormSubmissionService();
         }
-        return new FormSubmissionService(formScoreRecordService, formSubmissionRepository);
+        return new FormSubmissionService(formSubmissionRepository);
     }
 
     @Bean
     public PresenterService presenterService(PresenterRepository presenterRepository) {
         return new PresenterService(presenterRepository);
+    }
+
+    @Bean
+    public FormProcessingService formProcessingService(AbstractFormSubmissionService formSubmissionService, AbstractFormScoreRecordService formScoreRecordService) {
+        return new FormProcessingService(formSubmissionService, formScoreRecordService);
     }
 
 }

@@ -20,7 +20,7 @@ public class MockFormScoreRecordService extends AbstractFormScoreRecordService {
     }
 
     @Override
-    public void create(FormScoreRecord record) {
+    public void save(FormScoreRecord record) {
     }
 
     @Override
@@ -33,7 +33,12 @@ public class MockFormScoreRecordService extends AbstractFormScoreRecordService {
     }
 
     @Override
-    public void saveByFormSubmission(Long formId, FormSubmission formSubmission) {
-
+    public FormScoreRecordEntity findByFormIdAndPresenterId(Long formId, String presenterId) {
+        return null;
     }
+
+//    @Override
+//    public void saveByFormSubmission(Long formId, FormSubmission formSubmission) {
+//
+//    }
 }

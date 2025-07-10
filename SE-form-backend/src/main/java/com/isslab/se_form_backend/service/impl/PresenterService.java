@@ -18,7 +18,7 @@ import java.util.Map;
 public class PresenterService extends AbstractStudentRoleService {
 
     private final PresenterRepository repository;
-    private static final double BASIC_GRADE = 0.0;
+    private static final double BASIC_GRADE = 15.0;
 
     public PresenterService(PresenterRepository repository){
         this.repository = repository;

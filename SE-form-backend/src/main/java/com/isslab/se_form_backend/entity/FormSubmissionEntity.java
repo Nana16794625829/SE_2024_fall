@@ -1,6 +1,5 @@
 package com.isslab.se_form_backend.entity;
 
-import com.isslab.se_form_backend.entity.id.FormSubmissionEntityId;
 import jakarta.persistence.*;
 import lombok.*;
 
