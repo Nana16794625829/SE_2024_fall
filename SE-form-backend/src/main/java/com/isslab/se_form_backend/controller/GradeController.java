@@ -3,21 +3,24 @@ package com.isslab.se_form_backend.controller;
 import com.isslab.se_form_backend.helper.ResponseStatus;
 import com.isslab.se_form_backend.model.Status;
 import com.isslab.se_form_backend.service.AbstractGradeService;
-import lombok.extern.slf4j.Slf4j;
+import com.isslab.se_form_backend.service.impl.PresenterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/grade")
 public class GradeController {
 
     private final AbstractGradeService gradeService;
+    private final PresenterService presenterService;
 
-    public GradeController(AbstractGradeService gradeService) {
+    public GradeController(AbstractGradeService gradeService, PresenterService presenterService) {
         this.gradeService = gradeService;
+        this.presenterService = presenterService;
     }
 
     @GetMapping("{id}/{week}")
@@ -26,11 +29,22 @@ public class GradeController {
         return ResponseEntity.ok(grade);
     }
 
+    /// FIXME: 除了被計算的 presenter 外都會被以為沒有參加報告
+    /// -> 計算單一 presenter 要改成不會檢查未報告者 (saveAllGradesByWeekAndPresenter)
+
     @PostMapping("/save")
-    public ResponseEntity<Status> saveAllGradesByWeek(@RequestBody Map<String, String> body){
+    public ResponseEntity<Status> saveAllGradesByWeekAndPresenter(@RequestBody Map<String, String> body){
         int presenterOrder = Integer.parseInt(body.get("presenterOrder"));
         Map<String, Double> gradesMap = gradeService.calculateGradeBySinglePresenter(body.get("week"), presenterOrder);
-        gradeService.saveAllGradesByWeek(body.get("week"), gradesMap);
+        gradeService.saveAllGradesByWeekAndPresenter(body.get("week"), gradesMap);
+        return ResponseEntity.ok(ResponseStatus.statusOk());
+    }
+
+    @PostMapping("/save/batch/{week}")
+    public ResponseEntity<Status> saveAllGradesByWeek(@PathVariable String week){
+        gradeService.calculateGradesByWeek(week);
+        Set<String> presenterIds = presenterService.getPresenterIdsByWeek(week);
+        gradeService.saveAllGradesByWeek(week, presenterIds);
         return ResponseEntity.ok(ResponseStatus.statusOk());
     }
 

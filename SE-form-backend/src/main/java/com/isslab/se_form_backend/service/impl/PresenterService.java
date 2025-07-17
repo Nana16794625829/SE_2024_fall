@@ -9,10 +9,7 @@ import com.isslab.se_form_backend.service.AbstractStudentRoleService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 public class PresenterService extends AbstractStudentRoleService {
@@ -63,6 +60,10 @@ public class PresenterService extends AbstractStudentRoleService {
     @Override
     public double getBasicGrade() {
         return BASIC_GRADE;
+    }
+
+    public Set<String> getPresenterIdsByWeek(String week) {
+        return repository.getPresenterIdsByWeek(week);
     }
 
     public String getPresenterIdByWeekAndOrder(String week, int order) {

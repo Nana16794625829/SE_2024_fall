@@ -14,4 +14,5 @@ public abstract class AbstractFormScoreRecordService {
     public abstract void update(Long id, FormScoreRecordEntity newRecord);
     public abstract void delete(Long id);
     public abstract FormScoreRecordEntity findByFormIdAndPresenterId(Long formId, String presenterId);
+    public abstract List<FormScoreRecordEntity> findByFormIdIn(List<Long> formIds);
 }

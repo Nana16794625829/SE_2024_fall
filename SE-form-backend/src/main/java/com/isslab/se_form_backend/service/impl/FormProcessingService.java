@@ -8,7 +8,10 @@ import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
 import com.isslab.se_form_backend.service.AbstractFormSubmissionService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class FormProcessingService {
 
@@ -21,7 +24,7 @@ public class FormProcessingService {
     }
 
     public List<FormScoreRecordEntity> loadFormScoreRecordsByWeekAndPresenter(String week, String presenterId) {
-        List<FormSubmissionEntity> formSubmissions = formSubmissionService.fetchAllSubmissionsByWeek(week);
+        List<FormSubmissionEntity> formSubmissions = formSubmissionService.findAllSubmissionsByWeek(week);
         List<FormScoreRecordEntity> formScoreRecords = new ArrayList<>();
 
         for(FormSubmissionEntity formSubmission : formSubmissions) {
@@ -32,6 +35,24 @@ public class FormProcessingService {
 
         return formScoreRecords;
     }
+
+    public Map<String, List<FormScoreRecordEntity>> loadFormScoreRecordsByWeek(String week) {
+        List<FormSubmissionEntity> submissions = formSubmissionService.findAllSubmissionsByWeek(week);
+
+        List<Long> formIds = submissions.stream()
+                .map(FormSubmissionEntity::getId)
+                .collect(Collectors.toList());
+
+        if (formIds.isEmpty()) {
+            return new HashMap<>(); // 該週沒資料就回空
+        }
+
+        List<FormScoreRecordEntity> allRecords = formScoreRecordService.findByFormIdIn(formIds);
+
+        return allRecords.stream()
+                .collect(Collectors.groupingBy(FormScoreRecordEntity::getPresenterId));
+    }
+
 
     public void process(FormSubmission formSubmission) {
         saveFormSubmission(formSubmission);

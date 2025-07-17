@@ -40,6 +40,11 @@ public class MockFormScoreRecordService extends AbstractFormScoreRecordService {
         return null;
     }
 
+    @Override
+    public List<FormScoreRecordEntity> findByFormIdIn(List<Long> formIds) {
+        return List.of();
+    }
+
 //    @Override
 //    public void saveByFormSubmission(Long formId, FormSubmission formSubmission) {
 //

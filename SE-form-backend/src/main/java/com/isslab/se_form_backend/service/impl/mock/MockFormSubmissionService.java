@@ -13,7 +13,7 @@ public class MockFormSubmissionService extends AbstractFormSubmissionService {
     }
 
     @Override
-    public List<FormSubmissionEntity> fetchAllSubmissionsByWeek(String week) {
+    public List<FormSubmissionEntity> findAllSubmissionsByWeek(String week) {
         return MockDataBuilder.loadSubmissionFromCsv("/mock/sample.csv");
     }
 

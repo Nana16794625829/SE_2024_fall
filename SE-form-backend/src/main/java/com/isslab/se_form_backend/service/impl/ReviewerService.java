@@ -69,7 +69,8 @@ public class ReviewerService extends AbstractStudentRoleService {
         return existing.stream()
                 .collect(Collectors.toMap(
                         e -> e.getReviewerId() + "-" + e.getPresenterId() + "-" + e.getWeek(),
-                        Function.identity()
+                        Function.identity(),
+                        (existed, replacement) -> replacement
                 ));
     }
 

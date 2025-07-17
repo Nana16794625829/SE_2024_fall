@@ -2,7 +2,6 @@ package com.isslab.se_form_backend.service.impl;
 
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
 import com.isslab.se_form_backend.model.FormScoreRecord;
-import com.isslab.se_form_backend.model.FormSubmission;
 import com.isslab.se_form_backend.repository.FormScoreRecordRepository;
 import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
 
@@ -81,5 +80,10 @@ public class FormScoreRecordService extends AbstractFormScoreRecordService {
     @Override
     public FormScoreRecordEntity findByFormIdAndPresenterId(Long formId, String presenterId) {
         return repository.findByFormIdAndPresenterId(formId, presenterId);
+    }
+
+    @Override
+    public List<FormScoreRecordEntity> findByFormIdIn(List<Long> formIds) {
+        return repository.findByFormIdIn(formIds);
     }
 }

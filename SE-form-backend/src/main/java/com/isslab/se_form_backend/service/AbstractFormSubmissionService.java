@@ -7,6 +7,6 @@ import java.util.List;
 public abstract class AbstractFormSubmissionService {
 
     public abstract void save(FormSubmissionEntity formSubmissionEntity);
-    public abstract List<FormSubmissionEntity> fetchAllSubmissionsByWeek(String week);
+    public abstract List<FormSubmissionEntity> findAllSubmissionsByWeek(String week);
     public abstract Long getFormId(String submitterId, String week);
 }

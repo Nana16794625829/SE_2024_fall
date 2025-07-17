@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 public interface PresenterRepository extends JpaRepository<PresenterGradeEntity, Long> {
     void deleteByPresenterIdAndWeek(String presenterId, String week);
@@ -17,4 +18,6 @@ public interface PresenterRepository extends JpaRepository<PresenterGradeEntity,
     PresenterGradeEntity getByPresenterIdAndWeek(String presenterId, String week);
     PresenterGradeEntity getByWeekAndPresentOrder(String week, int order);
     List<PresenterGradeEntity> findAllByPresenterIdInAndWeekIn(List<String> presenterId, List<String> week);
+    @Query("SELECT p.presenterId FROM PresenterGradeEntity p WHERE p.week = :week")
+    Set<String> getPresenterIdsByWeek(String week);
 }
