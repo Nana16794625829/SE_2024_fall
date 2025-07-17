@@ -85,6 +85,12 @@ public class PresenterService extends AbstractStudentRoleService {
         repository.save(presenterGradeEntity);
     }
 
+    public void addPresentersByWeek(List<Presenter> presenters){
+        for(Presenter presenter : presenters){
+            addPresenter(presenter);
+        }
+    }
+
     private PresenterGradeEntity getPresenterEntityByStudentIdAndWeek(String studentId, String week) {
         return repository.getByPresenterIdAndWeek(studentId, week);
     }
