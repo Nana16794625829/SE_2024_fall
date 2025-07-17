@@ -25,31 +25,31 @@ public class SeFormBackendApplication {
         SpringApplication.run(SeFormBackendApplication.class, args);
     }
 
-    @Bean
-    CommandLineRunner init(
-            FormScoreCsvImporter scoreImporter,
-            FormSubmissionImporter submissionImporter,
-            FormScoreRecordRepository scoreRepo,
-            FormSubmissionRepository submissionRepo
-    ) {
-        return args -> {
-            importIfEmpty(submissionRepo, submissionImporter, scoreImporter);
-        };
-    }
-
-    private void importIfEmpty(FormSubmissionRepository submissionRepo, FormSubmissionImporter submissionImporter, FormScoreCsvImporter scoreImporter) {
-        if (submissionRepo.count() == 0) {
-            try (InputStream inputStream = new FileInputStream("src/main/resources/mock/formSubmissionSample.csv")) {
-                List<FormSubmissionEntity> submissions = submissionImporter.importSubmissionCsv(inputStream);
-
-                try (InputStream scoreStream = new FileInputStream("src/main/resources/mock/sample.csv")) {
-                    scoreImporter.importScoreRecordCsv(scoreStream, submissions);
-                }
-
-                System.out.println("匯入完成");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
+//    @Bean
+//    CommandLineRunner init(
+//            FormScoreCsvImporter scoreImporter,
+//            FormSubmissionImporter submissionImporter,
+//            FormScoreRecordRepository scoreRepo,
+//            FormSubmissionRepository submissionRepo
+//    ) {
+//        return args -> {
+//            importIfEmpty(submissionRepo, submissionImporter, scoreImporter);
+//        };
+//    }
+//
+//    private void importIfEmpty(FormSubmissionRepository submissionRepo, FormSubmissionImporter submissionImporter, FormScoreCsvImporter scoreImporter) {
+//        if (submissionRepo.count() == 0) {
+//            try (InputStream inputStream = new FileInputStream("src/main/resources/mock/formSubmissionSample.csv")) {
+//                List<FormSubmissionEntity> submissions = submissionImporter.importSubmissionCsv(inputStream);
+//
+//                try (InputStream scoreStream = new FileInputStream("src/main/resources/mock/sample.csv")) {
+//                    scoreImporter.importScoreRecordCsv(scoreStream, submissions);
+//                }
+//
+//                System.out.println("匯入完成");
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//    }
 }

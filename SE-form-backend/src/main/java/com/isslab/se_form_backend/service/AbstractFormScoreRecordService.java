@@ -9,7 +9,8 @@ public abstract class AbstractFormScoreRecordService {
 
     public abstract List<FormScoreRecord> getAll();
     public abstract FormScoreRecord getById(Long id);
-    public abstract void save(FormScoreRecord record);
+    public abstract void save(FormScoreRecordEntity record);
+    public abstract void saveAll(List<FormScoreRecordEntity> records);
     public abstract void update(Long id, FormScoreRecordEntity newRecord);
     public abstract void delete(Long id);
     public abstract FormScoreRecordEntity findByFormIdAndPresenterId(Long formId, String presenterId);

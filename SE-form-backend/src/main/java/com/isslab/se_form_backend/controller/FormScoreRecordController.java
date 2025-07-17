@@ -31,12 +31,6 @@ public class FormScoreRecordController {
         return ResponseEntity.ok(formScoreRecordService.getById(id));
     }
 
-    @PostMapping("/")
-    public ResponseEntity<?> addFormScoreRecord(@RequestBody FormScoreRecord newFormScoreRecord) {
-        formScoreRecordService.save(newFormScoreRecord);
-        return ResponseEntity.ok(ResponseStatus.statusOk());
-    }
-
     @PutMapping("/")
     public ResponseEntity<?> updateFormScoreRecordById(@RequestBody FormScoreRecordEntity newFormScoreRecord) {
         Long id = newFormScoreRecord.getId();

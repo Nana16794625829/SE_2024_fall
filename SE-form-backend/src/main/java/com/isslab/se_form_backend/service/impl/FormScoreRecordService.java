@@ -18,6 +18,7 @@ public class FormScoreRecordService extends AbstractFormScoreRecordService {
         this.repository = repository;
     }
 
+    @Override
     public List<FormScoreRecord> getAll() {
         List<FormScoreRecordEntity> entities = repository.findAll();
         List<FormScoreRecord> records = new ArrayList<>();
@@ -34,6 +35,7 @@ public class FormScoreRecordService extends AbstractFormScoreRecordService {
         return records;
     }
 
+    @Override
     public FormScoreRecord getById(Long id) {
         FormScoreRecordEntity entity = repository.findById(id).orElse(null);
         if(entity == null) return null;
@@ -44,17 +46,17 @@ public class FormScoreRecordService extends AbstractFormScoreRecordService {
         );
     }
 
-    public void save(FormScoreRecord record) {
-        FormScoreRecordEntity entity = FormScoreRecordEntity
-                .builder()
-                .score(record.getScore())
-                .presenterId(record.getPresenterId())
-                .build();
-
-
-        repository.save(entity);
+    @Override
+    public void save(FormScoreRecordEntity record) {
+        repository.save(record);
     }
 
+    @Override
+    public void saveAll(List<FormScoreRecordEntity> records) {
+        repository.saveAll(records);
+    }
+
+    @Override
     public void update(Long id, FormScoreRecordEntity newRecord) {
         FormScoreRecordEntity record = repository.findById(id).orElse(null);
 
@@ -71,6 +73,7 @@ public class FormScoreRecordService extends AbstractFormScoreRecordService {
         }
     }
 
+    @Override
     public void delete(Long id) {
         repository.deleteById(id);
     }
@@ -79,25 +82,4 @@ public class FormScoreRecordService extends AbstractFormScoreRecordService {
     public FormScoreRecordEntity findByFormIdAndPresenterId(Long formId, String presenterId) {
         return repository.findByFormIdAndPresenterId(formId, presenterId);
     }
-
-//    @Override
-//    public void saveByFormSubmission(Long formId, FormSubmission formSubmission) {
-//        String reviewerId = formSubmission.getSubmitterId();
-//
-//        List<FormScoreRecord> records = formSubmission.getScores();
-//        for(FormScoreRecord record : records) {
-//            String score = record.getScore();
-//            String presenterId = record.getPresenterId();
-//
-//            FormScoreRecordEntity entity = FormScoreRecordEntity.builder()
-//                    .formId(formId)
-//                    .reviewerId(reviewerId)
-//                    .score(score)
-//                    .presenterId(presenterId)
-//                    .build();
-//
-//            repository.save(entity);
-//        }
-//    }
-
 }

@@ -2,6 +2,8 @@ package com.isslab.se_form_backend.service.impl;
 
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
 import com.isslab.se_form_backend.entity.FormSubmissionEntity;
+import com.isslab.se_form_backend.model.FormScoreRecord;
+import com.isslab.se_form_backend.model.FormSubmission;
 import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
 import com.isslab.se_form_backend.service.AbstractFormSubmissionService;
 
@@ -29,5 +31,48 @@ public class FormProcessingService {
         }
 
         return formScoreRecords;
+    }
+
+    public void process(FormSubmission formSubmission) {
+        saveFormSubmission(formSubmission);
+
+        String submitterId = formSubmission.getSubmitterId();
+        String week = formSubmission.getWeek();
+        Long formId = formSubmissionService.getFormId(submitterId, week);
+
+        saveFormScoreRecords(formSubmission, formId);
+    }
+
+    private void saveFormSubmission(FormSubmission formSubmission) {
+        FormSubmissionEntity formSubmissionEntity = FormSubmissionEntity.builder()
+                .submitterId(formSubmission.getSubmitterId())
+                .week(formSubmission.getWeek())
+                .submitDateTime(formSubmission.getSubmitDateTime())
+                .comment(formSubmission.getComment())
+                .build();
+
+        formSubmissionService.save(formSubmissionEntity);
+    }
+
+    private void saveFormScoreRecords(FormSubmission formSubmission, Long formId) {
+        String reviewerId = formSubmission.getSubmitterId();
+
+        List<FormScoreRecordEntity> formScoreRecords = new ArrayList<>();
+
+        for(FormScoreRecord scoreRecord : formSubmission.getScores()) {
+            String score = scoreRecord.getScore();
+            String presenterId = scoreRecord.getPresenterId();
+
+            FormScoreRecordEntity formScoreRecordEntity = FormScoreRecordEntity.builder()
+                    .formId(formId)
+                    .score(score)
+                    .presenterId(presenterId)
+                    .reviewerId(reviewerId)
+                    .build();
+
+            formScoreRecords.add(formScoreRecordEntity);
+        }
+
+        formScoreRecordService.saveAll(formScoreRecords);
     }
 }
