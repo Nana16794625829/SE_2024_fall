@@ -53,7 +53,7 @@ public class FormScoreRecordLoader {
         List<FormScoreRecordEntity> filtered = new ArrayList<>();
 
         for (FormScoreRecordEntity record : records) {
-            if (score.equals(record.getScore())) { // 假設有getScore()方法
+            if (score.equals(record.getScore())) {
                 filtered.add(record);
             }
         }

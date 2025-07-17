@@ -29,15 +29,4 @@ public class FormSubmissionService extends AbstractFormSubmissionService {
     public Long getFormId(String submitterId, String week) {
         return formSubmissionRepository.getIdBySubmitterIdAndWeek(submitterId, week);
     }
-
-//    private void saveFormSubmission(FormSubmission formSubmission) {
-//        FormSubmissionEntity formSubmissionEntity = FormSubmissionEntity.builder()
-//                .submitterId(formSubmission.getSubmitterId())
-//                .week(formSubmission.getWeek())
-//                .submitDateTime(formSubmission.getSubmitDateTime())
-//                .comment(formSubmission.getComment())
-//                .build();
-//
-//        formSubmissionRepository.save(formSubmissionEntity);
-//    }
 }

@@ -29,9 +29,6 @@ public class GradeController {
         return ResponseEntity.ok(grade);
     }
 
-    /// FIXME: 除了被計算的 presenter 外都會被以為沒有參加報告
-    /// -> 計算單一 presenter 要改成不會檢查未報告者 (saveAllGradesByWeekAndPresenter)
-
     @PostMapping("/save")
     public ResponseEntity<Status> saveAllGradesByWeekAndPresenter(@RequestBody Map<String, String> body){
         int presenterOrder = Integer.parseInt(body.get("presenterOrder"));

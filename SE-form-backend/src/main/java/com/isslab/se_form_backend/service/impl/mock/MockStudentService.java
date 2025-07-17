@@ -16,7 +16,6 @@ public class MockStudentService extends AbstractStudentService {
 
     @Override
     public boolean isReviewer(String studentId) {
-//        return studentId.equals("113525009");
         return true;
     }
 
