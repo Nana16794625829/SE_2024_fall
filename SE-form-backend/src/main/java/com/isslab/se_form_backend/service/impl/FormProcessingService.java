@@ -81,7 +81,13 @@ public class FormProcessingService {
         List<FormScoreRecordEntity> formScoreRecords = new ArrayList<>();
 
         for(FormScoreRecord scoreRecord : formSubmission.getScores()) {
+
+            // 如果沒有提供評分就不要記錄這份 score record
             String score = scoreRecord.getScore();
+            if(score == null) {
+                continue;
+            }
+
             String presenterId = scoreRecord.getPresenterId();
 
             FormScoreRecordEntity formScoreRecordEntity = FormScoreRecordEntity.builder()

@@ -104,15 +104,18 @@ public abstract class AbstractGradeService {
     public Map<String, Double> calculateGradeBySinglePresenter(List<FormScoreRecordEntity> formScoreRecordList) {
 
         // map the reviewers' id and the scores for the presenter.
+        presenterGradeMap.clear();
         setPresenterGradeMap(formScoreRecordList);
 
         // calculate the mean (presenter's grade) and stdDev with grades.
         setPresenterGradeStatics();
 
         // Map the studentId to their zScore.
+        reviewerZScoreMap.clear();
         setReviewerZScoreMap();
 
         // calculate the reviewers' grade for first time.
+        reviewerGradeMap.clear();
         assignReviewerGradesByRound(1);
 
         // remove the outliers.
