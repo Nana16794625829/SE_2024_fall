@@ -5,6 +5,7 @@ import com.isslab.se_form_backend.model.Status;
 import com.isslab.se_form_backend.service.AbstractGradeService;
 import com.isslab.se_form_backend.service.impl.PresenterService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/grade")
+@PreAuthorize("hasRole('ADMIN')")
 public class GradeController {
 
     private final AbstractGradeService gradeService;

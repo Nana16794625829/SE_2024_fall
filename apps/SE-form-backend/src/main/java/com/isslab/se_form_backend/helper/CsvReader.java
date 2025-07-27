@@ -3,6 +3,7 @@ package com.isslab.se_form_backend.helper;
 import com.isslab.se_form_backend.entity.StudentEntity;
 import com.isslab.se_form_backend.model.ClassType;
 import com.isslab.se_form_backend.model.Student;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -10,7 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CsvReader {
-    public static List<StudentEntity> loadStudentsFromCsv(MultipartFile csvFile) {
+    private final static String DEFAULT_PASSWORD = "passw0rd";
+    private final PasswordEncoder passwordEncoder;
+    public CsvReader(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public List<StudentEntity> loadStudentsFromCsv(MultipartFile csvFile) {
         List<StudentEntity> StudentEntities = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(csvFile.getInputStream()))) {
@@ -24,7 +31,7 @@ public class CsvReader {
                 String email = parts[2];
                 ClassType classType = ClassType.valueOf(parts[3]);
 
-                StudentEntity student = new StudentEntity(studentId, name, email, classType);
+                StudentEntity student = new StudentEntity(studentId, name, email, classType, passwordEncoder.encode(DEFAULT_PASSWORD));
 
                 StudentEntities.add(student);
             }

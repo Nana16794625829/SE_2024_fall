@@ -1,5 +1,6 @@
 package com.isslab.se_form_backend.config;
 
+import com.isslab.se_form_backend.helper.CsvReader;
 import com.isslab.se_form_backend.helper.FormScoreCsvImporter;
 import com.isslab.se_form_backend.helper.FormSubmissionImporter;
 import com.isslab.se_form_backend.repository.*;
@@ -9,6 +10,7 @@ import com.isslab.se_form_backend.service.impl.mock.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.isslab.se_form_backend.repository")
@@ -17,11 +19,19 @@ public class SeFormBackendConfig {
     private final Boolean MOCK = Boolean.FALSE;
 
     @Bean
-    public AbstractStudentService studentService(StudentRepository studentRepository){
+    public CsvReader csvReader(PasswordEncoder passwordEncoder){
+        return new CsvReader(passwordEncoder);
+    }
+
+    @Bean
+    public AbstractStudentService studentService(
+            PasswordEncoder passwordEncoder,
+            StudentRepository studentRepository,
+            CsvReader csvReader){
         if (MOCK) {
             return new MockStudentService();
         }
-        return new StudentService(studentRepository);
+        return new StudentService(passwordEncoder, studentRepository, csvReader);
     }
 
     @Bean

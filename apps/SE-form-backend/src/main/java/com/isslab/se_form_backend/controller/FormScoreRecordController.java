@@ -6,6 +6,7 @@ import com.isslab.se_form_backend.model.FormScoreRecord;
 import com.isslab.se_form_backend.model.Status;
 import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/form-score")
+@PreAuthorize("hasRole('ADMIN')")
 public class FormScoreRecordController {
 
     private final AbstractFormScoreRecordService formScoreRecordService;

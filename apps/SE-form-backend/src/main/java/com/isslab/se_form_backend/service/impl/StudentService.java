@@ -7,17 +7,22 @@ import com.isslab.se_form_backend.model.Student;
 import com.isslab.se_form_backend.model.StudentUpdate;
 import com.isslab.se_form_backend.repository.StudentRepository;
 import com.isslab.se_form_backend.service.AbstractStudentService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
 
 public class StudentService extends AbstractStudentService {
-
+    private final static String DEFAULT_PASSWORD = "passw0rd";
+    private final PasswordEncoder passwordEncoder;
     private final StudentRepository studentRepository;
+    private final CsvReader csvReader;
 
-    public StudentService(StudentRepository studentRepository) {
+    public StudentService(PasswordEncoder passwordEncoder, StudentRepository studentRepository, CsvReader csvReader) {
+        this.passwordEncoder = passwordEncoder;
         this.studentRepository = studentRepository;
+        this.csvReader = csvReader;
     }
 
     @Override
@@ -49,13 +54,13 @@ public class StudentService extends AbstractStudentService {
         String email = studentInfo.getEmail();
         ClassType classType = studentInfo.getClassType();
 
-        StudentEntity studentEntity = new StudentEntity(studentId, name, email, classType);
+        StudentEntity studentEntity = new StudentEntity(studentId, name, email, classType, DEFAULT_PASSWORD);
         studentRepository.save(studentEntity);
     }
 
     @Override
     public void createMultiStudents(MultipartFile file) {
-        List<StudentEntity> studentList = CsvReader.loadStudentsFromCsv(file);
+        List<StudentEntity> studentList = csvReader.loadStudentsFromCsv(file);
         studentRepository.saveAll(studentList);
     }
 
@@ -68,7 +73,7 @@ public class StudentService extends AbstractStudentService {
         String email = studentInfo.getEmail();
         ClassType classType = student.getClassType();
 
-        StudentEntity studentEntity = new StudentEntity(studentId, name, email, classType);
+        StudentEntity studentEntity = new StudentEntity(studentId, name, email, classType, passwordEncoder.encode(""));
 
         studentRepository.save(studentEntity);
     }

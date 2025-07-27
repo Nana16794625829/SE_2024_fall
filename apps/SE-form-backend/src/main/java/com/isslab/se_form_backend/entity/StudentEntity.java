@@ -18,4 +18,6 @@ public class StudentEntity {
     private String name;
     private String email;
     private ClassType classType;
+
+    private String password;
 }
