@@ -1,4 +1,6 @@
 import * as React from 'react';
+
+import { useNavigate, Link as RouterLink } from 'react-router-dom'
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import MuiCard from '@mui/material/Card';
@@ -8,9 +10,11 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
-import ForgotPassword from './ForgotPassword.tsx';
-import { Link as RouterLink } from 'react-router-dom'
 
+import api from '../..//lib/axios';
+import { ROUTES } from '../../constants/routes';
+
+import ForgotPassword from './ForgotPassword.tsx';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -31,6 +35,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
 }));
 
 export default function SignInCard() {
+    const navigate = useNavigate();
     const [emailError, setEmailError] = React.useState(false);
     const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
     const [passwordError, setPasswordError] = React.useState(false);
@@ -45,16 +50,27 @@ export default function SignInCard() {
         setOpen(false);
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault(); // 一律阻止頁面 reload
+
         if (emailError || passwordError) {
             event.preventDefault();
             return;
         }
         const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+        
+        const email = data.get('email') as string;
+        const password = data.get('password') as string;
+        
+        try{
+            console.log({email: email,password: password});
+            const res = await api.post('/api/auth/login', { username: email, password });
+            // 儲存 token
+            localStorage.setItem('token', res.data.token);
+
+            navigate(ROUTES.FORM);
+        }catch(err){
+        }
     };
 
     const validateInputs = () => {
