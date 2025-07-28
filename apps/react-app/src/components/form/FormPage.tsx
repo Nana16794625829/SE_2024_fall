@@ -20,7 +20,7 @@ import Review from './Review';
 import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeIconDropdown from '../../shared-theme/ColorModeIconDropdown';
 
-const steps = ['README', 'Submit ratings', 'Review your ratings'];
+const steps = ['README', 'Submit ratings'];
 function getStepContent(step: number) {
     switch (step) {
         case 0:
