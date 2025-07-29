@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE || '/se/2025',
+  baseURL: import.meta.env.VITE_API_BASE,
   timeout: 10000,
 });
 

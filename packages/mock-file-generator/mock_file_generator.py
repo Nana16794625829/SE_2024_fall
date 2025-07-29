@@ -4,7 +4,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 
 # API URL
-url = "http://localhost:8080/se/2025/api/form-processing/"
+url = "http://localhost:8080/api/form-processing/"
 
 PRESENTER_NUMBER = 8
 MAX_WORKERS = 10       # 最大併發線程數
