@@ -1,3 +1,6 @@
+#Typescript
+*.tsbuildinfo
+
 # Logs
 logs
 *.log
