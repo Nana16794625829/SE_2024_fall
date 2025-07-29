@@ -6,6 +6,7 @@ import com.isslab.se_form_backend.model.FormScoreRecord;
 import com.isslab.se_form_backend.model.FormSubmission;
 import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
 import com.isslab.se_form_backend.service.AbstractFormSubmissionService;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class FormProcessingService {
 
     private final AbstractFormSubmissionService formSubmissionService;
@@ -55,6 +57,7 @@ public class FormProcessingService {
 
 
     public void process(FormSubmission formSubmission) {
+        log.info(formSubmission.toString());
         saveFormSubmission(formSubmission);
 
         String submitterId = formSubmission.getSubmitterId();

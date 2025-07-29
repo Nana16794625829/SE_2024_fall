@@ -1,5 +1,6 @@
 package com.isslab.se_form_backend.service.impl;
 
+import com.isslab.se_form_backend.constant.MyConstant;
 import com.isslab.se_form_backend.entity.StudentEntity;
 import com.isslab.se_form_backend.helper.CsvReader;
 import com.isslab.se_form_backend.model.ClassType;
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.Set;
 
 public class StudentService extends AbstractStudentService {
-    private final static String DEFAULT_PASSWORD = "passw0rd";
     private final PasswordEncoder passwordEncoder;
     private final StudentRepository studentRepository;
     private final CsvReader csvReader;
@@ -53,8 +53,9 @@ public class StudentService extends AbstractStudentService {
         String name = studentInfo.getName();
         String email = studentInfo.getEmail();
         ClassType classType = studentInfo.getClassType();
+        String encodePassword = passwordEncoder.encode(MyConstant.DEFAULT_PASSWORD);
 
-        StudentEntity studentEntity = new StudentEntity(studentId, name, email, classType, DEFAULT_PASSWORD);
+        StudentEntity studentEntity = new StudentEntity(studentId, name, email, classType, encodePassword);
         studentRepository.save(studentEntity);
     }
 
