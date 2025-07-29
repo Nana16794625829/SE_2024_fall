@@ -14,10 +14,16 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -41,12 +47,81 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                //許前端資源訪問
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login").permitAll() // login 不需驗證
-                        .anyRequest().authenticated()
+                        // 靜態資源（前端文件）- 完全開放
+                        .requestMatchers(
+                                "/",                    // 根路徑
+                                "/index.html",          // 主頁面
+                                "/static/**",           // 靜態資源
+                                "/assets/**",           // Vite 構建的資源
+                                "/*.js",               // JS 文件
+                                "/*.css",              // CSS 文件
+                                "/*.ico",              // 圖標
+                                "/*.png", "/*.jpg", "/*.jpeg", "/*.gif", "/*.svg", // 圖片
+                                "/*.woff", "/*.woff2", "/*.ttf", "/*.eot"          // 字體
+                        ).permitAll()
+
+                        // SPA 路由 - 開放（讓前端處理路由）
+                        .requestMatchers(
+                                "/login",
+                                "/dashboard",
+                                "/users",
+                                "/users/**",
+                                "/profile",
+                                "/profile/**",
+                                "/forms",
+                                "/forms/**"
+                        ).permitAll()
+
+                        // API 端點
+                        .requestMatchers("/api/auth/login").permitAll()    // 登入 API
+                        .requestMatchers("/api/health").permitAll()        // 健康檢查
+                        .requestMatchers("/api/test").permitAll()          // 測試 API（可選）
+
+                        // 其他 API 需要認證
+                        .requestMatchers("/api/**").authenticated()
+
+                        // 其他所有請求都允許（給前端路由處理）
+                        .anyRequest().permitAll()
                 )
+
+                // CORS 配置
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // JWT 過濾器
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // 允許的來源
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",    // Vite 開發服務器
+                "http://localhost:4173",    // Vite 預覽服務器
+                "http://localhost:8080"     // 生產環境（同域名）
+        ));
+
+        // 允許的方法
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // 允許的標頭
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+
+        // 允許憑證
+        configuration.setAllowCredentials(true);
+
+        // 應用到所有路徑
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 
     @Bean
