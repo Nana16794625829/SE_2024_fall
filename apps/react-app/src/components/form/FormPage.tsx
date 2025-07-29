@@ -11,8 +11,12 @@ import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+import RestoreIcon from '@mui/icons-material/Restore';
+import ClearIcon from '@mui/icons-material/Clear';
 import Rule from './Rule';
 import Info from './Info';
 import InfoMobile from './InfoMobile';
@@ -59,10 +63,54 @@ function getStepContent(
   }
 }
 
+const STORAGE_KEY = 'presenter_scores';
+const STEP_STORAGE_KEY = 'presenter_step';
+
 export default function FormPage(props: { disableCustomTheme?: boolean }) {
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [scores, setScores] = React.useState<Record<string, string>>({});
+  // 從 sessionStorage 恢復狀態
+  const [activeStep, setActiveStep] = React.useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedStep = sessionStorage.getItem(STEP_STORAGE_KEY);
+      return savedStep ? parseInt(savedStep, 10) : 0;
+    }
+    return 0;
+  });
+  
+  const [scores, setScores] = React.useState<Record<string, string>>(() => {
+    if (typeof window !== 'undefined') {
+      const savedScores = sessionStorage.getItem(STORAGE_KEY);
+      return savedScores ? JSON.parse(savedScores) : {};
+    }
+    return {};
+  });
+  
   const [error, setError] = React.useState('');
+  const [hasRestoredData, setHasRestoredData] = React.useState(false);
+
+  // 檢查是否有恢復的資料
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedScores = sessionStorage.getItem(STORAGE_KEY);
+      const savedStep = sessionStorage.getItem(STEP_STORAGE_KEY);
+      if (savedScores && Object.keys(JSON.parse(savedScores)).length > 0) {
+        setHasRestoredData(true);
+      }
+    }
+  }, []);
+
+  // 當 scores 變化時自動保存到 sessionStorage
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(scores));
+    }
+  }, [scores]);
+
+  // 當 activeStep 變化時自動保存到 sessionStorage
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(STEP_STORAGE_KEY, activeStep.toString());
+    }
+  }, [activeStep]);
 
   // 計算各等級數量
   const getScoreCount = () => {
@@ -78,6 +126,20 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
   const handleScoreChange = (studentId: string, score: string) => {
     setScores((prev) => ({ ...prev, [studentId]: score }));
     setError(''); // 清除錯誤訊息
+    setHasRestoredData(false); // 清除恢復資料提示
+  };
+
+  const clearAllData = () => {
+    if (confirm('確定要清除所有評分資料嗎？此操作無法復原。')) {
+      setScores({});
+      setActiveStep(0);
+      setError('');
+      setHasRestoredData(false);
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem(STORAGE_KEY);
+        sessionStorage.removeItem(STEP_STORAGE_KEY);
+      }
+    }
   };
 
   const validateScores = () => {
@@ -133,6 +195,12 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
         console.log(`${presenter.name} (${presenter.studentId}): ${scores[presenter.studentId]}`);
       });
       
+      // 清除 sessionStorage 中的資料
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem(STORAGE_KEY);
+        sessionStorage.removeItem(STEP_STORAGE_KEY);
+      }
+      
       alert('✅ 成功送出');
       setActiveStep(activeStep + 1);
     }
@@ -141,7 +209,21 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
-      <Box sx={{ position: 'fixed', top: '1rem', right: '1rem' }}>
+      <Box sx={{ position: 'fixed', top: '1rem', right: '1rem', display: 'flex', gap: 1 }}>
+        {/* 清除資料按鈕 */}
+        {(Object.keys(scores).length > 0 || activeStep > 0) && (
+          <Tooltip title="清除所有評分資料">
+            <IconButton 
+              onClick={clearAllData}
+              sx={{ 
+                bgcolor: 'background.paper',
+                '&:hover': { bgcolor: 'error.light' }
+              }}
+            >
+              <ClearIcon />
+            </IconButton>
+          </Tooltip>
+        )}
         <ColorModeIconDropdown />
       </Box>
 

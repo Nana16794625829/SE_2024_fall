@@ -92,6 +92,11 @@ export default function Score({ presenters, scores, onScoreChange, error }: Scor
           <Typography variant="body2" color="text.secondary">
             ✅ 規則提醒：所有人都要評分，至少一位 A，至少一位 C
           </Typography>
+          {Object.keys(scores).length > 0 && (
+            <Typography variant="body2" color="success.main" sx={{ mt: 0.5 }}>
+              💾 您的評分進度會自動保存，刷新頁面後可恢復
+            </Typography>
+          )}
         </Box>
       </Paper>
 
