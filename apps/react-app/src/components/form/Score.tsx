@@ -120,14 +120,28 @@ export default function Score({ presenters, scores, onScoreChange, error }: Scor
             justifyContent="space-between"
             flexWrap="wrap"
             gap={2}
+            sx={{
+              // 在小螢幕時確保有足夠空間
+              '@media (max-width: 900px)': {
+                flexDirection: 'column',
+                alignItems: 'stretch',
+                '& > :first-of-type': {
+                  justifyContent: 'center'
+                },
+                '& > :last-of-type': {
+                  justifyContent: 'center'
+                }
+              }
+            }}
           >
             {/* 學生資訊 */}
-            <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
+            <Box display="flex" alignItems="center" gap={2} flexWrap="wrap" sx={{ minWidth: 'fit-content' }}>
               <Typography 
                 variant="body1" 
                 sx={{ 
                   minWidth: '140px',
                   fontWeight: 'medium',
+                  whiteSpace: 'nowrap'
                 }}
               >
                 學號：{presenter.studentId}
@@ -138,6 +152,7 @@ export default function Score({ presenters, scores, onScoreChange, error }: Scor
                 sx={{ 
                   minWidth: '120px',
                   fontWeight: 'medium',
+                  whiteSpace: 'nowrap'
                 }}
               >
                 姓名：{presenter.name}
@@ -149,7 +164,11 @@ export default function Score({ presenters, scores, onScoreChange, error }: Scor
               row
               value={scores[presenter.studentId] || ''}
               onChange={(e) => handleChange(presenter.studentId, e.target.value)}
-              sx={{ gap: 1 }}
+              sx={{ 
+                gap: 1,
+                flexWrap: 'nowrap', // 防止換行
+                minWidth: 'fit-content'
+              }}
             >
               <FormControlLabel
                 value="A"
@@ -163,10 +182,12 @@ export default function Score({ presenters, scores, onScoreChange, error }: Scor
                   />
                 }
                 label={
-                  <Box display="flex" alignItems="center" gap={0.5}>
+                  <Box display="flex" alignItems="center" gap={0.3} sx={{ whiteSpace: 'nowrap' }}>
                     <Typography variant="body1" fontWeight="bold">A</Typography>
                     {count.A >= maxA && scores[presenter.studentId] !== 'A' && (
-                      <Typography variant="caption" color="error">(已滿)</Typography>
+                      <Typography variant="caption" color="error" sx={{ fontSize: '0.65rem' }}>
+                        (已滿)
+                      </Typography>
                     )}
                   </Box>
                 }
@@ -175,6 +196,8 @@ export default function Score({ presenters, scores, onScoreChange, error }: Scor
                   '& .MuiFormControlLabel-label': {
                     fontWeight: scores[presenter.studentId] === 'A' ? 'bold' : 'normal',
                   },
+                  minWidth: 'fit-content',
+                  mr: 0.5
                 }}
               />
               <FormControlLabel
@@ -189,10 +212,12 @@ export default function Score({ presenters, scores, onScoreChange, error }: Scor
                   />
                 }
                 label={
-                  <Box display="flex" alignItems="center" gap={0.5}>
+                  <Box display="flex" alignItems="center" gap={0.3} sx={{ whiteSpace: 'nowrap' }}>
                     <Typography variant="body1" fontWeight="bold">B</Typography>
                     {count.B >= maxB && scores[presenter.studentId] !== 'B' && (
-                      <Typography variant="caption" color="error">(已滿)</Typography>
+                      <Typography variant="caption" color="error" sx={{ fontSize: '0.65rem' }}>
+                        (已滿)
+                      </Typography>
                     )}
                   </Box>
                 }
@@ -201,6 +226,8 @@ export default function Score({ presenters, scores, onScoreChange, error }: Scor
                   '& .MuiFormControlLabel-label': {
                     fontWeight: scores[presenter.studentId] === 'B' ? 'bold' : 'normal',
                   },
+                  minWidth: 'fit-content',
+                  mr: 0.5
                 }}
               />
               <FormControlLabel
@@ -215,10 +242,12 @@ export default function Score({ presenters, scores, onScoreChange, error }: Scor
                   />
                 }
                 label={
-                  <Box display="flex" alignItems="center" gap={0.5}>
+                  <Box display="flex" alignItems="center" gap={0.3} sx={{ whiteSpace: 'nowrap' }}>
                     <Typography variant="body1" fontWeight="bold">C</Typography>
                     {count.C >= maxC && scores[presenter.studentId] !== 'C' && (
-                      <Typography variant="caption" color="error">(已滿)</Typography>
+                      <Typography variant="caption" color="error" sx={{ fontSize: '0.65rem' }}>
+                        (已滿)
+                      </Typography>
                     )}
                   </Box>
                 }
@@ -227,6 +256,7 @@ export default function Score({ presenters, scores, onScoreChange, error }: Scor
                   '& .MuiFormControlLabel-label': {
                     fontWeight: scores[presenter.studentId] === 'C' ? 'bold' : 'normal',
                   },
+                  minWidth: 'fit-content'
                 }}
               />
             </RadioGroup>
