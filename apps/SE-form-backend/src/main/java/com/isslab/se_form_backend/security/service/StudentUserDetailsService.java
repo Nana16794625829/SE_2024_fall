@@ -1,7 +1,9 @@
 package com.isslab.se_form_backend.security.service;
 
+import com.isslab.se_form_backend.model.ClassType;
 import com.isslab.se_form_backend.model.Student;
 import com.isslab.se_form_backend.repository.StudentRepository;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,6 +20,10 @@ public class StudentUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Student student = studentRepository.getStudentByStudentId(username);
+
+        if(ClassType.ON_SERVICE.equals(student.getClassType())){
+            throw new DisabledException(String.format("該用戶:%s 為夜間部，無法進行評分，請不用登入此系統，謝謝", username));
+        }
 
         return User.builder()
                 .username(student.getStudentId())
