@@ -4,6 +4,7 @@ import com.isslab.se_form_backend.controller.AuthController;
 import com.isslab.se_form_backend.repository.StudentRepository;
 import com.isslab.se_form_backend.security.JwtUtil;
 import com.isslab.se_form_backend.security.filter.JwtAuthFilter;
+import com.isslab.se_form_backend.security.property.AdminAuthProperties;
 import com.isslab.se_form_backend.security.service.StudentUserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -149,7 +150,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthController authController(AuthenticationManager authenticationManager, JwtUtil jwtUtil){
-        return new AuthController(authenticationManager, jwtUtil);
+    public AdminAuthProperties adminAuthProperties() {
+        return new AdminAuthProperties();
+    }
+
+    @Bean
+    public AuthController authController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, AdminAuthProperties adminAuthProperties) {
+        return new AuthController(authenticationManager, jwtUtil, adminAuthProperties);
     }
 }

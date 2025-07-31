@@ -1,9 +1,11 @@
 package com.isslab.se_form_backend.controller;
 
 import com.isslab.se_form_backend.security.JwtUtil;
+import com.isslab.se_form_backend.security.property.AdminAuthProperties;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,31 +22,40 @@ import java.util.Collections;
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final AdminAuthProperties adminAuthProperties;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil){
+    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, AdminAuthProperties adminAuthProperties) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.adminAuthProperties = adminAuthProperties;
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req) {
-        if ("admin".equals(req.getUsername()) && "admin".equals(req.getPassword())) {
+        if (adminAuthProperties.getUsername().equals(req.getUsername()) &&
+                adminAuthProperties.getPassword().equals(req.getPassword())) {
+
             String token = jwtUtil.generateAdminToken();
             return ResponseEntity.ok(Collections.singletonMap("token", token));
-        } else{
+        }
+
+        try {
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword())
             );
-            if(Boolean.TRUE.equals(auth.isAuthenticated())){
-                log.info("user: {} 驗證通過", req.getUsername());
 
+            if (Boolean.TRUE.equals(auth.isAuthenticated())) {
+                log.info("user: {} 驗證通過", req.getUsername());
                 String token = jwtUtil.generateToken(req.getUsername());
                 return ResponseEntity.ok(Collections.singletonMap("token", token));
             }
+        } catch (Exception e) {
+            log.warn("使用者驗證失敗: {}", e.getMessage());
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
 
     @Getter
     @Setter
