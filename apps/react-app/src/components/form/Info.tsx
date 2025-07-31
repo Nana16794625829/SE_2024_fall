@@ -3,61 +3,46 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-
-const scores = [
-    {
-        name: 'A',
-        // desc: 'Monthly subscription',
-        count: '2',
-    },
-    {
-        name: 'B',
-        // desc: 'Included in the Professional plan',
-        count: '3',
-    },
-    {
-        name: 'C',
-        // desc: 'Devices needed for development',
-        count: '4',
-    },
-    {
-        name: '無評分',
-        count: '1'
-    }
-];
+import {Chip, Divider, Grid, Paper} from "@mui/material";
+import ScoreSummary from "./ScoreSummary.tsx";
 
 interface InfoProps {
-    totalcount: string;
+    count: { A: number; B: number ; C: number };
 }
 
-export default function Info({ totalcount }: InfoProps) {
+export default function Info({count }: InfoProps) {
+    const getChipColor = (grade: 'A' | 'B' | 'C', currentCount: number, maxCount: number) => {
+        if (currentCount > maxCount) return 'error';
+        if (currentCount === maxCount) return 'success';
+        if (currentCount === 0) return 'warning';
+        return 'success';
+    };
+
+    const totalRated = Object.values(count).reduce((sum, value) => sum + value, 0);
+
     return (
         <React.Fragment>
-            <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+            <Typography variant="h2" sx={{ color: 'text.primary', my: 3 }}>
+                本周報告評分
+            </Typography>
+            <Typography variant="h3" sx={{ color: 'text.secondary' }}>
                 目前評分總計
             </Typography>
-            <Typography variant="h4" gutterBottom>
-                {totalcount}
-            </Typography>
-            <List disablePadding>
-                {scores.map((score) => (
-                    <ListItem key={score.name} sx={{ py: 1, px: 0 }}>
-                        <ListItemText
-                            sx={{ fontSize: 50, mr: 2}}
-                            primary={score.name}
-                            // slotProps={{
-                            //     primary: {
-                            //         sx: { fontSize: '1.9rem' },
-                            //     },
-                            // }}
-                            // secondary={score.desc}
-                        />
-                        <Typography variant="body1" sx={{ fontSize: '1.2rem', fontWeight: '500' }}>
-                            {score.count}
-                        </Typography>
-                    </ListItem>
-                ))}
-            </List>
+            <Divider orientation="horizontal" sx={{ my: 2 }} flexItem/>
+            <ScoreSummary
+                count={count}
+                maxA={2}
+                maxB={6}
+                maxC={2}
+                getChipColor={getChipColor}
+            />
+            <Divider orientation="horizontal" sx={{ my: 2 }} flexItem/>
+            {/* 進度提示 */}
+            <Paper sx={{p: 2, color: 'info.contrastText', display: 'flex', justifyContent: 'flex-end'}}>
+                <Typography variant="body2" textAlign="center">
+                    已評分：{totalRated} 位同學
+                </Typography>
+            </Paper>
         </React.Fragment>
     );
 }
