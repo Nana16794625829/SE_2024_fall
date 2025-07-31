@@ -3,17 +3,15 @@ import { List, ListItem, ListItemText, Typography, Chip, Box } from '@mui/materi
 
 interface ScoreSummaryProps {
     count: { A: number; B: number; C: number };
-    maxA: number;
-    maxB: number;
-    maxC: number;
+    maxRatings: { A: number; B: number; C: number };
     getChipColor: (grade: 'A' | 'B' | 'C', current: number, max: number) => 'error' | 'warning' | 'success';
 }
 
-export default function ScoreSummary({ count, maxA, maxB, maxC, getChipColor }: ScoreSummaryProps) {
+export default function ScoreSummary({ count,maxRatings, getChipColor }: ScoreSummaryProps) {
     const scores = [
-        { name: 'A', count: count.A, max: maxA },
-        { name: 'B', count: count.B, max: maxB },
-        { name: 'C', count: count.C, max: maxC },
+        { name: 'A', count: count.A, max: maxRatings.A },
+        { name: 'B', count: count.B, max: maxRatings.B },
+        { name: 'C', count: count.C, max: maxRatings.C },
     ];
 
     return (

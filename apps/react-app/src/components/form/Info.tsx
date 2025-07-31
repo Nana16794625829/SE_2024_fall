@@ -8,12 +8,13 @@ import ScoreSummary from "./ScoreSummary.tsx";
 
 interface InfoProps {
     count: { A: number; B: number ; C: number };
+    maxRatings: { A: number; B: number ; C: number };
 }
 
-export default function Info({count }: InfoProps) {
-    const getChipColor = (grade: 'A' | 'B' | 'C', currentCount: number, maxCount: number) => {
-        if (currentCount > maxCount) return 'error';
-        if (currentCount === maxCount) return 'success';
+export default function Info({count, maxRatings }: InfoProps) {
+    const getChipColor = (grade: 'A' | 'B' | 'C', currentCount: number, maxRating: number) => {
+        if (currentCount > maxRating) return 'error';
+        if (currentCount === maxRating) return 'success';
         if (currentCount === 0) return 'warning';
         return 'success';
     };
@@ -31,9 +32,7 @@ export default function Info({count }: InfoProps) {
             <Divider orientation="horizontal" sx={{ my: 2 }} flexItem/>
             <ScoreSummary
                 count={count}
-                maxA={2}
-                maxB={6}
-                maxC={2}
+                maxRatings={maxRatings}
                 getChipColor={getChipColor}
             />
             <Divider orientation="horizontal" sx={{ my: 2 }} flexItem/>

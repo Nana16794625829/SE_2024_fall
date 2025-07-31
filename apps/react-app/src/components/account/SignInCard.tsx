@@ -156,19 +156,19 @@ export default function SignInCard() {
         <Button type="submit" fullWidth variant="contained">
           Sign in
         </Button>
-        <Typography sx={{ textAlign: 'center' }}>
-          還沒有帳號？{' '}
-          <span>
-            <Link
-              component={RouterLink}
-              to="/material-ui/getting-started/templates/sign-in/"
-              variant="body2"
-              sx={{ alignSelf: 'center' }}
-            >
-              註冊帳號
-            </Link>
-          </span>
-        </Typography>
+        {/*<Typography sx={{ textAlign: 'center' }}>*/}
+        {/*  還沒有帳號？{' '}*/}
+        {/*  <span>*/}
+        {/*    <Link*/}
+        {/*      component={RouterLink}*/}
+        {/*      to="/material-ui/getting-started/templates/sign-in/"*/}
+        {/*      variant="body2"*/}
+        {/*      sx={{ alignSelf: 'center' }}*/}
+        {/*    >*/}
+        {/*      註冊帳號*/}
+        {/*    </Link>*/}
+        {/*  </span>*/}
+        {/*</Typography>*/}
       </Box>
     </Card>
   );

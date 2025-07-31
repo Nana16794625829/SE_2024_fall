@@ -13,14 +13,13 @@ export default function SignInSide(props: { disableCustomTheme?: boolean }) {
             <CssBaseline enableColorScheme />
             <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
             <Stack
-                direction="column"
                 component="main"
                 sx={[
                     {
+                        minHeight: '100vh',
                         justifyContent: 'center',
-                        height: 'calc((1 - var(--template-frame-height, 0)) * 100%)',
-                        marginTop: 'max(40px - var(--template-frame-height, 0px), 0px)',
-                        minHeight: '100%',
+                        alignItems: 'center',
+                        p: 2,
                     },
                     (theme) => ({
                         '&::before': {
@@ -40,44 +39,23 @@ export default function SignInSide(props: { disableCustomTheme?: boolean }) {
                     }),
                 ]}
             >
-                <Stack
-                    direction={{ xs: 'column', md: 'column' }}
-                    sx={{
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        gap: { xs: 2, sm: 4 },
-                        p: 2,
-                        mx: 'auto',
-                    }}
-                >
-                    <Typography variant="h1" gutterBottom>
+                <Stack spacing={10} alignItems="center">
+                    <Typography variant="h1" textAlign="center">
                         ISSLAB - Software Engineering 2025
                     </Typography>
 
                     <Stack
                         direction={{ xs: 'column-reverse', md: 'row' }}
-                        sx={{
-                            justifyContent: 'center',
-                            gap: { xs: 6, sm: 12 },
-                            p: 2,
-                            mx: 'auto',
-                        }}
+                        spacing={{ xs: 4, sm: 8 }}
+                        alignItems="center"
+                        justifyContent="center"
                     >
-                        <Stack
-                            direction={{ xs: 'column-reverse', md: 'row' }}
-                            sx={{
-                                justifyContent: 'center',
-                                gap: { xs: 6, sm: 12 },
-                                p: { xs: 2, sm: 4 },
-                                m: 'auto',
-                            }}
-                        >
-                            <SignInPageContent />
-                            <SignInCard />
-                        </Stack>
+                        <SignInPageContent />
+                        <SignInCard />
                     </Stack>
                 </Stack>
             </Stack>
         </AppTheme>
     );
+
 }

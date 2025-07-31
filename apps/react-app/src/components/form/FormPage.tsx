@@ -21,23 +21,35 @@ import Rule from './Rule';
 import Info from './Info';
 import InfoMobile from './InfoMobile';
 import Score from './Score';
-import Review from './Review';
+import Comment from './Comment.tsx';
 import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeIconDropdown from '../../shared-theme/ColorModeIconDropdown';
 import {useEffect, useState} from "react";
 
-const steps = ['README', 'Submit ratings'];
+const steps = ['README', 'Submit Ratings', 'Comments'];
 
 const presenters = [
     {order: '1', studentId: '112552001', name: '李小龍'},
     {order: '2', studentId: '112552002', name: '張曼玉'},
     {order: '3', studentId: '112552003', name: '周杰倫'},
-    {order: '4', studentId: '112552004', name: '林志玲'},
-    {order: '5', studentId: '112552005', name: '王力宏'},
-    {order: '6', studentId: '112552006', name: '蔡依林'},
-    {order: '7', studentId: '112552007', name: '謝金燕'},
-    {order: '8', studentId: '112552008', name: '黃鴻升'},
+    // {order: '4', studentId: '112552004', name: '林志玲'},
+    // {order: '5', studentId: '112552005', name: '王力宏'},
+    // {order: '6', studentId: '112552006', name: '蔡依林'},
+    // {order: '7', studentId: '112552007', name: '謝金燕'},
+    // {order: '8', studentId: '112552008', name: '黃鴻升'},
 ];
+
+const totalPeople = presenters.length;
+
+function getMaxRatings(totalPeople) {
+    const maxA = totalPeople <= 7 ? 1 : 2;
+    const maxC = totalPeople <= 7 ? 1 : 2;
+    const maxB = totalPeople - 2;
+
+    return { A: maxA, B: maxB, C: maxC };
+}
+
+const maxRatings = getMaxRatings(totalPeople);
 
 function getStepContent(
     step: number,
@@ -48,7 +60,7 @@ function getStepContent(
 ) {
     switch (step) {
         case 0:
-            return <Rule/>;
+            return <Rule presenterCount={totalPeople} maxRatings={maxRatings}/>;
         case 1:
             return (
                 <Score
@@ -57,10 +69,11 @@ function getStepContent(
                     onScoreChange={onScoreChange}
                     error={error}
                     onCountChange={handleCountChange}
+                    maxRatings={maxRatings}
                 />
             );
         case 2:
-            return <Review/>;
+            return <Comment/>;
         default:
             throw new Error('Unknown step');
     }
@@ -222,7 +235,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                 }}
             >
                 <Grid
-                    size={{xs: 12, sm: 5, lg: 4}}
+                    size={{xs: 12, sm: 4, lg: 3}}
                     sx={{
                         display: {xs: 'none', md: 'flex'},
                         flexDirection: 'column',
@@ -244,19 +257,19 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                             maxWidth: 500,
                         }}
                     >
-                        <Info count={count} />
+                        <Info count={count} maxRatings={maxRatings} />
                     </Box>
                 </Grid>
 
                 <Grid
-                    size={{sm: 12, md: 7, lg: 8}}
+                    size={{sm: 12, md: 8, lg: 9}}
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
                         maxWidth: '100%',
                         width: '100%',
                         backgroundColor: {xs: 'transparent', sm: 'background.default'},
-                        alignItems: 'start',
+                        alignItems: 'center',
                         pt: {xs: 0, sm: 16},
                         px: {xs: 2, sm: 10},
                         gap: {xs: 4, md: 8},
@@ -268,7 +281,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                             justifyContent: {sm: 'space-between', md: 'flex-end'},
                             alignItems: 'center',
                             width: '100%',
-                            maxWidth: {sm: '100%', md: 600},
+                            maxWidth: {sm: '100%', md: '50%'},
                         }}
                     >
                         <Box
@@ -296,35 +309,13 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                             </Stepper>
                         </Box>
                     </Box>
-
-                    {/*<Card sx={{display: {xs: 'flex', md: 'none'}, width: '100%'}}>*/}
-                    {/*    <CardContent*/}
-                    {/*        sx={{*/}
-                    {/*            display: 'flex',*/}
-                    {/*            width: '100%',*/}
-                    {/*            alignItems: 'center',*/}
-                    {/*            justifyContent: 'space-between',*/}
-                    {/*        }}*/}
-                    {/*    >*/}
-                    {/*        <div>*/}
-                    {/*            <Typography variant="subtitle2" gutterBottom>*/}
-                    {/*                Selected products*/}
-                    {/*            </Typography>*/}
-                    {/*            <Typography variant="body1">*/}
-                    {/*                {activeStep >= 2 ? '$144.97' : '$134.98'}*/}
-                    {/*            </Typography>*/}
-                    {/*        </div>*/}
-                    {/*        <InfoMobile count={count}/>*/}
-                    {/*    </CardContent>*/}
-                    {/*</Card>*/}
-
                     <Box
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
                             flexGrow: 1,
                             width: '100%',
-                            maxWidth: {sm: '100%', md: 600},
+                            maxWidth: {sm: '100%', md: '50%'},
                             // maxHeight: '720px',
                             gap: {xs: 5, md: 'none'},
                         }}
@@ -411,7 +402,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                                         </Button>
                                     )}
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', minWidth: '160px'}}>
-                                        {(Object.keys(scores).length > 0 && activeStep > 0) && (
+                                        {(Object.keys(scores).length > 0 && activeStep === 1) && (
                                             <Tooltip title="清除所有評分資料">
                                                 <IconButton
                                                     onClick={clearAllData}

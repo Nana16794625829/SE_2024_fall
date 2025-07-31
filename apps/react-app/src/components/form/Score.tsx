@@ -24,24 +24,15 @@ interface ScoreProps {
     onScoreChange: (studentId: string, score: string) => void;
     error: string;
     onCountChange: (count: { A: number; B: number; C: number }) => void;
+    maxRatings: { A: number; B: number; C: number };
 }
 
-const maxA = 2;
-const maxB = 6;
-const maxC = 2;
-
-export default function Score({presenters, scores, onScoreChange, error, onCountChange}: ScoreProps) {
+export default function Score({presenters, scores, onScoreChange, error, onCountChange, maxRatings}: ScoreProps) {
     const [count, setCount] = useState({A: 0, B: 0, C: 0});
 
-    // useEffect(() => {
-    //     const counter = {A: 0, B: 0, C: 0};
-    //     Object.values(scores).forEach((score) => {
-    //         if (score === 'A') counter.A += 1;
-    //         if (score === 'B') counter.B += 1;
-    //         if (score === 'C') counter.C += 1;
-    //     });
-    //     setCount(counter);
-    // }, [scores]);
+    const maxA = maxRatings.A;
+    const maxB = maxRatings.B;
+    const maxC = maxRatings.C;
 
     useEffect(() => {
         const counter = {A: 0, B: 0, C: 0};
@@ -57,12 +48,6 @@ export default function Score({presenters, scores, onScoreChange, error, onCount
     const handleChange = (studentId: string, score: string) => {
         onScoreChange(studentId, score);
     };
-
-    // const getChipColor = (grade: 'A' | 'B' | 'C', currentCount: number, maxCount: number) => {
-    //     if (currentCount >= maxCount) return 'error';
-    //     if (currentCount === maxCount - 1) return 'warning';
-    //     return 'success';
-    // };
 
     return (
 
@@ -81,7 +66,7 @@ export default function Score({presenters, scores, onScoreChange, error, onCount
                     </Typography>
                     {Object.keys(scores).length > 0 && (
                         <Typography variant="body2" color="success.main" sx={{mt: 0.5}}>
-                            您的評分進度會自動保存，刷新頁面後可恢復
+                            評分進度已自動保存，刷新頁面後仍會保持紀錄
                         </Typography>
                     )}
                 </Box>
