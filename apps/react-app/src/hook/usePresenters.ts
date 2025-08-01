@@ -2,23 +2,16 @@ import { useEffect, useState } from 'react';
 import api from "../lib/axios.ts";
 import {Presenter} from "../types/presenter.ts";
 
-export const usePresenters = (week: string, token: string | null) => {
+export const usePresenters = (week: string) => {
     const [presenters, setPresenters] = useState<Presenter[]>([]);
     const [error, setError] = useState<string | null>(null);
-    console.log('🔍 Fetching presenters for week:', week, 'token?', !!token);
+    
+    console.log('🔄 usePresenters hook 被調用, week:', week); // 這會顯示 hook 調用次數
 
     useEffect(() => {
-        if (!token) {
-            setError('請重新登入');
-            setPresenters([]);
-            return;
-        }
-
-        api.get(`/api/presenter/${week}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        })
+        console.log('🔍 實際發送 API 請求 for week:', week); // 這會顯示實際 API 調用
+        
+        api.get(`/api/presenter/${week}`)
             .then(res => {
                 console.log('✅ API 回傳資料:', res.data);
                 setPresenters(res.data)
@@ -28,7 +21,7 @@ export const usePresenters = (week: string, token: string | null) => {
                 setError('無法取得報告者資訊');
                 setPresenters([]);
             });
-    }, [week, token]);
+    }, [week]);
 
     return { presenters, error };
 };

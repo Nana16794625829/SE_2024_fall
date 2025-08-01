@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -85,31 +86,19 @@ const STORAGE_KEY = 'presenter_scores';
 const STEP_STORAGE_KEY = 'presenter_step';
 
 export default function FormPage(props: { disableCustomTheme?: boolean }) {
-    const token = localStorage.getItem('token');
+    const week = useMemo(() => getCurrentWeek('2025-09-01'), []); // 114 Fall 第一周起始日
 
-    const validateToken = () => {
-        if (!token) {
-            setError('請重新登入');
-            return;
-        }
-    }
+    const { presenters } = usePresenters(week);
 
-    const week = getCurrentWeek('2025-09-01'); // 114 Fall 第一周起始日
-
-    const { presenters } = usePresenters(week, token);
-
-    const maxRatings = getMaxRatings(presenters.length);
+    const maxRatings = useMemo(() => 
+    getMaxRatings(presenters.length), 
+    [presenters.length]
+);
 
     const [userId, setUserId] = useState<string>('');
 
     React.useEffect(() => {
-        validateToken();
-
-        api.get('/api/auth/me',{
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        })
+        api.get('/api/auth/me')
             .then((res) => {
                 setUserId(res.data.username);
             })
@@ -175,16 +164,6 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
         setError(''); // 清除錯誤訊息
         setHasRestoredData(false); // 清除恢復資料提示
     };
-
-    {getStepContent(
-        activeStep,
-        presenters,
-        maxRatings,
-        scores,
-        handleScoreChange,
-        error,
-        handleCountChange
-    )}
 
     const clearAllData = () => {
         if (confirm('確定要清除所有評分資料嗎？此操作無法復原。')) {
@@ -419,7 +398,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                             </Stack>
                         ) : (
                             <React.Fragment>
-                                {getStepContent(activeStep, scores, handleScoreChange, error, handleCountChange)}
+                                {getStepContent(activeStep, presenters, maxRatings, scores, handleScoreChange, error, handleCountChange)}
                                 <Box
                                     sx={[
                                         {
