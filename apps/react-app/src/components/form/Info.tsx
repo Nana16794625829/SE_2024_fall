@@ -9,9 +9,10 @@ import ScoreSummary from "./ScoreSummary.tsx";
 interface InfoProps {
     count: { A: number; B: number ; C: number };
     maxRatings: { A: number; B: number ; C: number };
+    week: string;
 }
 
-export default function Info({count, maxRatings }: InfoProps) {
+export default function Info({count, maxRatings, week}: InfoProps) {
     const getChipColor = (grade: 'A' | 'B' | 'C', currentCount: number, maxRating: number) => {
         if (currentCount > maxRating) return 'error';
         if (currentCount === maxRating) return 'success';
@@ -24,7 +25,7 @@ export default function Info({count, maxRatings }: InfoProps) {
     return (
         <React.Fragment>
             <Typography variant="h2" sx={{ color: 'text.primary', my: 3 }}>
-                本周報告評分
+                Week {week} 報告評分
             </Typography>
             <Typography variant="h3" sx={{ color: 'text.secondary' }}>
                 目前評分總計

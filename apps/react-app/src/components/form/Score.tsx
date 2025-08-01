@@ -11,12 +11,7 @@ import {
     Chip,
     Grid,
 } from '@mui/material';
-
-interface Presenter {
-    order: string;
-    studentId: string;
-    name: string;
-}
+import {Presenter} from "../../types/presenter.ts";
 
 interface ScoreProps {
     presenters: Presenter[];
@@ -33,6 +28,13 @@ export default function Score({presenters, scores, onScoreChange, error, onCount
     const maxA = maxRatings.A;
     const maxB = maxRatings.B;
     const maxC = maxRatings.C;
+
+    console.log('Score 組件收到的 presenters:', {
+        presenters,
+        type: typeof presenters,
+        isArray: Array.isArray(presenters),
+        length: presenters?.length
+    });
 
     useEffect(() => {
         const counter = {A: 0, B: 0, C: 0};
@@ -73,13 +75,13 @@ export default function Score({presenters, scores, onScoreChange, error, onCount
             </Paper>
 
             {/* 評分表單 */}
-            {presenters.map((presenter, index) => (
+            {presenters.map((presenter) => (
                 <Paper
-                    key={presenter.studentId}
+                    key={presenter.presenterId}
                     sx={{
                         p: 3,
-                        border: scores[presenter.studentId] ? '2px solid' : '1px solid',
-                        borderColor: scores[presenter.studentId] ? 'primary.main' : 'divider',
+                        border: scores[presenter.presenterId] ? '2px solid' : '1px solid',
+                        borderColor: scores[presenter.presenterId] ? 'primary.main' : 'divider',
                         transition: 'border-color 0.2s ease-in-out',
                         '&:hover': {
                             borderColor: 'primary.light',
@@ -116,7 +118,7 @@ export default function Score({presenters, scores, onScoreChange, error, onCount
                                     whiteSpace: 'nowrap'
                                 }}
                             >
-                                {presenter.order}
+                                {presenter.presentOrder}
                             </Typography>
                             <Divider orientation="vertical" flexItem/>
                             <Typography
@@ -127,15 +129,15 @@ export default function Score({presenters, scores, onScoreChange, error, onCount
                                     whiteSpace: 'nowrap'
                                 }}
                             >
-                                {presenter.name}
+                                {presenter.presenterName}
                             </Typography>
                         </Box>
 
                         {/* 評分選項 */}
                         <RadioGroup
                             row
-                            value={scores[presenter.studentId] || ''}
-                            onChange={(e) => handleChange(presenter.studentId, e.target.value)}
+                            value={scores[presenter.presenterId] || ''}
+                            onChange={(e) => handleChange(presenter.presenterId, e.target.value)}
                             sx={{
                                 gap: 1,
                                 flexWrap: 'nowrap', // 防止換行
@@ -156,17 +158,17 @@ export default function Score({presenters, scores, onScoreChange, error, onCount
                                 label={
                                     <Box display="flex" alignItems="center" gap={0.3} sx={{whiteSpace: 'nowrap'}}>
                                         <Typography variant="body1" fontWeight="bold">A</Typography>
-                                        {count.A >= maxA && scores[presenter.studentId] !== 'A' && (
+                                        {count.A >= maxA && scores[presenter.presenterId] !== 'A' && (
                                             <Typography variant="caption" color="error" sx={{fontSize: '0.65rem'}}>
                                                 (已滿)
                                             </Typography>
                                         )}
                                     </Box>
                                 }
-                                disabled={count.A >= maxA && scores[presenter.studentId] !== 'A'}
+                                disabled={count.A >= maxA && scores[presenter.presenterId] !== 'A'}
                                 sx={{
                                     '& .MuiFormControlLabel-label': {
-                                        fontWeight: scores[presenter.studentId] === 'A' ? 'bold' : 'normal',
+                                        fontWeight: scores[presenter.presenterId] === 'A' ? 'bold' : 'normal',
                                     },
                                     minWidth: 'fit-content',
                                     mr: 0.5
@@ -186,17 +188,17 @@ export default function Score({presenters, scores, onScoreChange, error, onCount
                                 label={
                                     <Box display="flex" alignItems="center" gap={0.3} sx={{whiteSpace: 'nowrap'}}>
                                         <Typography variant="body1" fontWeight="bold">B</Typography>
-                                        {count.B >= maxB && scores[presenter.studentId] !== 'B' && (
+                                        {count.B >= maxB && scores[presenter.presenterId] !== 'B' && (
                                             <Typography variant="caption" color="error" sx={{fontSize: '0.65rem'}}>
                                                 (已滿)
                                             </Typography>
                                         )}
                                     </Box>
                                 }
-                                disabled={count.B >= maxB && scores[presenter.studentId] !== 'B'}
+                                disabled={count.B >= maxB && scores[presenter.presenterId] !== 'B'}
                                 sx={{
                                     '& .MuiFormControlLabel-label': {
-                                        fontWeight: scores[presenter.studentId] === 'B' ? 'bold' : 'normal',
+                                        fontWeight: scores[presenter.presenterId] === 'B' ? 'bold' : 'normal',
                                     },
                                     minWidth: 'fit-content',
                                     mr: 0.5
@@ -216,17 +218,17 @@ export default function Score({presenters, scores, onScoreChange, error, onCount
                                 label={
                                     <Box display="flex" alignItems="center" gap={0.3} sx={{whiteSpace: 'nowrap'}}>
                                         <Typography variant="body1" fontWeight="bold">C</Typography>
-                                        {count.C >= maxC && scores[presenter.studentId] !== 'C' && (
+                                        {count.C >= maxC && scores[presenter.presenterId] !== 'C' && (
                                             <Typography variant="caption" color="error" sx={{fontSize: '0.65rem'}}>
                                                 (已滿)
                                             </Typography>
                                         )}
                                     </Box>
                                 }
-                                disabled={count.C >= maxC && scores[presenter.studentId] !== 'C'}
+                                disabled={count.C >= maxC && scores[presenter.presenterId] !== 'C'}
                                 sx={{
                                     '& .MuiFormControlLabel-label': {
-                                        fontWeight: scores[presenter.studentId] === 'C' ? 'bold' : 'normal',
+                                        fontWeight: scores[presenter.presenterId] === 'C' ? 'bold' : 'normal',
                                     },
                                     minWidth: 'fit-content'
                                 }}
@@ -235,14 +237,14 @@ export default function Score({presenters, scores, onScoreChange, error, onCount
                     </Box>
 
                     {/* 顯示目前選擇的評分 */}
-                    {/*{scores[presenter.studentId] && (*/}
+                    {/*{scores[presenter.presenterId] && (*/}
                     {/*    <Box mt={1} display="flex" justifyContent="flex-end">*/}
                     {/*        <Chip*/}
-                    {/*            label={`已選擇：${scores[presenter.studentId]} 等級`}*/}
+                    {/*            label={`已選擇：${scores[presenter.presenterId]} 等級`}*/}
                     {/*            size="small"*/}
                     {/*            color={*/}
-                    {/*                scores[presenter.studentId] === 'A' ? 'success' :*/}
-                    {/*                    scores[presenter.studentId] === 'B' ? 'warning' : 'error'*/}
+                    {/*                scores[presenter.presenterId] === 'A' ? 'success' :*/}
+                    {/*                    scores[presenter.presenterId] === 'B' ? 'warning' : 'error'*/}
                     {/*            }*/}
                     {/*            variant="filled"*/}
                     {/*        />*/}

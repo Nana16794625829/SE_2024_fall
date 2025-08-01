@@ -1,8 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
@@ -10,38 +8,35 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
-import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-import RestoreIcon from '@mui/icons-material/Restore';
 import ClearIcon from '@mui/icons-material/Clear';
 import Rule from './Rule';
 import Info from './Info';
-import InfoMobile from './InfoMobile';
 import Score from './Score';
 import Comment from './Comment.tsx';
 import AppTheme from '../../shared-theme/AppTheme';
-import ColorModeIconDropdown from '../../shared-theme/ColorModeIconDropdown';
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
+import api from "../../lib/axios.ts";
+import dayjs from 'dayjs';
+import {usePresenters} from "../../hook/usePresenters.ts";
+import {Presenter} from "../../types/presenter.ts";
 
 const steps = ['README', 'Submit Ratings', 'Comments'];
 
-const presenters = [
-    {order: '1', studentId: '112552001', name: '李小龍'},
-    {order: '2', studentId: '112552002', name: '張曼玉'},
-    {order: '3', studentId: '112552003', name: '周杰倫'},
-    // {order: '4', studentId: '112552004', name: '林志玲'},
-    // {order: '5', studentId: '112552005', name: '王力宏'},
-    // {order: '6', studentId: '112552006', name: '蔡依林'},
-    // {order: '7', studentId: '112552007', name: '謝金燕'},
-    // {order: '8', studentId: '112552008', name: '黃鴻升'},
-];
+function getCurrentWeek(startDateStr: string): string {
+    const today = dayjs();
+    const start = dayjs(startDateStr);
+    let diffDays = today.diff(start, 'day');
+    if(diffDays < 0) {
+        diffDays = dayjs('2025-09-01').diff(start, 'days')
+    }
+    return (Math.floor(diffDays / 7) + 1).toString();
+}
 
-const totalPeople = presenters.length;
-
-function getMaxRatings(totalPeople) {
+function getMaxRatings(totalPeople: number) {
     const maxA = totalPeople <= 7 ? 1 : 2;
     const maxC = totalPeople <= 7 ? 1 : 2;
     const maxB = totalPeople - 2;
@@ -49,18 +44,24 @@ function getMaxRatings(totalPeople) {
     return { A: maxA, B: maxB, C: maxC };
 }
 
-const maxRatings = getMaxRatings(totalPeople);
-
 function getStepContent(
     step: number,
+    presenters: Presenter[],
+    maxRatings: { A: number; B: number; C: number },
     scores: Record<string, string>,
     onScoreChange: (id: string, score: string) => void,
     error: string,
     handleCountChange: (newCount: { A: number; B: number; C: number }) => void
 ) {
+    console.log('getStepContent 收到的 presenters:', {
+        presenters,
+        type: typeof presenters,
+        isArray: Array.isArray(presenters)
+    });
+
     switch (step) {
         case 0:
-            return <Rule presenterCount={totalPeople} maxRatings={maxRatings}/>;
+            return <Rule presenterCount={presenters.length} maxRatings={maxRatings} />;
         case 1:
             return (
                 <Score
@@ -73,21 +74,56 @@ function getStepContent(
                 />
             );
         case 2:
-            return <Comment/>;
+            return <Comment />;
         default:
             throw new Error('Unknown step');
     }
 }
 
+
 const STORAGE_KEY = 'presenter_scores';
 const STEP_STORAGE_KEY = 'presenter_step';
 
 export default function FormPage(props: { disableCustomTheme?: boolean }) {
+    const token = localStorage.getItem('token');
+
+    const validateToken = () => {
+        if (!token) {
+            setError('請重新登入');
+            return;
+        }
+    }
+
+    const week = getCurrentWeek('2025-09-01'); // 114 Fall 第一周起始日
+
+    const { presenters } = usePresenters(week, token);
+
+    const maxRatings = getMaxRatings(presenters.length);
+
+    const [userId, setUserId] = useState<string>('');
+
+    React.useEffect(() => {
+        validateToken();
+
+        api.get('/api/auth/me',{
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then((res) => {
+                setUserId(res.data.username);
+            })
+            .catch((err) => {
+                console.error('取得登入資訊失敗', err);
+                setError('無法取得使用者資訊，請重新登入');
+            });
+    }, []);
+
     const [count, setCount] = useState({A: 0, B: 0, C: 0});
 
-    const handleCountChange = (newCount: { A: number; B: number; C: number }) => {
+    const handleCountChange = useCallback((newCount: { A: number; B: number; C: number }) => {
         setCount(newCount);
-    };
+    }, []);
 
     // 從 sessionStorage 恢復狀態
     const [activeStep, setActiveStep] = React.useState(() => {
@@ -139,6 +175,16 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
         setError(''); // 清除錯誤訊息
         setHasRestoredData(false); // 清除恢復資料提示
     };
+
+    {getStepContent(
+        activeStep,
+        presenters,
+        maxRatings,
+        scores,
+        handleScoreChange,
+        error,
+        handleCountChange
+    )}
 
     const clearAllData = () => {
         if (confirm('確定要清除所有評分資料嗎？此操作無法復原。')) {
@@ -193,27 +239,38 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
         setError(''); // 返回時清除錯誤訊息
     };
 
-    const handleSubmit = () => {
-        if (validateScores()) {
-            setError('');
-            console.log('✅ Submitted scores:', scores);
+    const handleSubmit = async () => {
+        if (!validateScores()) return;
 
-            // 顯示詳細的評分結果
-            // const count = getScoreCount();
-            console.log('📊 Score Summary:', count);
-            console.log('📋 Detailed Results:');
-            presenters.forEach((presenter) => {
-                console.log(`${presenter.name} (${presenter.studentId}): ${scores[presenter.studentId]}`);
-            });
+        setError('');
 
-            // 清除 sessionStorage 中的資料
-            if (typeof window !== 'undefined') {
-                sessionStorage.removeItem(STORAGE_KEY);
-                sessionStorage.removeItem(STEP_STORAGE_KEY);
-            }
+        const payload = {
+            submitterId: userId,
+            week: week,
+            scores: Object.entries(scores).map(([presenterId, score]) => ({
+                presenterId,
+                score,
+            })),
+            submitDateTime: "20250801",
+            comment: "front-end-test"
+        };
 
-            alert('✅ 成功送出');
+        try {
+            const res = await api.post('/api/form-processing/', payload);
+
+            console.log('✅ Submitted:', payload);
+            console.log('Response from server:', res.data);
+
+            // 清除 sessionStorage
+            sessionStorage.removeItem(STORAGE_KEY);
+            sessionStorage.removeItem(STEP_STORAGE_KEY);
+
+            alert('成功送出');
             setActiveStep(activeStep + 1);
+
+        } catch (err) {
+            console.error('提交失敗', err);
+            setError('送出失敗，請稍後再試');
         }
     };
 
@@ -257,7 +314,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                             maxWidth: 500,
                         }}
                     >
-                        <Info count={count} maxRatings={maxRatings} />
+                        <Info count={count} maxRatings={maxRatings} week={week} />
                     </Box>
                 </Grid>
 
@@ -353,12 +410,12 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                                     We have recorded your evaluation
                                     and will process the results accordingly.
                                 </Typography>
-                                <Button
-                                    variant="contained"
-                                    sx={{alignSelf: 'start', width: {xs: '100%', sm: 'auto'}}}
-                                >
-                                    Go to dashboard
-                                </Button>
+                                {/*<Button*/}
+                                {/*    variant="contained"*/}
+                                {/*    sx={{alignSelf: 'start', width: {xs: '100%', sm: 'auto'}}}*/}
+                                {/*>*/}
+                                {/*    Go to dashboard*/}
+                                {/*</Button>*/}
                             </Stack>
                         ) : (
                             <React.Fragment>

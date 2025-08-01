@@ -57,7 +57,7 @@ export default function SignInCard() {
 
     if (!/^\d{9,}$/.test(username.value)) {
       setUsernameError(true);
-      setUsernameErrorMessage('請輸入有效的學號（至少9位數字）');
+      setUsernameErrorMessage('學號格式錯誤');
       isValid = false;
     } else {
       setUsernameError(false);
@@ -156,19 +156,6 @@ export default function SignInCard() {
         <Button type="submit" fullWidth variant="contained">
           Sign in
         </Button>
-        {/*<Typography sx={{ textAlign: 'center' }}>*/}
-        {/*  還沒有帳號？{' '}*/}
-        {/*  <span>*/}
-        {/*    <Link*/}
-        {/*      component={RouterLink}*/}
-        {/*      to="/material-ui/getting-started/templates/sign-in/"*/}
-        {/*      variant="body2"*/}
-        {/*      sx={{ alignSelf: 'center' }}*/}
-        {/*    >*/}
-        {/*      註冊帳號*/}
-        {/*    </Link>*/}
-        {/*  </span>*/}
-        {/*</Typography>*/}
       </Box>
     </Card>
   );

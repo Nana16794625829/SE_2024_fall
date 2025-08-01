@@ -1,16 +1,17 @@
 import React from 'react'
-import SignInSide from "./components/account/SignInSide.tsx";
+import SignIn from "./components/account/SignIn.tsx";
 import {Route, Routes } from 'react-router-dom';
-import SignUpPage from "./components/account/SignUpPage.tsx";
+import ChangePassword from "./components/account/ChangePassword.tsx";
 import FormPage from "./components/form/FormPage.tsx";
 import ProtectedRoute from './components/common/ProtectedRoute.tsx';
+import {ROUTES} from "./constants/routes.ts";
 
 const App: React.FC = () => {
     return (
         <Routes>
-            <Route path="/" element={<SignInSide/>}/>
-            <Route path="/material-ui/getting-started/templates/sign-in/" element={<SignUpPage/>}/>
-            <Route path="/material-ui/getting-started/templates/form/" 
+            <Route path={ROUTES.SIGN_IN} element={<SignIn/>}/>
+            <Route path={ROUTES.CHANGE_PASSWORD} element={<ChangePassword/>}/>
+            <Route path={ROUTES.FORM}
                 element={
                 <ProtectedRoute>
                     <FormPage />

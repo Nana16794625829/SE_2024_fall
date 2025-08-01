@@ -7,7 +7,7 @@ import SignInCard from './SignInCard.tsx';
 import SignInPageContent from './SignInPageContent.tsx';
 import {Typography} from "@mui/material";
 
-export default function SignInSide(props: { disableCustomTheme?: boolean }) {
+export default function SignIn(props: { disableCustomTheme?: boolean }) {
     return (
         <AppTheme {...props}>
             <CssBaseline enableColorScheme />

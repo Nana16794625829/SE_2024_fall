@@ -16,4 +16,5 @@ public abstract class AbstractStudentService {
     public abstract void createMultiStudents(MultipartFile file);
     public abstract void updateStudentById(StudentUpdate studentInfo);
     public abstract void deleteStudentById(String studentId);
+    public abstract String getNameByStudentId(String studentId);
 }

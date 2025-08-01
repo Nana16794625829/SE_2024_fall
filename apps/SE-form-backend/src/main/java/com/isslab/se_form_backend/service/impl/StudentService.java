@@ -83,4 +83,9 @@ public class StudentService extends AbstractStudentService {
     public void deleteStudentById(String studentId) {
         studentRepository.deleteByStudentId(studentId);
     }
+
+    @Override
+    public String getNameByStudentId(String studentId) {
+        return studentRepository.getNameByStudentId(studentId);
+    }
 }

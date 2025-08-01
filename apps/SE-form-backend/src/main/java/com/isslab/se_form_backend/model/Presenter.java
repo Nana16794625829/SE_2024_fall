@@ -14,4 +14,5 @@ public class Presenter {
     private String presenterId;
     private String presentWeek;
     private String presentOrder;
+    private String presenterName;
 }

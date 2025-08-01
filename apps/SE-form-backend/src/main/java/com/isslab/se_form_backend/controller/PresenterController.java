@@ -4,10 +4,7 @@ import com.isslab.se_form_backend.model.Presenter;
 import com.isslab.se_form_backend.service.impl.PresenterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,6 +29,14 @@ public class PresenterController {
     @PostMapping("/batch")
     public ResponseEntity<List<Presenter>> addPresenterBatch(@RequestBody List<Presenter> presenters) {
         presenterService.addPresentersByWeek(presenters);
+
+        return ResponseEntity.ok(presenters);
+    }
+
+    @GetMapping("/{week}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<List<Presenter>> getPresenters(@PathVariable("week") String week) {
+        List<Presenter> presenters = presenterService.getPresentersByWeek(week);
 
         return ResponseEntity.ok(presenters);
     }

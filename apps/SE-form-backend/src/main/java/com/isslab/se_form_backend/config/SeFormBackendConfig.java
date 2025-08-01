@@ -43,11 +43,11 @@ public class SeFormBackendConfig {
     }
 
     @Bean
-    public AbstractStudentRoleService presenterServiceAbstract(PresenterRepository presenterRepository){
+    public AbstractStudentRoleService presenterServiceAbstract(PresenterRepository presenterRepository, AbstractStudentService studentService){
         if (MOCK) {
             return new MockPresenterService();
         }
-        return new PresenterService(presenterRepository);
+        return new PresenterService(presenterRepository, studentService);
     }
 
     @Bean
@@ -88,8 +88,8 @@ public class SeFormBackendConfig {
     }
 
     @Bean
-    public PresenterService presenterService(PresenterRepository presenterRepository) {
-        return new PresenterService(presenterRepository);
+    public PresenterService presenterService(PresenterRepository presenterRepository, AbstractStudentService studentService) {
+        return new PresenterService(presenterRepository, studentService);
     }
 
     @Bean

@@ -49,4 +49,9 @@ public class MockStudentService extends AbstractStudentService {
     public void deleteStudentById(String studentId) {
 
     }
+
+    @Override
+    public String getNameByStudentId(String studentId) {
+        return "";
+    }
 }

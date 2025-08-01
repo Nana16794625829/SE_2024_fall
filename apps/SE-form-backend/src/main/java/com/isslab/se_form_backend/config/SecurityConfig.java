@@ -6,6 +6,8 @@ import com.isslab.se_form_backend.security.JwtUtil;
 import com.isslab.se_form_backend.security.filter.JwtAuthFilter;
 import com.isslab.se_form_backend.security.property.AdminAuthProperties;
 import com.isslab.se_form_backend.security.service.StudentUserDetailsService;
+import com.isslab.se_form_backend.service.AbstractStudentService;
+import com.isslab.se_form_backend.service.impl.StudentService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -105,7 +107,8 @@ public class SecurityConfig {
         // 允許的來源
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",    // Vite 開發服務器
-                "http://localhost:4173",    // Vite 預覽服務器
+                "http://localhost:4173",    // Vite 預覽服務器 1
+                "http://localhost:5173",    // Vite 預覽服務器 2
                 "http://localhost:8080"     // 生產環境（同域名）
         ));
 
@@ -155,7 +158,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthController authController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, AdminAuthProperties adminAuthProperties) {
-        return new AuthController(authenticationManager, jwtUtil, adminAuthProperties);
+    public AuthController authController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, AdminAuthProperties adminAuthProperties, AbstractStudentService studentService) {
+        return new AuthController(authenticationManager, jwtUtil, adminAuthProperties, studentService);
     }
 }

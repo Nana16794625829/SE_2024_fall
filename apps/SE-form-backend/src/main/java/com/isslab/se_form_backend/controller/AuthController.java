@@ -1,9 +1,14 @@
 package com.isslab.se_form_backend.controller;
 
+import com.isslab.se_form_backend.model.ClassType;
+import com.isslab.se_form_backend.model.Student;
 import com.isslab.se_form_backend.security.JwtUtil;
 import com.isslab.se_form_backend.security.property.AdminAuthProperties;
+import com.isslab.se_form_backend.service.AbstractStudentService;
+import com.isslab.se_form_backend.service.impl.StudentService;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -23,11 +28,13 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final AdminAuthProperties adminAuthProperties;
+    private final AbstractStudentService studentService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, AdminAuthProperties adminAuthProperties) {
+    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, AdminAuthProperties adminAuthProperties, AbstractStudentService studentService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.adminAuthProperties = adminAuthProperties;
+        this.studentService = studentService;
     }
 
     @PostMapping("/login")
@@ -68,13 +75,15 @@ public class AuthController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
-        String username = authentication.getName();
+        String username = authentication.getName(); // username = student id
+        Student student = studentService.getStudentById(username);
+        String name = student.getName();
+        String classType = (student.getClassType()).toString();
 
-        // 如果你之後有 custom UserDetails，可以回傳更完整的資料
         return ResponseEntity.ok(
-                new MeResponse(username)
+                new MeResponse(username, name, classType)
         );
     }
 
-    public record MeResponse(String username) {}
+    public record MeResponse(String username, String name, String classType) {}
 }

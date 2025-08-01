@@ -13,7 +13,7 @@ const items = [
     },
 ];
 
-export default function SignUpPage(props: { disableCustomTheme?: boolean }) {
+export default function ChangePassword(props: { disableCustomTheme?: boolean }) {
     return (
         <AppTheme {...props}>
             <CssBaseline enableColorScheme />

@@ -6,6 +6,7 @@ import com.isslab.se_form_backend.model.GradeInput;
 import com.isslab.se_form_backend.model.Presenter;
 import com.isslab.se_form_backend.repository.PresenterRepository;
 import com.isslab.se_form_backend.service.AbstractStudentRoleService;
+import com.isslab.se_form_backend.service.AbstractStudentService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,10 +16,12 @@ import java.util.*;
 public class PresenterService extends AbstractStudentRoleService {
 
     private final PresenterRepository repository;
+    private final AbstractStudentService studentService;
     private static final double BASIC_GRADE = 15.0;
 
-    public PresenterService(PresenterRepository repository){
+    public PresenterService(PresenterRepository repository, AbstractStudentService studentService) {
         this.repository = repository;
+        this.studentService = studentService;
     }
 
     @Override
@@ -90,6 +93,25 @@ public class PresenterService extends AbstractStudentRoleService {
         for(Presenter presenter : presenters){
             addPresenter(presenter);
         }
+    }
+
+    public List<Presenter> getPresentersByWeek(String week) {
+        List<PresenterGradeEntity> entities = repository.findAllByWeek(week);
+        List<Presenter> presenters = new ArrayList<>();
+        for(PresenterGradeEntity e : entities){
+            String name = studentService.getNameByStudentId(e.getPresenterId());
+
+            Presenter presenter = Presenter.builder()
+                    .presenterId(e.getPresenterId())
+                    .presentOrder(String.valueOf((e.getPresentOrder())))
+                    .presentWeek(week)
+                    .presenterName(name)
+                    .build();
+
+            presenters.add(presenter);
+        }
+
+        return presenters;
     }
 
     private PresenterGradeEntity getPresenterEntityByStudentIdAndWeek(String studentId, String week) {

@@ -17,7 +17,10 @@ public interface PresenterRepository extends JpaRepository<PresenterGradeEntity,
 
     PresenterGradeEntity getByPresenterIdAndWeek(String presenterId, String week);
     PresenterGradeEntity getByWeekAndPresentOrder(String week, int order);
+
+    List<PresenterGradeEntity> findAllByWeek(String week);
     List<PresenterGradeEntity> findAllByPresenterIdInAndWeekIn(List<String> presenterId, List<String> week);
+
     @Query("SELECT p.presenterId FROM PresenterGradeEntity p WHERE p.week = :week")
     Set<String> getPresenterIdsByWeek(String week);
 }
