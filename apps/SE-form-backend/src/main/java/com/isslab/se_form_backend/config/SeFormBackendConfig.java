@@ -4,12 +4,14 @@ import com.isslab.se_form_backend.helper.CsvReader;
 import com.isslab.se_form_backend.helper.FormScoreCsvImporter;
 import com.isslab.se_form_backend.helper.FormSubmissionImporter;
 import com.isslab.se_form_backend.repository.*;
+import com.isslab.se_form_backend.security.JwtUtil;
 import com.isslab.se_form_backend.service.*;
 import com.isslab.se_form_backend.service.impl.*;
 import com.isslab.se_form_backend.service.impl.mock.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
@@ -97,6 +99,10 @@ public class SeFormBackendConfig {
         return new FormProcessingService(formSubmissionService, formScoreRecordService);
     }
 
+    @Bean
+    public PasswordService passwordService(PasswordEncoder passwordEncoder, StudentRepository studentRepository, JwtUtil jwtUtil) {
+        return new PasswordService(passwordEncoder, studentRepository, jwtUtil);
+    }
 }
 
 

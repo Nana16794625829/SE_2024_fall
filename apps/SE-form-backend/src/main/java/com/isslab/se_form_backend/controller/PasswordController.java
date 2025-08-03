@@ -1,0 +1,57 @@
+package com.isslab.se_form_backend.controller;
+
+import com.isslab.se_form_backend.model.ChangePasswordRequest;
+import com.isslab.se_form_backend.model.ForgetPasswordRequest;
+import com.isslab.se_form_backend.model.ForgetPasswordResponse;
+import com.isslab.se_form_backend.model.ResetPasswordRequest;
+import com.isslab.se_form_backend.service.impl.PasswordService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/password")
+public class PasswordController {
+
+    private final PasswordService passwordService;
+
+    public PasswordController(PasswordService passwordService) {
+        this.passwordService = passwordService;
+    }
+
+    @PostMapping("/change")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest req) {
+        String username = req.getUsername();
+        String oldPassword = req.getOldPassword();
+        String newPassword = req.getNewPassword();
+        boolean valid = passwordService.checkPassword(username, oldPassword);
+
+        if(valid) {
+            passwordService.changePassword(username, newPassword);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    @PostMapping("/reset")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest req) {
+        String token = req.getToken();
+        String newPassword = req.getNewPassword();
+        passwordService.resetPassword(token, newPassword);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    @PostMapping("/forget")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> forgetPassword(@RequestBody ForgetPasswordRequest req) {
+        String username = req.getUsername();
+        ForgetPasswordResponse res = passwordService.getResetEmailInfo(username);
+
+        return new ResponseEntity<>(ResponseEntity.ok(res), HttpStatus.OK);
+    }
+}

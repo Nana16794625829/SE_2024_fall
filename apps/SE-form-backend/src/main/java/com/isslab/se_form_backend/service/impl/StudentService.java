@@ -3,11 +3,13 @@ package com.isslab.se_form_backend.service.impl;
 import com.isslab.se_form_backend.constant.MyConstant;
 import com.isslab.se_form_backend.entity.StudentEntity;
 import com.isslab.se_form_backend.helper.CsvReader;
+import com.isslab.se_form_backend.helper.exception.UserNotFoundException;
 import com.isslab.se_form_backend.model.ClassType;
 import com.isslab.se_form_backend.model.Student;
 import com.isslab.se_form_backend.model.StudentUpdate;
 import com.isslab.se_form_backend.repository.StudentRepository;
 import com.isslab.se_form_backend.service.AbstractStudentService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,7 +46,8 @@ public class StudentService extends AbstractStudentService {
 
     @Override
     public Student getStudentById(String studentId) {
-        return studentRepository.getStudentByStudentId(studentId);
+        return studentRepository.getStudentByStudentId(studentId)
+                .orElseThrow(UserNotFoundException::new);
     }
 
     @Override
@@ -68,7 +71,8 @@ public class StudentService extends AbstractStudentService {
     @Override
     public void updateStudentById(StudentUpdate studentInfo) {
         String studentId = studentInfo.getStudentId();
-        Student student = studentRepository.getStudentByStudentId(studentId);
+        Student student = studentRepository.getStudentByStudentId(studentId)
+                .orElseThrow(UserNotFoundException::new);
 
         String name = studentInfo.getName();
         String email = studentInfo.getEmail();

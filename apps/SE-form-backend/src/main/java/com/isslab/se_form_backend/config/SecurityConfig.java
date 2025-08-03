@@ -83,6 +83,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login").permitAll()    // 登入 API
                         .requestMatchers("/api/health").permitAll()        // 健康檢查
                         .requestMatchers("/api/test").permitAll()          // 測試 API（可選）
+                        .requestMatchers("/api/password/reset").permitAll()          // 忘記密碼由信件 url 重設
 
                         // 其他 API 需要認證
                         .requestMatchers("/api/**").authenticated()

@@ -30,3 +30,7 @@ admin:
 
 jwt:
   secretKey: <your-key>
+
+app:
+  frontEnd:
+    base-url: http://my-frontend.com/
