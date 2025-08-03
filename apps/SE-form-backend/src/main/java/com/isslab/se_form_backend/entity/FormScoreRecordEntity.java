@@ -9,7 +9,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "form_score_record")
+@Table(
+        name = "form_score_record",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"formId", "reviewerId", "presenterId"})
+)
 public class FormScoreRecordEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

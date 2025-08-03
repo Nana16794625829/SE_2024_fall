@@ -34,3 +34,6 @@ build/
 
 ### Application.yaml ###
 **/src/main/resources/application.yaml
+
+### Mock data ###
+**/src/main/resources/mock

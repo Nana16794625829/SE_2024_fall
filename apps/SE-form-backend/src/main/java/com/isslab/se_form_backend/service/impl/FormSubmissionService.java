@@ -17,7 +17,11 @@ public class FormSubmissionService extends AbstractFormSubmissionService {
 
     @Override
     public void save(FormSubmissionEntity formSubmission) {
-        formSubmissionRepository.save(formSubmission);
+        formSubmissionRepository
+                .findBySubmitterIdAndWeek(formSubmission.getSubmitterId(), formSubmission.getWeek())
+                .ifPresent(existing -> formSubmission.setId(existing.getId()));
+
+        formSubmissionRepository.save(formSubmission); // update or insert
     }
 
     @Override

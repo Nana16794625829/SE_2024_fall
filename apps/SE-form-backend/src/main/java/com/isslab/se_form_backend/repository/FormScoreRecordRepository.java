@@ -8,4 +8,5 @@ import java.util.List;
 public interface FormScoreRecordRepository extends JpaRepository<FormScoreRecordEntity, Long> {
     FormScoreRecordEntity findByFormIdAndPresenterId(Long formId, String presenterId);
     List<FormScoreRecordEntity> findByFormIdIn(List<Long> formIds);
+    List<FormScoreRecordEntity> findByFormIdAndReviewerIdInAndPresenterIdIn(Long formId, List<String> reviewerIds, List<String> presenterIds);
 }

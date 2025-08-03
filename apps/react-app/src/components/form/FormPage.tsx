@@ -180,7 +180,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
 
     const validateScores = () => {
         // 檢查是否所有人都有評分
-        const allFilled = presenters.every((p) => scores[p.studentId]);
+        const allFilled = presenters.every((p) => scores[p.presenterId]);
         if (!allFilled) {
             setError('請為每位 presenter 給分。');
             return false;
@@ -227,8 +227,8 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
             submitterId: userId,
             week: week,
             scores: Object.entries(scores).map(([presenterId, score]) => ({
-                presenterId,
                 score,
+                presenterId,
             })),
             submitDateTime: "20250801",
             comment: "front-end-test"

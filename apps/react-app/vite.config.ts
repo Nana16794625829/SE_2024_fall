@@ -10,8 +10,8 @@ export default defineConfig({
     },
     proxy: {
     '/api/': {
-      // target: 'http://localhost:8080',
-      target: 'http://140.115.59.213:8080',
+      target: 'http://localhost:8080',
+      // target: 'http://140.115.59.213:8080',
       changeOrigin: true,
       // 不 rewrite，完整轉發
       }

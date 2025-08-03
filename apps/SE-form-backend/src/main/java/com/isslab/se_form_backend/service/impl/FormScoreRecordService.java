@@ -7,7 +7,9 @@ import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class FormScoreRecordService extends AbstractFormScoreRecordService {
 
@@ -52,8 +54,31 @@ public class FormScoreRecordService extends AbstractFormScoreRecordService {
 
     @Override
     public void saveAll(List<FormScoreRecordEntity> records) {
+        if (records.isEmpty()) return;
+
+        Long formId = records.get(0).getFormId();
+        List<String> reviewerIds = records.stream().map(FormScoreRecordEntity::getReviewerId).toList();
+        List<String> presenterIds = records.stream().map(FormScoreRecordEntity::getPresenterId).toList();
+
+        List<FormScoreRecordEntity> existing = repository.findByFormIdAndReviewerIdInAndPresenterIdIn(
+                formId, reviewerIds, presenterIds
+        );
+
+        Map<String, Long> existingMap = existing.stream().collect(Collectors.toMap(
+                r -> r.getReviewerId() + "|" + r.getPresenterId(),
+                FormScoreRecordEntity::getId
+        ));
+
+        for (FormScoreRecordEntity r : records) {
+            String key = r.getReviewerId() + "|" + r.getPresenterId();
+            if (existingMap.containsKey(key)) {
+                r.setId(existingMap.get(key)); // 設定 id → save 時變 update
+            }
+        }
+
         repository.saveAll(records);
     }
+
 
     @Override
     public void update(Long id, FormScoreRecordEntity newRecord) {
