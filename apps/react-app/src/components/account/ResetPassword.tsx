@@ -18,6 +18,8 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {FormHelperText} from "@mui/material";
 import axios from "axios";
+import {ROUTES} from "../../constants/routes.ts";
+import {useNavigate} from "react-router-dom";
 
 
 export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
@@ -31,6 +33,8 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
     const handleMouseUpPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
     };
+
+    const navigate = useNavigate();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -65,6 +69,8 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
                 }
             );
             alert('密碼修改成功');
+            navigate(ROUTES.SIGN_IN);
+
         } catch (err) {
             console.error('密碼修改失敗', err);
             alert('密碼修改失敗，請稍後再試');
@@ -74,6 +80,25 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
     return (
             <AppTheme {...props}>
                 <CssBaseline enableColorScheme />
+                <Stack
+                    sx={{
+                        position: 'fixed',
+                        top: 16,
+                        right: 16,
+                        zIndex: 2000, // 確保蓋在其他元素上
+                    }}
+                    spacing={1}
+                    direction="row"
+                >
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={() => navigate(ROUTES.SIGN_IN)}
+                    >
+                        登入
+                    </Button>
+                </Stack>
+
                 <Stack
                     component="main"
                     sx={(theme) => ({
