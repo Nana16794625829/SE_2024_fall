@@ -33,9 +33,18 @@ public class PresenterController {
         return ResponseEntity.ok(presenters);
     }
 
-    @GetMapping("/{week}")
+    @GetMapping("/")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<List<Presenter>> getPresenters(@PathVariable("week") String week) {
+    public ResponseEntity<List<Presenter>> getPresenters() {
+        String week = presenterService.getCurrentWeek();
+        List<Presenter> presenters = presenterService.getPresentersByWeek(week);
+
+        return ResponseEntity.ok(presenters);
+    }
+
+    @GetMapping("/{week}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<List<Presenter>> getPresentersByWeek(@PathVariable("week") String week) {
         List<Presenter> presenters = presenterService.getPresentersByWeek(week);
 
         return ResponseEntity.ok(presenters);

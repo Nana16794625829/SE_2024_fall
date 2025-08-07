@@ -48,7 +48,7 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
             alert('密碼或驗證連結無效');
             return;
         }
-        
+
         try {
             const res = await axios.post(
                 '/api/password/reset',
@@ -59,7 +59,6 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
                     },
                 }
             );
-            console.log('Response from server:', res.data);
             alert('密碼修改成功');
         } catch (err) {
             console.error('密碼修改失敗', err);

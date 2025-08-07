@@ -10,6 +10,8 @@ import com.isslab.se_form_backend.service.AbstractStudentService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Slf4j
@@ -18,6 +20,7 @@ public class PresenterService extends AbstractStudentRoleService {
     private final PresenterRepository repository;
     private final AbstractStudentService studentService;
     private static final double BASIC_GRADE = 15.0;
+    private static final String SEMESTER_START_DAY = "2025-09-01";
 
     public PresenterService(PresenterRepository repository, AbstractStudentService studentService) {
         this.repository = repository;
@@ -112,6 +115,20 @@ public class PresenterService extends AbstractStudentRoleService {
         }
 
         return presenters;
+    }
+
+    public String getCurrentWeek() {
+        String startDateStr = SEMESTER_START_DAY;
+        LocalDate today = LocalDate.now();
+        LocalDate start = LocalDate.parse(startDateStr);
+
+        long diffDays = ChronoUnit.DAYS.between(start, today);
+        if (diffDays < 0) {
+            diffDays = ChronoUnit.DAYS.between(start, LocalDate.of(2025, 9, 1));
+        }
+
+        long week = diffDays / 7 + 1;
+        return String.valueOf(week);
     }
 
     private PresenterGradeEntity getPresenterEntityByStudentIdAndWeek(String studentId, String week) {

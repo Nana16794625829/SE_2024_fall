@@ -29,13 +29,6 @@ export default function Score({presenters, scores, onScoreChange, error, onCount
     const maxB = maxRatings.B;
     const maxC = maxRatings.C;
 
-    console.log('Score 組件收到的 presenters:', {
-        presenters,
-        type: typeof presenters,
-        isArray: Array.isArray(presenters),
-        length: presenters?.length
-    });
-
     useEffect(() => {
         const counter = {A: 0, B: 0, C: 0};
         Object.values(scores).forEach((score) => {
