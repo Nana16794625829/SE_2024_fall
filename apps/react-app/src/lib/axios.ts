@@ -22,9 +22,9 @@ api.interceptors.response.use(
     const status = err.response?.status;
 
     if (status === 401) {
-      alert('🔐 登入失敗，請確認帳號密碼');
+      alert('請再次確認帳號密碼');
     } else if (status === 500) {
-      alert('💥 伺服器錯誤，請稍後再試');
+      alert('伺服器錯誤，請稍後再試');
     }
 
     return Promise.reject(err); // 保留 throw 給 catch 處理邏輯

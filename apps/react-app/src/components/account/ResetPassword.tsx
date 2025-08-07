@@ -39,13 +39,18 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
         const newPassword = (document.getElementById('newPassword') as HTMLInputElement).value;
         const newPasswordCheck = (document.getElementById('newPasswordCheck') as HTMLInputElement).value;
 
+        if(!newPassword || newPassword.length < 6) {
+            alert('密碼無效，請輸入至少 6 碼');
+            return;
+        }
+
         if (newPassword !== newPasswordCheck) {
             setMatchError('兩次輸入密碼不相同');
             return;
         }
 
-        if (!newPassword || !token) {
-            alert('密碼或驗證連結無效');
+        if (!token) {
+            alert('驗證連結已失效');
             return;
         }
 
