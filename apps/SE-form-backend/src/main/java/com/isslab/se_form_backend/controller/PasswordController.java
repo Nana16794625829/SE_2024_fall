@@ -5,11 +5,13 @@ import com.isslab.se_form_backend.model.ForgetPasswordRequest;
 import com.isslab.se_form_backend.model.ForgetPasswordResponse;
 import com.isslab.se_form_backend.model.ResetPasswordRequest;
 import com.isslab.se_form_backend.service.impl.PasswordService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/password")
 public class PasswordController {
@@ -37,8 +39,14 @@ public class PasswordController {
     }
 
     @PostMapping("/reset")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest req) {
-        String token = req.getToken();
+    public ResponseEntity<?> resetPassword(
+            @RequestBody ResetPasswordRequest req,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token validation failed");
+        }
+        String token = authHeader.substring(7);
         String newPassword = req.getNewPassword();
         passwordService.resetPassword(token, newPassword);
 

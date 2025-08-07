@@ -1,5 +1,6 @@
 package com.isslab.se_form_backend.service;
 
+import com.isslab.se_form_backend.entity.StudentEntity;
 import com.isslab.se_form_backend.model.Student;
 import com.isslab.se_form_backend.model.StudentUpdate;
 import org.springframework.web.multipart.MultipartFile;

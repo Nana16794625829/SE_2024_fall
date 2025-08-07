@@ -1,5 +1,6 @@
 package com.isslab.se_form_backend.controller;
 
+import com.isslab.se_form_backend.entity.StudentEntity;
 import com.isslab.se_form_backend.model.ClassType;
 import com.isslab.se_form_backend.model.Student;
 import com.isslab.se_form_backend.security.JwtUtil;

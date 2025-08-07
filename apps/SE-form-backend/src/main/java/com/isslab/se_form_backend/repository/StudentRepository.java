@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
-    Optional<Student> getStudentByStudentId(String studentId);
+    Optional<StudentEntity> getStudentByStudentId(String studentId);
 
     @Query("SELECT s.studentId FROM StudentEntity s")
     Set<String> getAllStudentIds();

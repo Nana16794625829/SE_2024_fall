@@ -34,18 +34,29 @@ public class StudentService extends AbstractStudentService {
 
     @Override
     public boolean isReviewer(String studentId) {
-        Student student = getStudentById(studentId);
+        StudentEntity student = getStudentEntityById(studentId);
         return student.getClassType() == ClassType.DAY;
     }
 
     @Override
     public boolean isPresenter(String studentId) {
-        Student student = getStudentById(studentId);
+        StudentEntity student = getStudentEntityById(studentId);
         return student.getClassType() == ClassType.ON_SERVICE;
     }
 
     @Override
     public Student getStudentById(String studentId) {
+        StudentEntity entity = getStudentEntityById(studentId);
+
+        return Student.builder()
+                .classType(entity.getClassType())
+                .studentId(entity.getStudentId())
+                .email(entity.getEmail())
+                .name(entity.getName())
+                .build();
+    }
+
+    private StudentEntity getStudentEntityById(String studentId) {
         return studentRepository.getStudentByStudentId(studentId)
                 .orElseThrow(UserNotFoundException::new);
     }
@@ -71,17 +82,15 @@ public class StudentService extends AbstractStudentService {
     @Override
     public void updateStudentById(StudentUpdate studentInfo) {
         String studentId = studentInfo.getStudentId();
-        Student student = studentRepository.getStudentByStudentId(studentId)
+        StudentEntity student = studentRepository.getStudentByStudentId(studentId)
                 .orElseThrow(UserNotFoundException::new);
 
-        String name = studentInfo.getName();
-        String email = studentInfo.getEmail();
-        ClassType classType = student.getClassType();
+        student.setName(studentInfo.getName());
+        student.setEmail(studentInfo.getEmail());
 
-        StudentEntity studentEntity = new StudentEntity(studentId, name, email, classType, passwordEncoder.encode(""));
-
-        studentRepository.save(studentEntity);
+        studentRepository.save(student); // 其實這邊也可以不用 save，若是 @Transactional，JPA 會自動 flush
     }
+
 
     @Override
     public void deleteStudentById(String studentId) {

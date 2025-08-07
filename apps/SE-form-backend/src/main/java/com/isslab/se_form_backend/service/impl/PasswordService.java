@@ -31,7 +31,7 @@ public class PasswordService {
     }
 
     public void changePassword(String studentId, String newPassword) {
-        Student user = studentRepository.getStudentByStudentId(studentId)
+        StudentEntity user = studentRepository.getStudentByStudentId(studentId)
                 .orElseThrow(UserNotFoundException::new);
         String encodePassword = passwordEncoder.encode(newPassword);
 
@@ -45,7 +45,7 @@ public class PasswordService {
             throw new IllegalArgumentException("Token invalid");
 
         String username = jwtUtil.extractUsername(token);
-        Student user = studentRepository.getStudentByStudentId(username)
+        StudentEntity user = studentRepository.getStudentByStudentId(username)
                 .orElseThrow(UserNotFoundException::new);
         String encodePassword = passwordEncoder.encode(newPassword);
         StudentEntity studentEntity = new StudentEntity(user.getStudentId(), user.getName(), user.getEmail(), user.getClassType(), encodePassword);
@@ -55,12 +55,12 @@ public class PasswordService {
     }
 
     public ForgetPasswordResponse getResetEmailInfo(String studentId) {
-        Student student = studentRepository.getStudentByStudentId(studentId)
+        StudentEntity student = studentRepository.getStudentByStudentId(studentId)
                 .orElseThrow(UserNotFoundException::new);
 
         String email = student.getEmail();
         String token = jwtUtil.generateResetPasswordToken(studentId);
-        String resetUrl = baseUrl + "api/reset?token=" + token;
+        String resetUrl = baseUrl + "user/password/reset?token=" + token;
 
         return ForgetPasswordResponse.builder().email(email).resetUrl(resetUrl).build();
     }

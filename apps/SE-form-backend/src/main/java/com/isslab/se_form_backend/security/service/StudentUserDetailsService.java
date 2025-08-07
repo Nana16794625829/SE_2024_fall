@@ -1,5 +1,6 @@
 package com.isslab.se_form_backend.security.service;
 
+import com.isslab.se_form_backend.entity.StudentEntity;
 import com.isslab.se_form_backend.helper.exception.UserNotFoundException;
 import com.isslab.se_form_backend.model.ClassType;
 import com.isslab.se_form_backend.model.Student;
@@ -22,7 +23,7 @@ public class StudentUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Student student = studentRepository.getStudentByStudentId(username)
+        StudentEntity student = studentRepository.getStudentByStudentId(username)
                 .orElseThrow(UserNotFoundException::new);
 
         if(ClassType.ON_SERVICE.equals(student.getClassType())){
