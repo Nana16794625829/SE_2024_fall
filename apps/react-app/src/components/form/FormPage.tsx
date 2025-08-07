@@ -24,6 +24,8 @@ import api from "../../lib/axios.ts";
 import dayjs from 'dayjs';
 import {usePresenters} from "../../hook/usePresenters.ts";
 import {Presenter} from "../../types/presenter.ts";
+import {useNavigate} from "react-router-dom";
+import {ROUTES} from "../../constants/routes.ts";
 
 const steps = ['README', 'Submit Ratings', 'Comments'];
 
@@ -52,14 +54,10 @@ function getStepContent(
     scores: Record<string, string>,
     onScoreChange: (id: string, score: string) => void,
     error: string,
-    handleCountChange: (newCount: { A: number; B: number; C: number }) => void
+    handleCountChange: (newCount: { A: number; B: number; C: number }) => void,
+    comment: string,
+    onCommentChange: (value: string) => void
 ) {
-    console.log('getStepContent 收到的 presenters:', {
-        presenters,
-        type: typeof presenters,
-        isArray: Array.isArray(presenters)
-    });
-
     switch (step) {
         case 0:
             return <Rule presenterCount={presenters.length} maxRatings={maxRatings} />;
@@ -75,7 +73,7 @@ function getStepContent(
                 />
             );
         case 2:
-            return <Comment />;
+            return <Comment comment={comment} onCommentChange={onCommentChange} />;
         default:
             throw new Error('Unknown step');
     }
@@ -84,16 +82,17 @@ function getStepContent(
 
 const STORAGE_KEY = 'presenter_scores';
 const STEP_STORAGE_KEY = 'presenter_step';
+const TOKEN_STORAGE_KEY = 'token';
 
 export default function FormPage(props: { disableCustomTheme?: boolean }) {
     const week = useMemo(() => getCurrentWeek('2025-09-01'), []); // 114 Fall 第一周起始日
 
-    const { presenters } = usePresenters(week);
+    const { presenters } = usePresenters();
 
     const maxRatings = useMemo(() => 
-    getMaxRatings(presenters.length), 
-    [presenters.length]
-);
+        getMaxRatings(presenters.length),
+        [presenters.length]
+    );
 
     const [userId, setUserId] = useState<string>('');
 
@@ -218,10 +217,21 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
         setError(''); // 返回時清除錯誤訊息
     };
 
+    const [comment, setComment] = useState('');
+
     const handleSubmit = async () => {
         if (!validateScores()) return;
 
         setError('');
+
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+
+        const formattedDate = `${yyyy}-${mm}-${dd} ${hh}:${min}`;
 
         const payload = {
             submitterId: userId,
@@ -230,16 +240,12 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                 score,
                 presenterId,
             })),
-            submitDateTime: "20250801",
-            comment: "front-end-test"
+            submitDateTime: formattedDate,
+            comment: comment
         };
 
         try {
             const res = await api.post('/api/form-processing/', payload);
-
-            console.log('✅ Submitted:', payload);
-            console.log('Response from server:', res.data);
-
             // 清除 sessionStorage
             sessionStorage.removeItem(STORAGE_KEY);
             sessionStorage.removeItem(STEP_STORAGE_KEY);
@@ -253,9 +259,40 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
         }
     };
 
+    const navigate = useNavigate();
+
     return (
         <AppTheme {...props}>
             <CssBaseline enableColorScheme/>
+            <Stack
+                sx={{
+                    position: 'fixed',
+                    top: 16,
+                    right: 16,
+                    zIndex: 2000, // 確保蓋在其他元素上
+                }}
+                spacing={1}
+                direction="row"
+            >
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => navigate(ROUTES.CHANGE_PASSWORD)}
+                >
+                    修改密碼
+                </Button>
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => {
+                        navigate(ROUTES.SIGN_IN);
+                        localStorage.removeItem(TOKEN_STORAGE_KEY);
+                        sessionStorage.removeItem(STEP_STORAGE_KEY);
+                    }}
+                >
+                    登出
+                </Button>
+            </Stack>
 
             <Grid
                 container
@@ -320,6 +357,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                             maxWidth: {sm: '100%', md: '50%'},
                         }}
                     >
+
                         <Box
                             sx={{
                                 display: {xs: 'none', md: 'flex'},
@@ -336,7 +374,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                             >
                                 {steps.map((label) => (
                                     <Step
-                                        sx={{':first-child': {pl: 0}, ':last-child': {pr: 0}}}
+                                        sx={{':first-of-type': {pl: 0}, ':last-child': {pr: 0}}}
                                         key={label}
                                     >
                                         <StepLabel>{label}</StepLabel>
@@ -365,7 +403,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                             {steps.map((label) => (
                                 <Step
                                     sx={{
-                                        ':first-child': {pl: 0},
+                                        ':first-of-type': {pl: 0},
                                         ':last-child': {pr: 0},
                                         '& .MuiStepConnector-root': {top: {xs: 6, sm: 12}},
                                     }}
@@ -389,16 +427,10 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                                     We have recorded your evaluation
                                     and will process the results accordingly.
                                 </Typography>
-                                {/*<Button*/}
-                                {/*    variant="contained"*/}
-                                {/*    sx={{alignSelf: 'start', width: {xs: '100%', sm: 'auto'}}}*/}
-                                {/*>*/}
-                                {/*    Go to dashboard*/}
-                                {/*</Button>*/}
                             </Stack>
                         ) : (
                             <React.Fragment>
-                                {getStepContent(activeStep, presenters, maxRatings, scores, handleScoreChange, error, handleCountChange)}
+                                {getStepContent(activeStep, presenters, maxRatings, scores, handleScoreChange, error, handleCountChange, comment, setComment)}
                                 <Box
                                     sx={[
                                         {
@@ -437,7 +469,14 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                                             Previous
                                         </Button>
                                     )}
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', minWidth: '160px'}}>
+                                    <Box sx={{
+                                        display: 'flex',
+                                        justifyContent:
+                                            Object.keys(scores).length > 0 && activeStep === 1
+                                                ? 'space-between'
+                                                : 'flex-end',
+                                        minWidth: '145px'}}
+                                    >
                                         {(Object.keys(scores).length > 0 && activeStep === 1) && (
                                             <Tooltip title="清除所有評分資料">
                                                 <IconButton
