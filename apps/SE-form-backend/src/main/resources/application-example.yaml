@@ -34,3 +34,9 @@ jwt:
 app:
   frontEnd:
     base-url: http://my-frontend.com/
+
+csv:
+  output-path:
+    grades: <app-path>/backend-output/grades
+    forms: <app-path>/backend-output/forms
+    records: <app-path>/backend-output/records

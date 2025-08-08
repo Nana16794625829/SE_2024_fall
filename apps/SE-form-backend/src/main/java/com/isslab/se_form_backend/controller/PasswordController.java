@@ -6,14 +6,11 @@ import com.isslab.se_form_backend.model.ForgetPasswordResponse;
 import com.isslab.se_form_backend.model.ResetPasswordRequest;
 import com.isslab.se_form_backend.service.impl.PasswordService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.Authenticator;
 
 @Slf4j
 @RestController

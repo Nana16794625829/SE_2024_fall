@@ -8,6 +8,7 @@ import com.isslab.se_form_backend.security.property.AdminAuthProperties;
 import com.isslab.se_form_backend.security.service.StudentUserDetailsService;
 import com.isslab.se_form_backend.service.AbstractStudentService;
 import com.isslab.se_form_backend.service.impl.StudentService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,6 +53,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, e) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+                        .accessDeniedHandler((req, res, e) -> res.sendError(HttpServletResponse.SC_FORBIDDEN))
+                )
+
                 //許前端資源訪問
                 .authorizeHttpRequests(auth -> auth
                         // 靜態資源（前端文件）- 完全開放
@@ -90,6 +96,7 @@ public class SecurityConfig {
 
                         // 其他所有請求都允許（給前端路由處理）
                         .anyRequest().permitAll()
+
                 )
 
                 // CORS 配置

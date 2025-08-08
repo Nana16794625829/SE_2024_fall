@@ -26,6 +26,7 @@ import {usePresenters} from "../../hook/usePresenters.ts";
 import {Presenter} from "../../types/presenter.ts";
 import {useNavigate} from "react-router-dom";
 import {ROUTES} from "../../constants/routes.ts";
+import ColorModeSelect from "../../shared-theme/ColorModeSelect.tsx";
 
 const steps = ['README', 'Submit Ratings', 'Comments'];
 
@@ -292,6 +293,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                 >
                     登出
                 </Button>
+                <ColorModeSelect />
             </Stack>
 
             <Grid
@@ -335,16 +337,16 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                 </Grid>
 
                 <Grid
-                    size={{sm: 12, md: 8, lg: 9}}
+                    size={{sm: 12, md: 9, lg: 9}}
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
                         maxWidth: '100%',
                         width: '100%',
                         backgroundColor: {xs: 'transparent', sm: 'background.default'},
-                        alignItems: 'center',
+                        alignItems: 'flex-start',
                         pt: {xs: 0, sm: 16},
-                        px: {xs: 2, sm: 10},
+                        px: {xs: 2, sm: 12},
                         gap: {xs: 4, md: 8},
                     }}
                 >
@@ -354,7 +356,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                             justifyContent: {sm: 'space-between', md: 'flex-end'},
                             alignItems: 'center',
                             width: '100%',
-                            maxWidth: {sm: '100%', md: '50%'},
+                            maxWidth: {sm: '100%', md: '70%'},
                         }}
                     >
 
@@ -389,7 +391,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                             flexDirection: 'column',
                             flexGrow: 1,
                             width: '100%',
-                            maxWidth: {sm: '100%', md: '50%'},
+                            maxWidth: {sm: '100%', md: '70%'},
                             // maxHeight: '720px',
                             gap: {xs: 5, md: 'none'},
                         }}

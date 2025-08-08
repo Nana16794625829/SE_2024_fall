@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class StudentGrade {
-    private String studentId;
-    private List<Double> grades;
+public class PresenterGrade {
+    private String presenterId;
+    private Double grade;
 }

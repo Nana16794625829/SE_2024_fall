@@ -24,7 +24,7 @@ public class FormProcessingController {
         this.formProcessingService = formProcessingService;
     }
 
-    @PreAuthorize("hasRole('USER')") //當進來的用戶權限為 ROLE_USER
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping("/")
     public ResponseEntity<?> submit(@RequestBody FormSubmission formSubmission,
                                     //此 authentication 是由 JwtAuthFilter 處理後的資訊

@@ -13,6 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@Builder
 @AllArgsConstructor
 public class FormScoreRecord {
     private String score;

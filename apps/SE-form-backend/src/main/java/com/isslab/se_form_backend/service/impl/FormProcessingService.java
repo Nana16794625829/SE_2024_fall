@@ -67,6 +67,54 @@ public class FormProcessingService {
         saveFormScoreRecords(formSubmission, formId);
     }
 
+    public List<FormSubmission> getAllSubmissionsByWeek(String week) {
+        List<FormSubmissionEntity> submissions = formSubmissionService.findAllSubmissionsByWeek(week);
+        List<FormSubmission> formSubmissions = new ArrayList<>();
+
+        for(FormSubmissionEntity formSubmission : submissions) {
+            FormSubmission submission = FormSubmission.builder()
+                    .week(formSubmission.getWeek())
+                    .submitterId(formSubmission.getSubmitterId())
+                    .submitDateTime(formSubmission.getSubmitDateTime())
+                    .comment(formSubmission.getComment())
+                    .build();
+
+            formSubmissions.add(submission);
+        }
+
+        return formSubmissions;
+    }
+
+    public List<FormSubmission> getAllScoreRecordsByWeek(String week) {
+        List<FormSubmissionEntity> submissions = formSubmissionService.findAllSubmissionsByWeek(week);
+        if (submissions.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> formIds = submissions.stream()
+                .map(FormSubmissionEntity::getId)
+                .toList();
+
+        Map<String, List<FormScoreRecord>> scoresByReviewer = formScoreRecordService.findByFormIdIn(formIds).stream()
+                .collect(Collectors.groupingBy(
+                        FormScoreRecordEntity::getReviewerId,
+                        Collectors.mapping(e -> FormScoreRecord.builder()
+                                        .presenterId(e.getPresenterId())
+                                        .score(e.getScore())
+                                        .build(),
+                                Collectors.toList())
+                ));
+
+        // return 的資料格式是 Map<ReviewerId, List<PresenterId, Score>>
+        return submissions.stream()
+                .map(s -> FormSubmission.builder()
+                        .submitterId(s.getSubmitterId())
+                        .scores(scoresByReviewer.getOrDefault(s.getSubmitterId(), List.of()))
+                        .build())
+                .toList();
+    }
+
+
     private void saveFormSubmission(FormSubmission formSubmission) {
         FormSubmissionEntity formSubmissionEntity = FormSubmissionEntity.builder()
                 .submitterId(formSubmission.getSubmitterId())

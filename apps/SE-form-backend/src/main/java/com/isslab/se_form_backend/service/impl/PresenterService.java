@@ -4,6 +4,7 @@ import com.isslab.se_form_backend.entity.PresenterGradeEntity;
 import com.isslab.se_form_backend.helper.exception.InvalidGradeCalculationException;
 import com.isslab.se_form_backend.model.GradeInput;
 import com.isslab.se_form_backend.model.Presenter;
+import com.isslab.se_form_backend.model.PresenterGrade;
 import com.isslab.se_form_backend.repository.PresenterRepository;
 import com.isslab.se_form_backend.service.AbstractStudentRoleService;
 import com.isslab.se_form_backend.service.AbstractStudentService;
@@ -115,6 +116,21 @@ public class PresenterService extends AbstractStudentRoleService {
         }
 
         return presenters;
+    }
+
+    public List<PresenterGrade> getPresenterGradesByWeek(String week) {
+        List<PresenterGradeEntity> entities = repository.findAllByWeek(week);
+        List<PresenterGrade> presenterGrades = new ArrayList<>();
+        for(PresenterGradeEntity e : entities){
+            PresenterGrade presenterGrade = PresenterGrade.builder()
+                    .presenterId(e.getPresenterId())
+                    .grade(e.getGrade())
+                    .build();
+
+            presenterGrades.add(presenterGrade);
+        }
+
+        return presenterGrades;
     }
 
     public String getCurrentWeek() {

@@ -35,13 +35,13 @@ public class SeFormBackendConfig {
         return new StudentService(passwordEncoder, studentRepository, csvReader);
     }
 
-    @Bean
-    public AbstractStudentRoleService reviewerService(ReviewerRepository reviewerRepository){
-        if (MOCK) {
-            return new MockReviewerService();
-        }
-        return new ReviewerService(reviewerRepository);
-    }
+//    @Bean
+//    public AbstractStudentRoleService reviewerService(ReviewerRepository reviewerRepository){
+//        if (MOCK) {
+//            return new MockReviewerService();
+//        }
+//        return new ReviewerService(reviewerRepository);
+//    }
 
     @Bean
     public AbstractStudentRoleService presenterServiceAbstract(PresenterRepository presenterRepository, AbstractStudentService studentService){
@@ -94,6 +94,11 @@ public class SeFormBackendConfig {
     }
 
     @Bean
+    public ReviewerService reviewerService(ReviewerRepository reviewerRepository) {
+        return new ReviewerService(reviewerRepository);
+    }
+
+    @Bean
     public FormProcessingService formProcessingService(AbstractFormSubmissionService formSubmissionService, AbstractFormScoreRecordService formScoreRecordService) {
         return new FormProcessingService(formSubmissionService, formScoreRecordService);
     }
@@ -101,6 +106,11 @@ public class SeFormBackendConfig {
     @Bean
     public PasswordService passwordService(PasswordEncoder passwordEncoder, StudentRepository studentRepository, JwtUtil jwtUtil) {
         return new PasswordService(passwordEncoder, studentRepository, jwtUtil);
+    }
+
+    @Bean
+    public ExportService exportService(PresenterService presenterService, ReviewerService reviewerService, FormProcessingService formProcessingService) {
+        return new ExportService(presenterService, reviewerService, formProcessingService);
     }
 }
 

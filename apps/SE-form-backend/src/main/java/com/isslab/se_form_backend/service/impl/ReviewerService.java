@@ -1,12 +1,16 @@
 package com.isslab.se_form_backend.service.impl;
 
+import com.isslab.se_form_backend.entity.PresenterGradeEntity;
 import com.isslab.se_form_backend.entity.ReviewerGradeEntity;
 import com.isslab.se_form_backend.entity.id.ReviewerGradeEntityId;
 import com.isslab.se_form_backend.model.GradeInput;
+import com.isslab.se_form_backend.model.PresenterGrade;
+import com.isslab.se_form_backend.model.ReviewerGrade;
 import com.isslab.se_form_backend.repository.ReviewerRepository;
 import com.isslab.se_form_backend.service.AbstractStudentRoleService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -63,6 +67,32 @@ public class ReviewerService extends AbstractStudentRoleService {
 
     public List<ReviewerGradeEntity> findNonAttendeeByWeek(String week){
         return repository.findAllByWeekAndGradeIsNull(week);
+    }
+
+    public List<ReviewerGrade> getReviewerGradesByWeek(String week) {
+        List<ReviewerGradeEntity> entities = repository.findAllByWeek(week);
+        List<ReviewerGrade> reviewerGradesList = new ArrayList<>();
+
+        Map<String ,List<PresenterGrade>> reviewerGradesMap = new HashMap<>();
+        for(ReviewerGradeEntity e : entities){
+            PresenterGrade pg = PresenterGrade.builder()
+                    .presenterId(e.getPresenterId())
+                    .grade(e.getGrade())
+                    .build();
+
+            reviewerGradesMap.computeIfAbsent(e.getReviewerId(), k -> new ArrayList<>()).add(pg);
+        }
+
+        for(Map.Entry<String, List<PresenterGrade>> e : reviewerGradesMap.entrySet()){
+            ReviewerGrade rg = ReviewerGrade.builder()
+                    .reviewerId(e.getKey())
+                    .grades(e.getValue())
+                    .build();
+
+            reviewerGradesList.add(rg);
+        }
+
+        return reviewerGradesList;
     }
 
     private Map<String, ReviewerGradeEntity> buildExistingMap(List<ReviewerGradeEntity> existing) {
