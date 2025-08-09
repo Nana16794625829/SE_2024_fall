@@ -1,11 +1,11 @@
 package com.isslab.se_form_backend.service.impl;
 
-import com.isslab.se_form_backend.entity.PresenterGradeEntity;
 import com.isslab.se_form_backend.entity.ReviewerGradeEntity;
 import com.isslab.se_form_backend.entity.id.ReviewerGradeEntityId;
 import com.isslab.se_form_backend.model.GradeInput;
 import com.isslab.se_form_backend.model.PresenterGrade;
 import com.isslab.se_form_backend.model.ReviewerGrade;
+import com.isslab.se_form_backend.model.UpdatePresenterGrade;
 import com.isslab.se_form_backend.repository.ReviewerRepository;
 import com.isslab.se_form_backend.service.AbstractStudentRoleService;
 
@@ -40,12 +40,14 @@ public class ReviewerService extends AbstractStudentRoleService {
     }
 
     @Override
-    public void saveGradeToStudent(String studentId, String week, double grade) {
-        ReviewerGradeEntity reviewerGradeEntity = ReviewerGradeEntity.builder()
-                .reviewerId(studentId)
-                .week(week)
-                .grade(grade)
-                .build();
+    public void saveGradeToPresenter(String presenterId, String week, double grade) {
+        throw new UnsupportedOperationException("This role does not support saving presenter grades.");
+    }
+
+    @Override
+    public void saveGradeToReviewer(String reviewerId, String presenterId, String week, double grade) {
+        ReviewerGradeEntity reviewerGradeEntity = getReviewerByIdsAndWeek(reviewerId, presenterId, week);
+        reviewerGradeEntity.setGrade(grade);
 
         repository.save(reviewerGradeEntity);
     }
@@ -63,6 +65,11 @@ public class ReviewerService extends AbstractStudentRoleService {
     @Override
     public double getBasicGrade() {
         return BASIC_GRADE;
+    }
+
+    @Override
+    public boolean checkParticipate(String studentId, String week) {
+        return true;
     }
 
     public List<ReviewerGradeEntity> findNonAttendeeByWeek(String week){
@@ -130,6 +137,10 @@ public class ReviewerService extends AbstractStudentRoleService {
                     .grade(g.getGrade())
                     .build();
         }
+    }
+
+    private ReviewerGradeEntity getReviewerByIdsAndWeek(String reviewerId, String presenterId, String week) {
+        return repository.findByIdsAndGrade(reviewerId, presenterId, week);
     }
 
 }

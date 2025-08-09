@@ -12,21 +12,31 @@ export default function SignIn() {
                 <ColorModeSelect sx={{position: 'fixed', top: '1rem', right: '1rem', zIndex: 4000}}/>
                 <Stack
                     component="main"
-                    sx={{
+                    sx={(theme) => ({
                         minHeight: '100vh',
                         justifyContent: 'center',
                         alignItems: 'flex-start',
-                    }}
+                        [theme.breakpoints.down('md')]: {
+                            paddingTop: '80px',
+                            mx: '2rem',
+                        },
+                    })}
+
                 >
                     <Stack
                         direction={{xs: 'column-reverse', md: 'row'}}
                         spacing={{xs: 4, sm: 8}}
                         alignItems="center"
                         justifyContent="center"
+                        sx={(theme) => ({
+                            [theme.breakpoints.down('md')]: {
+                                marginBottom: '2rem',
+                            },
+                        })}
                     >
                         <SignInCard/>
 
-                        <Stack spacing={10} alignItems="center">
+                        <Stack spacing={{xs: 4, sm: 10}} alignItems="center">
                             <Stack alignItems="start">
                                 <Typography variant="h2" textAlign="start">
                                     NCU 2025

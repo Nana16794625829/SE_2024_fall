@@ -23,4 +23,7 @@ public class PresenterGradeEntity {
     private String week;
     private int presentOrder;
     private double grade;
+
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean participate;
 }

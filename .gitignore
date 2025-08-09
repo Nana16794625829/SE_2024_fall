@@ -15,3 +15,5 @@ yarn-error.log*
 .DS_Store
 
 dist/
+packages/mock-file-generator/__pycache__/config.cpython-312.pyc
+apps/SE-form-backend/src/main/resources/static

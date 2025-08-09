@@ -20,6 +20,8 @@ import {FormHelperText} from "@mui/material";
 import axios from "axios";
 import {ROUTES} from "../../constants/routes.ts";
 import {useNavigate} from "react-router-dom";
+import BackgroundWrapper from "../BackgroundWrpper.tsx";
+import ColorModeSelect from "../../shared-theme/ColorModeSelect.tsx";
 
 
 export default function ChangePassword(props: { disableCustomTheme?: boolean }) {
@@ -68,10 +70,9 @@ export default function ChangePassword(props: { disableCustomTheme?: boolean }) 
     const TOKEN_STORAGE_KEY = 'token';
 
     return (
-        // <AppTheme {...props}>
-        //     <CssBaseline enableColorScheme />
         <>
-            <Stack
+        <BackgroundWrapper>
+        <Stack
                 sx={{
                     position: 'fixed',
                     top: 16,
@@ -82,15 +83,15 @@ export default function ChangePassword(props: { disableCustomTheme?: boolean }) 
                 direction="row"
             >
                 <Button
-                    variant="outlined"
-                    color="secondary"
+                    variant="text"
+                    color="primary"
                     onClick={() => navigate(ROUTES.FORM)}
                 >
                     表單
                 </Button>
                 <Button
-                    variant="outlined"
-                    color="secondary"
+                    variant="text"
+                    color="primary"
                     onClick={() => {
                         navigate(ROUTES.SIGN_IN);
                         localStorage.removeItem(TOKEN_STORAGE_KEY);
@@ -99,6 +100,7 @@ export default function ChangePassword(props: { disableCustomTheme?: boolean }) 
                 >
                     登出
                 </Button>
+                <ColorModeSelect/>
             </Stack>
             <Stack
                 component="main"
@@ -210,7 +212,7 @@ export default function ChangePassword(props: { disableCustomTheme?: boolean }) 
                     </CardWrapper>
                 </Stack>
             </Stack>
+        </BackgroundWrapper>
         </>
-        // </AppTheme>
     )
 }

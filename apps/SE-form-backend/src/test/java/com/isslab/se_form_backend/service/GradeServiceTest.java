@@ -41,7 +41,7 @@ class GradeServiceTest {
         gradeService = new MockGradeService(reviewerService, presenterService, studentService, formProcessingService);
 
         // prepare for testGetGradeByIdAndWeek()
-        gradeService.saveGradeToStudent("113525009", "1", 60);
+        gradeService.saveGradeToReviewer("113525009", "113552015", "1", 60);
     }
 
     @Test
@@ -79,7 +79,7 @@ class GradeServiceTest {
 
     @Test
     public void testSaveGradesToStudent(){
-        gradeService.saveGradeToStudent("113525009", "1", 60);
+        gradeService.saveGradeToPresenter("1135520015", "1", 60);
     }
 
     @Test

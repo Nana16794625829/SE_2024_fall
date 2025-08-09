@@ -1,6 +1,8 @@
 package com.isslab.se_form_backend.controller;
 
+import com.isslab.se_form_backend.helper.ResponseStatus;
 import com.isslab.se_form_backend.model.Presenter;
+import com.isslab.se_form_backend.model.SetPresenterParticipateRequest;
 import com.isslab.se_form_backend.service.impl.PresenterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -48,4 +50,16 @@ public class PresenterController {
 
         return ResponseEntity.ok(presenters);
     }
+
+    @PostMapping("/participants")
+    public ResponseEntity<?> setParticipants(@RequestBody SetPresenterParticipateRequest request) {
+        String presenterId = request.getPresenterId();
+        String week = request.getWeek();
+        Boolean participate = request.getParticipate();
+
+        presenterService.setParticipate(participate, presenterId, week);
+
+        return ResponseEntity.ok(ResponseStatus.statusOk());
+    }
+
 }

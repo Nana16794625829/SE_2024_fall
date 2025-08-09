@@ -21,9 +21,13 @@ public class MockGradeService extends AbstractGradeService {
     }
 
     @Override
-    public void saveGradeToStudent(String studentId, String week, double grade) {
-        AbstractStudentRoleService roleService = getServiceByRole(studentId);
-        roleService.saveGradeToStudent(studentId, week, grade);
+    public void saveGradeToPresenter(String presenterId, String week, double grade) {
+
+    }
+
+    @Override
+    public void saveGradeToReviewer(String reviewerId, String presenterId, String week, double grade) {
+
     }
 
     @Override

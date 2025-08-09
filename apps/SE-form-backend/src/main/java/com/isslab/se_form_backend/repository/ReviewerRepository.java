@@ -19,4 +19,11 @@ public interface ReviewerRepository extends JpaRepository<ReviewerGradeEntity, R
     List<ReviewerGradeEntity> findAllByWeekAndGradeIsNull(String week);
 
     List<ReviewerGradeEntity> findAllByWeek(String week);
+
+    @Query("SELECT r FROM ReviewerGradeEntity r WHERE r.reviewerId = :reviewerId AND r.presenterId = :presenterId AND r.week = :week")
+    ReviewerGradeEntity findByIdsAndGrade(
+            @Param("reviewerId") String reviewerId,
+            @Param("presenterId") String presenterId,
+            @Param("week") String week
+    );
 }
