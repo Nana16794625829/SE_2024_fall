@@ -13,6 +13,12 @@ import { ROUTES } from '../../constants/routes';
 
 import ForgotPassword from './ForgotPassword.tsx';
 import CardWrapper from "../CardWrapper.tsx";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import {FormHelperText} from "@mui/material";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import Visibility from "@mui/icons-material/Visibility";
 
 export default function SignInCard() {
   const navigate = useNavigate();
@@ -57,6 +63,17 @@ export default function SignInCard() {
     return isValid;
   };
 
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+  const handleMouseUpPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -90,11 +107,9 @@ export default function SignInCard() {
         noValidate
         sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 2 }}
       >
-        <FormControl>
+        <FormControl error={usernameError}>
           <FormLabel htmlFor="username">學號</FormLabel>
-          <TextField
-            error={usernameError}
-            helperText={usernameErrorMessage}
+          <OutlinedInput
             id="username"
             name="username"
             placeholder="請輸入學號"
@@ -102,11 +117,13 @@ export default function SignInCard() {
             autoFocus
             required
             fullWidth
-            variant="outlined"
             color={usernameError ? 'error' : 'primary'}
           />
+          {usernameError && (
+              <FormHelperText>{usernameErrorMessage}</FormHelperText>
+          )}
         </FormControl>
-        <FormControl>
+        <FormControl error={passwordError}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <FormLabel htmlFor="password">密碼</FormLabel>
             <Link
@@ -119,22 +136,35 @@ export default function SignInCard() {
               忘記密碼？
             </Link>
           </Box>
-          <TextField
-            error={passwordError}
-            helperText={passwordErrorMessage}
+          <OutlinedInput
             name="password"
             placeholder="••••••"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             id="password"
             autoComplete="current-password"
             required
             fullWidth
-            variant="outlined"
             color={passwordError ? 'error' : 'primary'}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                    aria-label={showPassword ? 'hide the password' : 'display the password'}
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    onMouseUp={handleMouseUpPassword}
+                    edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
           />
+          {passwordError && (
+              <FormHelperText>{passwordErrorMessage}</FormHelperText>
+          )}
         </FormControl>
         <ForgotPassword open={open} handleClose={handleClose} />
-        <Button type="submit" fullWidth variant="contained">
+        <Button type="submit" fullWidth variant="contained" sx={{mt: '0.5rem'}}>
           Sign in
         </Button>
       </Box>
