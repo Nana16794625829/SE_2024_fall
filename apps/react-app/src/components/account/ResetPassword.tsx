@@ -24,7 +24,7 @@ import BackgroundWrapper from "../BackgroundWrpper.tsx";
 import ColorModeSelect from "../../shared-theme/ColorModeSelect.tsx";
 
 
-export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
+export default function ResetPassword() {
     const [matchError, setMatchError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = React.useState(false);
 
@@ -80,8 +80,6 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
     };
 
     return (
-            // <AppTheme {...props}>
-            //     <CssBaseline enableColorScheme />
         <>
             <BackgroundWrapper>
                 <Stack
@@ -95,8 +93,8 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
                     direction="row"
                 >
                     <Button
-                        variant="outlined"
-                        color="secondary"
+                        variant="text"
+                        color="primary"
                         onClick={() => navigate(ROUTES.SIGN_IN)}
                     >
                         登入
@@ -106,13 +104,12 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
 
                 <Stack
                     component="main"
-                    sx={(theme) => ({
+                    sx={{
                         minHeight: '100vh',
                         justifyContent: 'center',
                         alignItems: 'center',
                         p: 2,
-                        ...backgroundGradientStyle(theme),
-                    })}
+                    }}
                 >
 
                     <Stack
@@ -184,7 +181,13 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
                                     </FormControl>
                                 </Stack>
 
-                                <Button type="submit" fullWidth variant="contained" endIcon={<SendIcon />}>
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    endIcon={<SendIcon />}
+                                    sx={{ mt: '0.5rem'}}
+                                >
                                     Submit
                                 </Button>
                             </Box>
@@ -193,6 +196,5 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
                 </Stack>
             </BackgroundWrapper>
         </>
-            // </AppTheme>
         )
     }

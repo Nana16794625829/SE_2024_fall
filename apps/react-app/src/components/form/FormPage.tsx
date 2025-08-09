@@ -278,15 +278,15 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                 direction="row"
             >
                 <Button
-                    variant="outlined"
-                    color="secondary"
+                    variant="text"
+                    color="primary"
                     onClick={() => navigate(ROUTES.CHANGE_PASSWORD)}
                 >
                     修改密碼
                 </Button>
                 <Button
-                    variant="outlined"
-                    color="secondary"
+                    variant="text"
+                    color="primary"
                     onClick={() => {
                         navigate(ROUTES.SIGN_IN);
                         localStorage.removeItem(TOKEN_STORAGE_KEY);

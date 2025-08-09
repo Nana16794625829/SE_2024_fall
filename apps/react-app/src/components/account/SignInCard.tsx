@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import {useNavigate, Link as RouterLink} from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormLabel from '@mui/material/FormLabel';
@@ -9,7 +9,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import api from '../../lib/axios';
-import { ROUTES } from '../../constants/routes';
+import {ROUTES} from '../../constants/routes';
 
 import ForgotPassword from './ForgotPassword.tsx';
 import CardWrapper from "../CardWrapper.tsx";
@@ -23,160 +23,160 @@ import Stack from "@mui/material/Stack";
 import SidePageWrapper from "../SidePageWrapper.tsx";
 
 export default function SignInCard() {
-  const navigate = useNavigate();
-  const [usernameError, setUsernameError] = React.useState(false);
-  const [usernameErrorMessage, setUsernameErrorMessage] = React.useState('');
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-  const [open, setOpen] = React.useState(false);
+    const navigate = useNavigate();
+    const [usernameError, setUsernameError] = React.useState(false);
+    const [usernameErrorMessage, setUsernameErrorMessage] = React.useState('');
+    const [passwordError, setPasswordError] = React.useState(false);
+    const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
+    const [open, setOpen] = React.useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+    const handleClose = () => {
+        setOpen(false);
+    };
 
-  const validateInputs = () => {
-    const username = document.getElementById('username') as HTMLInputElement;
-    const password = document.getElementById('password') as HTMLInputElement;
+    const validateInputs = () => {
+        const username = document.getElementById('username') as HTMLInputElement;
+        const password = document.getElementById('password') as HTMLInputElement;
 
-    let isValid = true;
+        let isValid = true;
 
-    if (!/^\d{9,}$/.test(username.value)) {
-      setUsernameError(true);
-      setUsernameErrorMessage('學號格式錯誤');
-      isValid = false;
-    } else {
-      setUsernameError(false);
-      setUsernameErrorMessage('');
-    }
+        if (!/^\d{9,}$/.test(username.value)) {
+            setUsernameError(true);
+            setUsernameErrorMessage('學號格式錯誤');
+            isValid = false;
+        } else {
+            setUsernameError(false);
+            setUsernameErrorMessage('');
+        }
 
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage('密碼至少 6 碼');
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage('');
-    }
+        if (!password.value || password.value.length < 6) {
+            setPasswordError(true);
+            setPasswordErrorMessage('密碼至少 6 碼');
+            isValid = false;
+        } else {
+            setPasswordError(false);
+            setPasswordErrorMessage('');
+        }
 
-    return isValid;
-  };
+        return isValid;
+    };
 
-  const [showPassword, setShowPassword] = React.useState(false);
+    const [showPassword, setShowPassword] = React.useState(false);
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-  };
-  const handleMouseUpPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-  };
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    };
+    const handleMouseUpPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    };
 
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
 
-    if (!validateInputs()) return;
+        if (!validateInputs()) return;
 
-    const data = new FormData(event.currentTarget);
-    const username = data.get('username') as string;
-    const password = data.get('password') as string;
+        const data = new FormData(event.currentTarget);
+        const username = data.get('username') as string;
+        const password = data.get('password') as string;
 
-    try {
-      const res = await api.post('/api/auth/login', { username, password });
-      localStorage.setItem('token', res.data.token);
-      navigate(ROUTES.FORM);
-    } catch (err) {
-      // 錯誤處理可補上
-    }
-  };
+        try {
+            const res = await api.post('/api/auth/login', {username, password});
+            localStorage.setItem('token', res.data.token);
+            navigate(ROUTES.FORM);
+        } catch (err) {
+            // 錯誤處理可補上
+        }
+    };
 
-  return (
-    <SidePageWrapper variant="outlined">
-      <Stack direction="column">
-        <Typography
-          component="h1"
-          variant="h4"
-          sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
-        >
-          Welcome!
-        </Typography>
-        <Typography component="text" variant="body2" sx={{mb: '0.5rem'}}>
-          Log in to review this weeks's presenters.
-        </Typography>
-      </Stack>
-      <Box
-        component="form"
-        onSubmit={handleSubmit}
-        noValidate
-        sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 5 }}
-      >
-        <Stack direction="column" spacing={2.5}>
-        <FormControl error={usernameError}>
-          <FormLabel htmlFor="username">學號</FormLabel>
-          <OutlinedInput
-            id="username"
-            name="username"
-            placeholder="請輸入學號"
-            autoComplete="username"
-            autoFocus
-            required
-            fullWidth
-            color={usernameError ? 'error' : 'primary'}
-          />
-          {usernameError && (
-              <FormHelperText>{usernameErrorMessage}</FormHelperText>
-          )}
-        </FormControl>
-        <FormControl error={passwordError}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <FormLabel htmlFor="password">密碼</FormLabel>
-            <Link
-              component="button"
-              type="button"
-              onClick={handleClickOpen}
-              variant="body2"
-              sx={{ alignSelf: 'baseline' }}
-            >
-              忘記密碼？
-            </Link>
-          </Box>
-          <OutlinedInput
-            name="password"
-            placeholder="••••••"
-            type={showPassword ? 'text' : 'password'}
-            id="password"
-            autoComplete="current-password"
-            required
-            fullWidth
-            color={passwordError ? 'error' : 'primary'}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                    aria-label={showPassword ? 'hide the password' : 'display the password'}
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                    onMouseUp={handleMouseUpPassword}
-                    edge="end"
+    return (
+        <SidePageWrapper variant="outlined">
+            <Stack direction="column">
+                <Typography
+                    component="h1"
+                    variant="h4"
+                    sx={{width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)'}}
                 >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
-          />
-          {passwordError && (
-              <FormHelperText>{passwordErrorMessage}</FormHelperText>
-          )}
-        </FormControl>
-        </Stack>
-        <ForgotPassword open={open} handleClose={handleClose} />
-        <Button type="submit" fullWidth variant="contained" sx={{mt: '0.5rem'}}>
-          Sign in
-        </Button>
-      </Box>
-    </SidePageWrapper>
-  );
+                    Welcome!
+                </Typography>
+                <Typography component="p" variant="body2" sx={{mb: '0.5rem'}}>
+                    Log in to review this weeks's presenters.
+                </Typography>
+            </Stack>
+            <Box
+                component="form"
+                onSubmit={handleSubmit}
+                noValidate
+                sx={{display: 'flex', flexDirection: 'column', width: '100%', gap: 5}}
+            >
+                <Stack direction="column" spacing={2.5}>
+                    <FormControl error={usernameError}>
+                        <FormLabel htmlFor="username">學號</FormLabel>
+                        <OutlinedInput
+                            id="username"
+                            name="username"
+                            placeholder="請輸入學號"
+                            autoComplete="username"
+                            autoFocus
+                            required
+                            fullWidth
+                            color={usernameError ? 'error' : 'primary'}
+                        />
+                        {usernameError && (
+                            <FormHelperText>{usernameErrorMessage}</FormHelperText>
+                        )}
+                    </FormControl>
+                    <FormControl error={passwordError}>
+                        <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+                            <FormLabel htmlFor="password">密碼</FormLabel>
+                            <Link
+                                component="button"
+                                type="button"
+                                onClick={handleClickOpen}
+                                variant="body2"
+                                sx={{alignSelf: 'baseline'}}
+                            >
+                                忘記密碼？
+                            </Link>
+                        </Box>
+                        <OutlinedInput
+                            name="password"
+                            placeholder="••••••"
+                            type={showPassword ? 'text' : 'password'}
+                            id="password"
+                            autoComplete="current-password"
+                            required
+                            fullWidth
+                            color={passwordError ? 'error' : 'primary'}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label={showPassword ? 'hide the password' : 'display the password'}
+                                        onClick={handleClickShowPassword}
+                                        onMouseDown={handleMouseDownPassword}
+                                        onMouseUp={handleMouseUpPassword}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOff/> : <Visibility/>}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                        />
+                        {passwordError && (
+                            <FormHelperText>{passwordErrorMessage}</FormHelperText>
+                        )}
+                    </FormControl>
+                </Stack>
+                <ForgotPassword open={open} handleClose={handleClose}/>
+                <Button type="submit" fullWidth variant="contained" sx={{mt: '0.5rem'}}>
+                    Sign in
+                </Button>
+            </Box>
+        </SidePageWrapper>
+    );
 }

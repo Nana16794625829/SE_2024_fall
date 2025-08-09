@@ -5,6 +5,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import {Chip, Divider, Grid, Paper} from "@mui/material";
 import ScoreSummary from "./ScoreSummary.tsx";
+import SidePageWrapper from "../SidePageWrapper.tsx";
 
 interface InfoProps {
     count: { A: number; B: number ; C: number };
@@ -24,6 +25,7 @@ export default function Info({count, maxRatings, week}: InfoProps) {
 
     return (
         <React.Fragment>
+            {/*<SidePageWrapper>*/}
             <Typography variant="h2" sx={{ color: 'text.primary', my: 3 }}>
                 Week {week} 報告評分
             </Typography>
@@ -49,6 +51,7 @@ export default function Info({count, maxRatings, week}: InfoProps) {
                     已評分：{totalRated} 位同學
                 </Typography>
             </Paper>
+            {/*</SidePageWrapper>*/}
         </React.Fragment>
     );
 }
