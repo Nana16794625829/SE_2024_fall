@@ -20,6 +20,8 @@ import {FormHelperText} from "@mui/material";
 import axios from "axios";
 import {ROUTES} from "../../constants/routes.ts";
 import {useNavigate} from "react-router-dom";
+import BackgroundWrapper from "../BackgroundWrpper.tsx";
+import ColorModeSelect from "../../shared-theme/ColorModeSelect.tsx";
 
 
 export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
@@ -78,8 +80,10 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
     };
 
     return (
-            <AppTheme {...props}>
-                <CssBaseline enableColorScheme />
+            // <AppTheme {...props}>
+            //     <CssBaseline enableColorScheme />
+        <>
+            <BackgroundWrapper>
                 <Stack
                     sx={{
                         position: 'fixed',
@@ -97,6 +101,7 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
                     >
                         登入
                     </Button>
+                    <ColorModeSelect/>
                 </Stack>
 
                 <Stack
@@ -186,6 +191,8 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
                         </CardWrapper>
                     </Stack>
                 </Stack>
-            </AppTheme>
+            </BackgroundWrapper>
+        </>
+            // </AppTheme>
         )
     }

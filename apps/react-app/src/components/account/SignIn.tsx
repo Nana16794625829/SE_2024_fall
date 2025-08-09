@@ -1,45 +1,45 @@
 // import * as React from 'react';
-import CssBaseline from '@mui/material/CssBaseline';
 import Stack from '@mui/material/Stack';
-import AppTheme from '../../shared-theme/AppTheme.tsx';
 import ColorModeSelect from '../../shared-theme/ColorModeSelect.tsx';
 import SignInCard from './SignInCard.tsx';
 import SignInPageContent from './SignInPageContent.tsx';
 import {Typography} from "@mui/material";
-import {backgroundGradientStyle} from "../../styles/backgroundStyles.tsx";
+import BackgroundWrapper from "../BackgroundWrpper.tsx";
 
-export default function SignIn(props: { disableCustomTheme?: boolean }) {
+export default function SignIn() {
     return (
-        <AppTheme {...props}>
-            <CssBaseline enableColorScheme />
-            <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
-            <Stack
-                component="main"
-                sx={(theme) => ({
-                    minHeight: '100vh',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    p: 2,
-                    ...backgroundGradientStyle(theme),
-                })}
-            >
-                <Stack spacing={10} alignItems="center">
-                    <Typography variant="h1" textAlign="center">
-                        ISSLAB - Software Engineering 2025
-                    </Typography>
-
+            <BackgroundWrapper>
+                <ColorModeSelect sx={{position: 'fixed', top: '1rem', right: '1rem', zIndex: 4000}}/>
+                <Stack
+                    component="main"
+                    sx={{
+                        minHeight: '100vh',
+                        justifyContent: 'center',
+                        alignItems: 'flex-start',
+                    }}
+                >
                     <Stack
-                        direction={{ xs: 'column-reverse', md: 'row' }}
-                        spacing={{ xs: 4, sm: 8 }}
+                        direction={{xs: 'column-reverse', md: 'row'}}
+                        spacing={{xs: 4, sm: 8}}
                         alignItems="center"
                         justifyContent="center"
                     >
-                        <SignInPageContent />
-                        <SignInCard />
+                        <SignInCard/>
+
+                        <Stack spacing={10} alignItems="center">
+                            <Stack alignItems="start">
+                                <Typography variant="h2" textAlign="start">
+                                    NCU 2025
+                                </Typography>
+                                <Typography variant="h1" textAlign="start">
+                                    Software Engineer
+                                </Typography>
+                            </Stack>
+                            <SignInPageContent/>
+                        </Stack>
                     </Stack>
                 </Stack>
-            </Stack>
-        </AppTheme>
+            </BackgroundWrapper>
     );
 
 }

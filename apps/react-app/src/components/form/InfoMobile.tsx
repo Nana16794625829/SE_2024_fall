@@ -9,9 +9,11 @@ import Info from './Info';
 
 interface InfoProps {
     count: { A: number; B: number ; C: number };
+    maxRatings: { A: number; B: number ; C: number };
+    week: string;
 }
 
-export default function InfoMobile({ count }: InfoProps) {
+export default function InfoMobile({ count, maxRatings, week }: InfoProps) {
     const [open, setOpen] = React.useState(false);
 
     const toggleDrawer = (newOpen: boolean) => () => {
@@ -26,7 +28,7 @@ export default function InfoMobile({ count }: InfoProps) {
             >
                 <CloseIcon />
             </IconButton>
-            <Info count={count}/>
+            <Info count={count} maxRatings={maxRatings} week={week}/>
         </Box>
     );
 
@@ -43,12 +45,16 @@ export default function InfoMobile({ count }: InfoProps) {
                 open={open}
                 anchor="top"
                 onClose={toggleDrawer(false)}
-                PaperProps={{
-                    sx: {
-                        top: 'var(--template-frame-height, 0px)',
-                        backgroundImage: 'none',
-                        backgroundColor: 'background.paper',
-                    },
+                sx={{
+                    top: 'var(--template-frame-height, 0px)',
+                    zIndex: '5000'
+                }}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            backgroundColor: 'hsla(0, 0%, 0%, 0.9)',
+                        }
+                    }
                 }}
             >
                 {DrawerList}

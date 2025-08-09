@@ -38,7 +38,13 @@ export default function Info({count, maxRatings, week}: InfoProps) {
             />
             <Divider orientation="horizontal" sx={{ my: 2 }} flexItem/>
             {/* 進度提示 */}
-            <Paper sx={{p: 2, color: 'info.contrastText', display: 'flex', justifyContent: 'flex-end'}}>
+            <Paper sx={{
+                p: 2,
+                backgroundColor: 'transparent', // 透明背景
+                color: 'info.contrastText',
+                display: 'flex',
+                justifyContent: 'flex-end'
+            }}>
                 <Typography variant="body2" textAlign="center">
                     已評分：{totalRated} 位同學
                 </Typography>

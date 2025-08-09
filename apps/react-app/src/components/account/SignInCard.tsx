@@ -19,6 +19,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
+import Stack from "@mui/material/Stack";
+import SidePageWrapper from "../SidePageWrapper.tsx";
 
 export default function SignInCard() {
   const navigate = useNavigate();
@@ -93,20 +95,26 @@ export default function SignInCard() {
   };
 
   return (
-    <CardWrapper variant="outlined">
-      <Typography
-        component="h1"
-        variant="h4"
-        sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
-      >
-        Sign in
-      </Typography>
+    <SidePageWrapper variant="outlined">
+      <Stack direction="column">
+        <Typography
+          component="h1"
+          variant="h4"
+          sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
+        >
+          Welcome!
+        </Typography>
+        <Typography component="text" variant="body2" sx={{mb: '0.5rem'}}>
+          Log in to review this weeks's presenters.
+        </Typography>
+      </Stack>
       <Box
         component="form"
         onSubmit={handleSubmit}
         noValidate
-        sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 2 }}
+        sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 5 }}
       >
+        <Stack direction="column" spacing={2.5}>
         <FormControl error={usernameError}>
           <FormLabel htmlFor="username">學號</FormLabel>
           <OutlinedInput
@@ -163,11 +171,12 @@ export default function SignInCard() {
               <FormHelperText>{passwordErrorMessage}</FormHelperText>
           )}
         </FormControl>
+        </Stack>
         <ForgotPassword open={open} handleClose={handleClose} />
         <Button type="submit" fullWidth variant="contained" sx={{mt: '0.5rem'}}>
           Sign in
         </Button>
       </Box>
-    </CardWrapper>
+    </SidePageWrapper>
   );
 }

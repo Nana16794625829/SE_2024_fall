@@ -68,8 +68,9 @@ export default function ChangePassword(props: { disableCustomTheme?: boolean }) 
     const TOKEN_STORAGE_KEY = 'token';
 
     return (
-        <AppTheme {...props}>
-            <CssBaseline enableColorScheme />
+        // <AppTheme {...props}>
+        //     <CssBaseline enableColorScheme />
+        <>
             <Stack
                 sx={{
                     position: 'fixed',
@@ -209,6 +210,7 @@ export default function ChangePassword(props: { disableCustomTheme?: boolean }) 
                     </CardWrapper>
                 </Stack>
             </Stack>
-        </AppTheme>
+        </>
+        // </AppTheme>
     )
 }

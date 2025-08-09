@@ -27,6 +27,7 @@ import {Presenter} from "../../types/presenter.ts";
 import {useNavigate} from "react-router-dom";
 import {ROUTES} from "../../constants/routes.ts";
 import ColorModeSelect from "../../shared-theme/ColorModeSelect.tsx";
+import InfoMobile from "./InfoMobile.tsx";
 
 const steps = ['README', 'Submit Ratings', 'Comments'];
 
@@ -263,8 +264,9 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
     const navigate = useNavigate();
 
     return (
-        <AppTheme {...props}>
-            <CssBaseline enableColorScheme/>
+        // <AppTheme {...props}>
+        //     <CssBaseline enableColorScheme/>
+        <>
             <Stack
                 sx={{
                     position: 'fixed',
@@ -310,7 +312,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                 }}
             >
                 <Grid
-                    size={{xs: 12, sm: 4, lg: 3}}
+                    size={{xs: 12, sm: 4, lg: 4}}
                     sx={{
                         display: {xs: 'none', md: 'flex'},
                         flexDirection: 'column',
@@ -337,7 +339,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                 </Grid>
 
                 <Grid
-                    size={{sm: 12, md: 9, lg: 9}}
+                    size={{sm: 12, md: 8, lg: 8}}
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -359,6 +361,18 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                             maxWidth: {sm: '100%', md: '70%'},
                         }}
                     >
+                        <Box
+                            sx={{
+                                mt: '64px',
+                                display: {xs: 'flex', md: 'none'},
+                                flexDirection: 'column',
+                                justifyContent: 'space-between',
+                                alignItems: 'flex-end',
+                                flexGrow: 1,
+                            }}
+                        >
+                            <InfoMobile count={count} maxRatings={maxRatings} week={week} />
+                        </Box>
 
                         <Box
                             sx={{
@@ -507,6 +521,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                     </Box>
                 </Grid>
             </Grid>
-        </AppTheme>
+        </>
+        // </AppTheme>
     );
 }

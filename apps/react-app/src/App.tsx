@@ -7,24 +7,31 @@ import ProtectedRoute from './components/common/ProtectedRoute.tsx';
 import {ROUTES} from "./constants/routes.ts";
 import ResetPassword from "./components/account/ResetPassword.tsx";
 import ProtectedLayout from "./components/ProtectedLayout.tsx";
+import RootLayout from "./components/RootLayout.tsx";
+import AppTheme from "./shared-theme/AppTheme.tsx";
+import CssBaseline from "@mui/material/CssBaseline";
 
 const App: React.FC = () => {
     return (
+    <AppTheme>
+        <CssBaseline enableColorScheme />
         <Routes>
-            <Route path={ROUTES.SIGN_IN} element={<SignIn/>}/>
-            <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword/>}/>
+            <Route element={<RootLayout/>}>
+                <Route path={ROUTES.SIGN_IN} element={<SignIn/>}/>
+                <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword/>}/>
 
-            <Route element={<ProtectedLayout />}>
-                <Route path={ROUTES.CHANGE_PASSWORD} element={<ChangePassword/>}/>
-                <Route path={ROUTES.FORM}
-                    element={
-                    <ProtectedRoute>
-                        <FormPage />
-                    </ProtectedRoute>
-                    }/>
+                <Route element={<ProtectedLayout />}>
+                    <Route path={ROUTES.CHANGE_PASSWORD} element={<ChangePassword/>}/>
+                    <Route path={ROUTES.FORM}
+                        element={
+                        <ProtectedRoute>
+                            <FormPage />
+                        </ProtectedRoute>
+                        }/>
+                </Route>
             </Route>
-
         </Routes>
+    </AppTheme>
     );
 }
 export default App
