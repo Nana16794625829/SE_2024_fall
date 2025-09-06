@@ -15,5 +15,15 @@ yarn-error.log*
 .DS_Store
 
 dist/
+<<<<<<< HEAD
 packages/mock-file-generator/__pycache__/config.cpython-312.pyc
 apps/SE-form-backend/src/main/resources/static
+=======
+apps/SE-form-backend/application.yaml
+apps/SE-form-backend/src/main/resources/static/index.html
+apps/SE-form-backend/src/main/resources/static/vite.svg
+apps/SE-form-backend/src/main/resources/static/dark-background.jpg
+apps/SE-form-backend/src/main/resources/static/light-background.jpg
+apps/SE-form-backend/src/main/resources/static/assets/index-CRjdFbj_.js
+packages/mock-file-generator/__pycache__/config.cpython-312.pyc
+>>>>>>> backup
