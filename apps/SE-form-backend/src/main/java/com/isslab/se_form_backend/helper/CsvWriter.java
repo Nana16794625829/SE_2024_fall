@@ -14,18 +14,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.time.LocalDateTime;
+
 
 @Slf4j
 public class CsvWriter {
     public static void writePresenterGrades(List<PresenterGrade> grades, String fileDir, String week) throws IOException {
-        Path dir = Paths.get(fileDir);
+        Path dir = Paths.get(fileDir, week);
         Files.createDirectories(dir);
-
-        String filePath = Paths.get(fileDir, String.format("presenter_week%s.csv", week)).toString();
+        LocalDateTime now = LocalDateTime.now();
+        String date = now.format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+        String filePath = Paths.get(fileDir, String.format("presenter_%s.csv", date)).toString();
 
         try (FileWriter writer = new FileWriter(filePath, true)) {
             for (PresenterGrade pg : grades) {
@@ -42,7 +43,7 @@ public class CsvWriter {
     }
 
     public static void writeReviewerGrades(List<ReviewerGrade> grades, String fileDir, String week) throws IOException {
-        Path dir = Paths.get(fileDir);
+        Path dir = Paths.get(fileDir, week);
         Files.createDirectories(dir);
 
         Map<String, List<String>> bucket = new HashMap<>();
@@ -59,7 +60,9 @@ public class CsvWriter {
         for (Map.Entry<String, List<String>> e : bucket.entrySet()) {
             String presenterId = e.getKey();
             List<String> lines = e.getValue();
-            Path file = dir.resolve(String.format("reviewer_week%s_%s.csv", week, presenterId));
+            LocalDateTime now = LocalDateTime.now();
+            String date = now.format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+            Path file = dir.resolve(String.format("reviewer_%s_%s.csv", presenterId, date));
 
             try (BufferedWriter w = Files.newBufferedWriter(
                     file, StandardCharsets.UTF_8,
@@ -74,10 +77,11 @@ public class CsvWriter {
     }
 
     public static void writeFormSubmissions(List<FormSubmission> submissions, String fileDir, String week) throws IOException {
-        Path dir = Paths.get(fileDir);
+        Path dir = Paths.get(fileDir, week);
         Files.createDirectories(dir);
-
-        String filePath = Paths.get(fileDir, String.format("form_submissions_week%s.csv", week)).toString();
+        LocalDateTime now = LocalDateTime.now();
+        String date = now.format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+        String filePath = Paths.get(fileDir, String.format("form_submissions_%s.csv", date)).toString();
 
         try (FileWriter writer = new FileWriter(filePath, true)) {
             writer.append("reviewerId,submitDateTime,comment\n");
@@ -98,10 +102,11 @@ public class CsvWriter {
     }
 
     public static void writeScoreRecords(List<FormSubmission> scoreRecords, String fileDir, String week) throws IOException {
-        Path dir = Paths.get(fileDir);
+        Path dir = Paths.get(fileDir, week);
         Files.createDirectories(dir);
-
-        String filePath = Paths.get(fileDir, String.format("score_records_week%s.csv", week)).toString();
+        LocalDateTime now = LocalDateTime.now();
+        String date = now.format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+        String filePath = Paths.get(fileDir, String.format("score_records_%s.csv", date)).toString();
 
         try (FileWriter writer = new FileWriter(filePath, true)) {
             writer.append("reviewerId, presenterId ,score\n");

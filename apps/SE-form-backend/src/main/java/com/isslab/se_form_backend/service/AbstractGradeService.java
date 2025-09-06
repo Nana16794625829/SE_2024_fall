@@ -54,8 +54,19 @@ public abstract class AbstractGradeService {
 
         Map<String, List<FormScoreRecordEntity>> allPresentersRecords = formProcessingService.loadFormScoreRecordsByWeek(week);
 
-        for (Map.Entry<String, List<FormScoreRecordEntity>> entry : allPresentersRecords.entrySet()) {
+        Iterator<Map.Entry<String, List<FormScoreRecordEntity>>> iterator = allPresentersRecords.entrySet().iterator();
+        while(iterator.hasNext()) {
+            Map.Entry<String, List<FormScoreRecordEntity>> entry = iterator.next();
             this.presenterId = entry.getKey();
+
+            boolean participated = presenterService.checkParticipate(presenterId, week);
+            if(!participated) {
+                iterator.remove();
+                double basicGrade = presenterService.getBasicGrade();
+                saveGradeToPresenter(presenterId, week, basicGrade); // Presenter 如果沒有參加報告就直接給基本分
+
+                continue;
+            }
 
             Map<String, Double> grades = calculateGradeBySinglePresenter(entry.getValue());
             allGradesByPresenter.add(grades); // 每份 grades 含 reviewer 成績 + presenter 成績
@@ -63,8 +74,6 @@ public abstract class AbstractGradeService {
     }
 
     public void saveAllGradesByWeek(String week, Set<String> presenterIds) {
-        assignPresenterGradesByParticipation(presenterIds);
-
         Map<AbstractStudentRoleService, List<GradeInput>> grouped = new HashMap<>();
 
         for (Map<String, Double> grades : allGradesByPresenter) {
@@ -148,7 +157,8 @@ public abstract class AbstractGradeService {
         }
     }
 
-    public abstract void saveGradeToStudent(String studentId, String week, double grade);
+    public abstract void saveGradeToPresenter(String presenterId, String week, double grade);
+    public abstract void saveGradeToReviewer(String reviewerId, String presenterId, String week, double grade);
     public abstract List<Double> getGradesByIdAndWeek(String studentId, String week);
     public abstract void deleteGradeByIdAndWeek(String studentId, String week);
 
@@ -245,18 +255,18 @@ public abstract class AbstractGradeService {
         else throw new IllegalArgumentException("無法辨識學生身分: " + studentId);
     }
 
-    protected void fillBasicGradeForNonAttendeeByWeek(String week) {
-        if(reviewerService instanceof ReviewerService rService){
-            List<ReviewerGradeEntity> nonAttendees = rService.findNonAttendeeByWeek(week);
-            for(ReviewerGradeEntity reviewerGradeEntity : nonAttendees) {
-                String reviewerId = reviewerGradeEntity.getReviewerId();
-                rService.saveGradeToStudent(reviewerId, week, 75.0);
-            }
-        }
-        else {
-            throw new UnsupportedOperationException("Only ReviewerService supports findNonAttendeeByWeek()");
-        }
-    }
+//    protected void fillBasicGradeForNonAttendeeByWeek(String week) {
+//        if(reviewerService instanceof ReviewerService rService){
+//            List<ReviewerGradeEntity> nonAttendees = rService.findNonAttendeeByWeek(week);
+//            for(ReviewerGradeEntity reviewerGradeEntity : nonAttendees) {
+//                String reviewerId = reviewerGradeEntity.getReviewerId();
+//                rService.saveGradeToReviewer(reviewerId, week, 75.0);
+//            }
+//        }
+//        else {
+//            throw new UnsupportedOperationException("Only ReviewerService supports findNonAttendeeByWeek()");
+//        }
+//    }
 
     private void saveGroupedGrades(Map<AbstractStudentRoleService, List<GradeInput>> grouped) {
         for (Map.Entry<AbstractStudentRoleService, List<GradeInput>> entry : grouped.entrySet()) {
@@ -276,23 +286,6 @@ public abstract class AbstractGradeService {
 
             if (!missing.isEmpty()) {
                 throw new IllegalArgumentException("評分者為不存在課程名單的學號，Invalid student IDs: " + missing);
-            }
-        }
-    }
-
-    private void assignPresenterGradesByParticipation(Set<String> allPresentersThisWeek) {
-        Set<String> presentersWithGrade = allGradesByPresenter.stream()
-                .flatMap(map -> map.keySet().stream())
-                .filter(studentService::isPresenter) // 自訂判斷是否為 presenter 的邏輯
-                .collect(Collectors.toSet());
-
-
-        for (String missingPresenter : allPresentersThisWeek) {
-            if (!presentersWithGrade.contains(missingPresenter)) {
-                // 補分給未參加報告的 presenter
-                Map<String, Double> fake = new HashMap<>();
-                fake.put(missingPresenter, presenterService.getBasicGrade());
-                allGradesByPresenter.add(fake);
             }
         }
     }

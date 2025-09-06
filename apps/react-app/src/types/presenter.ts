@@ -3,4 +3,5 @@ export type Presenter = {
     presentWeek: string;
     presentOrder: string;
     presenterName: string;
+    participate: boolean;
 };

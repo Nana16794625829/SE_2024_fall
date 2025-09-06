@@ -1,15 +1,16 @@
 package com.isslab.se_form_backend.controller;
 
 import com.isslab.se_form_backend.helper.ResponseStatus;
+import com.isslab.se_form_backend.model.GradeInput;
 import com.isslab.se_form_backend.model.SinglePresenterCalculationRequest;
 import com.isslab.se_form_backend.model.Status;
+import com.isslab.se_form_backend.model.UpdatePresenterGrade;
 import com.isslab.se_form_backend.service.AbstractGradeService;
 import com.isslab.se_form_backend.service.impl.PresenterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,11 +50,18 @@ public class GradeController {
         return ResponseEntity.ok(ResponseStatus.statusOk());
     }
 
-//    @PutMapping("/update")
-//    public ResponseEntity<Status> setGradeById(@RequestBody Map<String, String> body){
-//        gradeService.saveGradeToStudent(body.get("id"), body.get("week"), Double.parseDouble(body.get("grade")));
-//        return ResponseEntity.ok(ResponseStatus.statusOk());
-//    }
+    @PutMapping("/update/reviewer")
+    public ResponseEntity<Status> setReviewerGradeByIdAndWeek(@RequestBody GradeInput body){
+        gradeService.saveGradeToReviewer(body.getStudentId(), body.getPresenterId(), body.getWeek(), body.getGrade());
+        return ResponseEntity.ok(ResponseStatus.statusOk());
+    }
+
+    @PutMapping("/update/presenter")
+    public ResponseEntity<Status> setPresenterGradeByIdAndWeek(@RequestBody UpdatePresenterGrade body){
+        gradeService.saveGradeToPresenter(body.getPresenterId(), body.getWeek(), body.getGrade());
+        return ResponseEntity.ok(ResponseStatus.statusOk());
+    }
+
 //
 //    @DeleteMapping("/delete")
 //    public ResponseEntity<Status> deleteGradeByIdAndWeek(@RequestBody Map<String, String> body){

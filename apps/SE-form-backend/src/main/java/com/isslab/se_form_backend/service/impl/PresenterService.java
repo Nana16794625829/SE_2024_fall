@@ -10,6 +10,7 @@ import com.isslab.se_form_backend.service.AbstractStudentRoleService;
 import com.isslab.se_form_backend.service.AbstractStudentService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -20,8 +21,10 @@ public class PresenterService extends AbstractStudentRoleService {
 
     private final PresenterRepository repository;
     private final AbstractStudentService studentService;
-    private static final double BASIC_GRADE = 15.0;
-    private static final String SEMESTER_START_DAY = "2025-09-01";
+    private static final double BASIC_GRADE = 0.0;
+
+    @Value("${date.semesterStartDay}")
+    private String SEMESTER_START_DAY;
 
     public PresenterService(PresenterRepository repository, AbstractStudentService studentService) {
         this.repository = repository;
@@ -47,11 +50,16 @@ public class PresenterService extends AbstractStudentRoleService {
 
 
     @Override
-    public void saveGradeToStudent(String studentId, String week, double grade) {
+    public void saveGradeToPresenter(String studentId, String week, double grade) {
         PresenterGradeEntity presenterGradeEntity = getPresenterEntityByStudentIdAndWeek(studentId, week);
         presenterGradeEntity.setGrade(grade);
 
         repository.save(presenterGradeEntity);
+    }
+
+    @Override
+    public void saveGradeToReviewer(String reviewerId, String presenterId, String week, double grade) {
+        throw new UnsupportedOperationException("This role does not support saving reviewer grades.");
     }
 
     @Override
@@ -110,6 +118,7 @@ public class PresenterService extends AbstractStudentRoleService {
                     .presentOrder(String.valueOf((e.getPresentOrder())))
                     .presentWeek(week)
                     .presenterName(name)
+                    .participate(e.isParticipate())
                     .build();
 
             presenters.add(presenter);
@@ -145,6 +154,17 @@ public class PresenterService extends AbstractStudentRoleService {
 
         long week = diffDays / 7 + 1;
         return String.valueOf(week);
+    }
+
+    public boolean checkParticipate(String presenterId, String week) {
+        PresenterGradeEntity presenter = getPresenterEntityByStudentIdAndWeek(presenterId, week);
+        return presenter.isParticipate();
+    }
+
+    public void setParticipate(Boolean participate, String presenterId, String week) {
+        PresenterGradeEntity presenter = getPresenterEntityByStudentIdAndWeek(presenterId, week);
+        presenter.setParticipate(participate);
+        repository.save(presenter);
     }
 
     private PresenterGradeEntity getPresenterEntityByStudentIdAndWeek(String studentId, String week) {

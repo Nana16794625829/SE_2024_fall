@@ -37,3 +37,7 @@ build/
 
 ### Mock data ###
 **/src/main/resources/mock
+
+### Docker ###
+Dockerfile
+docker-compose.yaml

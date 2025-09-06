@@ -12,7 +12,12 @@ public class MockPresenterService extends AbstractStudentRoleService {
     }
 
     @Override
-    public void saveGradeToStudent(String studentId, String week, double grade) {
+    public void saveGradeToPresenter(String presenterId, String week, double grade) {
+
+    }
+
+    @Override
+    public void saveGradeToReviewer(String reviewerId, String presenterId, String week, double grade) {
 
     }
 
@@ -29,5 +34,10 @@ public class MockPresenterService extends AbstractStudentRoleService {
     @Override
     public double getBasicGrade() {
         return 0;
+    }
+
+    @Override
+    public boolean checkParticipate(String studentId, String week) {
+        return true;
     }
 }

@@ -10,7 +10,12 @@ export const usePresenters = () => {
     useEffect(() => {
         api.get(`/api/presenter/`)
             .then(res => {
-                setPresenters(res.data)
+                const filtered = res.data
+                    .filter((p: Presenter) => p.participate)
+                    .sort((a: Presenter, b: Presenter) => Number(a.presentOrder) - Number(b.presentOrder)); // 依照 presentOrder 排序
+                setPresenters(filtered)
+                console.log('res.data', res.data);
+                // setPresenters(res.data)
             })
             .catch(err => {
                 console.error('取得 presenter 失敗', err);

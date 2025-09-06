@@ -15,4 +15,5 @@ public class Presenter {
     private String presentWeek;
     private String presentOrder;
     private String presenterName;
+    private boolean participate;
 }
