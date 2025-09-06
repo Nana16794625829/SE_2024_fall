@@ -40,11 +40,8 @@ build/
 
 ### Docker ###
 Dockerfile
-<<<<<<< HEAD
 docker-compose.yaml
 
 
 application.yaml
-=======
-docker-compose.yaml
->>>>>>> backup
+apps/SE-form-backend/target
