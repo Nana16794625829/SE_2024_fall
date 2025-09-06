@@ -9,10 +9,10 @@ import com.isslab.se_form_backend.model.Student;
 import com.isslab.se_form_backend.model.StudentUpdate;
 import com.isslab.se_form_backend.repository.StudentRepository;
 import com.isslab.se_form_backend.service.AbstractStudentService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -53,6 +53,7 @@ public class StudentService extends AbstractStudentService {
                 .studentId(entity.getStudentId())
                 .email(entity.getEmail())
                 .name(entity.getName())
+                .classSkipped(entity.getClassSkipped())
                 .build();
     }
 
@@ -69,7 +70,7 @@ public class StudentService extends AbstractStudentService {
         ClassType classType = studentInfo.getClassType();
         String encodePassword = passwordEncoder.encode(MyConstant.DEFAULT_PASSWORD);
 
-        StudentEntity studentEntity = new StudentEntity(studentId, name, email, classType, encodePassword);
+        StudentEntity studentEntity = new StudentEntity(studentId, name, email, classType, encodePassword, 0);
         studentRepository.save(studentEntity);
     }
 
@@ -88,7 +89,7 @@ public class StudentService extends AbstractStudentService {
         student.setName(studentInfo.getName());
         student.setEmail(studentInfo.getEmail());
 
-        studentRepository.save(student); // 其實這邊也可以不用 save，若是 @Transactional，JPA 會自動 flush
+        studentRepository.save(student);
     }
 
 
@@ -100,5 +101,54 @@ public class StudentService extends AbstractStudentService {
     @Override
     public String getNameByStudentId(String studentId) {
         return studentRepository.getNameByStudentId(studentId);
+    }
+
+    @Override
+    public Set<Student> checkEligibility() {
+        Set<String> studentIds = studentRepository.getAllStudentIds();
+        Set<String> ineligibleUsers = new HashSet<>();
+        Set<Student> ineligibleStudents = new HashSet<>();
+
+        for(String studentId :studentIds) {
+            boolean eligibility = checkEligibilityByStudentId(studentId);
+            if(!eligibility) {
+                ineligibleUsers.add(studentId);
+            }
+        }
+
+        for(String ineligibleUser : ineligibleUsers) {
+            StudentEntity removedStudent = studentRepository.getStudentByStudentId(ineligibleUser)
+                    .orElseThrow(UserNotFoundException::new);
+
+            Student ineligibleStudent = Student.builder()
+                    .studentId(ineligibleUser)
+                    .name(removedStudent.getName())
+                    .email(removedStudent.getEmail())
+                    .classType(removedStudent.getClassType())
+                    .classSkipped(removedStudent.getClassSkipped())
+                    .build();
+
+            if(removedStudent.getClassType() == ClassType.DAY) {
+                studentRepository.deleteByStudentId(ineligibleUser);
+                ineligibleStudents.add(ineligibleStudent);
+            }
+        }
+
+        return ineligibleStudents;
+    }
+
+    @Override
+    public void setClassSkipped(String studentId) {
+        StudentEntity student = studentRepository.getStudentByStudentId(studentId)
+                .orElseThrow(UserNotFoundException::new);
+
+        int count = student.getClassSkipped();
+        student.setClassSkipped(count + 1);
+        studentRepository.save(student);
+    }
+
+    private boolean checkEligibilityByStudentId(String studentId) {
+        StudentEntity studentEntity = getStudentEntityById(studentId);
+        return studentEntity.getClassSkipped() <= 1;
     }
 }

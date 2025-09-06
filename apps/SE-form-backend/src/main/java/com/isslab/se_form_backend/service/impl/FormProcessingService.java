@@ -2,16 +2,14 @@ package com.isslab.se_form_backend.service.impl;
 
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
 import com.isslab.se_form_backend.entity.FormSubmissionEntity;
-import com.isslab.se_form_backend.model.FormScoreRecord;
-import com.isslab.se_form_backend.model.FormSubmission;
+import com.isslab.se_form_backend.entity.PresenterGradeEntity;
+import com.isslab.se_form_backend.model.*;
 import com.isslab.se_form_backend.service.AbstractFormScoreRecordService;
 import com.isslab.se_form_backend.service.AbstractFormSubmissionService;
+import com.isslab.se_form_backend.service.AbstractStudentService;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -19,10 +17,12 @@ public class FormProcessingService {
 
     private final AbstractFormSubmissionService formSubmissionService;
     private final AbstractFormScoreRecordService formScoreRecordService;
+    private final AbstractStudentService studentService;
 
-    public FormProcessingService(AbstractFormSubmissionService formSubmissionService, AbstractFormScoreRecordService formScoreRecordService) {
+    public FormProcessingService(AbstractFormSubmissionService formSubmissionService, AbstractFormScoreRecordService formScoreRecordService, AbstractStudentService studentService) {
         this.formSubmissionService = formSubmissionService;
         this.formScoreRecordService = formScoreRecordService;
+        this.studentService = studentService;
     }
 
     public List<FormScoreRecordEntity> loadFormScoreRecordsByWeekAndPresenter(String week, String presenterId) {
@@ -112,6 +112,35 @@ public class FormProcessingService {
                         .scores(scoresByReviewer.getOrDefault(s.getSubmitterId(), List.of()))
                         .build())
                 .toList();
+    }
+
+    public Set<Student> checkParticipant(String week) {
+        List<FormSubmission> submissions = getAllSubmissionsByWeek(week);
+        Set<String> studentIds= studentService.getAllStudentIds();
+
+        Set<String> submitters = new HashSet<>();
+        Set<Student> absentStudents = new HashSet<>();
+
+        for(FormSubmission submission : submissions) {
+            submitters.add(submission.getSubmitterId());
+        }
+
+        for(String studentId : studentIds) {
+            setClassSkippedIfAbsent(studentId, submitters, absentStudents);
+        }
+
+        return absentStudents;
+    }
+
+    private void setClassSkippedIfAbsent(String studentId, Set<String> submitters, Set<Student> absentStudents) {
+        Student student = studentService.getStudentById(studentId);
+
+        if(!submitters.contains(studentId) && student.getClassType() == ClassType.DAY) {
+            studentService.setClassSkipped(studentId);
+            int skipped = student.getClassSkipped() + 1;
+            student.setClassSkipped(skipped);
+            absentStudents.add(student);
+        }
     }
 
 

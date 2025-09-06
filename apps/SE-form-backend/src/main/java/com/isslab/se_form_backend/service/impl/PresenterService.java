@@ -156,7 +156,7 @@ public class PresenterService extends AbstractStudentRoleService {
         return String.valueOf(week);
     }
 
-    public boolean checkParticipate(String presenterId, String week) {
+    public boolean checkParticipated(String presenterId, String week) {
         PresenterGradeEntity presenter = getPresenterEntityByStudentIdAndWeek(presenterId, week);
         return presenter.isParticipate();
     }
@@ -165,6 +165,20 @@ public class PresenterService extends AbstractStudentRoleService {
         PresenterGradeEntity presenter = getPresenterEntityByStudentIdAndWeek(presenterId, week);
         presenter.setParticipate(participate);
         repository.save(presenter);
+    }
+
+    public Set<Presenter> checkPresent(String week) {
+        List<Presenter> presenters = getPresentersByWeek(week);
+
+        Set<Presenter> absentPresenters = new HashSet<>();
+
+        for(Presenter presenter : presenters) {
+            if(!presenter.isParticipate()) {
+                absentPresenters.add(presenter);
+            }
+        }
+
+        return absentPresenters;
     }
 
     private PresenterGradeEntity getPresenterEntityByStudentIdAndWeek(String studentId, String week) {

@@ -35,7 +35,7 @@ public class PasswordService {
                 .orElseThrow(UserNotFoundException::new);
         String encodePassword = passwordEncoder.encode(newPassword);
 
-        StudentEntity studentEntity = new StudentEntity(user.getStudentId(), user.getName(), user.getEmail(), user.getClassType(), encodePassword);
+        StudentEntity studentEntity = new StudentEntity(user.getStudentId(), user.getName(), user.getEmail(), user.getClassType(), encodePassword, user.getClassSkipped());
 
         studentRepository.save(studentEntity);
     }
@@ -48,7 +48,7 @@ public class PasswordService {
         StudentEntity user = studentRepository.getStudentByStudentId(username)
                 .orElseThrow(UserNotFoundException::new);
         String encodePassword = passwordEncoder.encode(newPassword);
-        StudentEntity studentEntity = new StudentEntity(user.getStudentId(), user.getName(), user.getEmail(), user.getClassType(), encodePassword);
+        StudentEntity studentEntity = new StudentEntity(user.getStudentId(), user.getName(), user.getEmail(), user.getClassType(), encodePassword, user.getClassSkipped());
 
         studentRepository.save(studentEntity);
 

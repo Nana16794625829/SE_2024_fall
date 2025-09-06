@@ -99,8 +99,8 @@ public class SeFormBackendConfig {
     }
 
     @Bean
-    public FormProcessingService formProcessingService(AbstractFormSubmissionService formSubmissionService, AbstractFormScoreRecordService formScoreRecordService) {
-        return new FormProcessingService(formSubmissionService, formScoreRecordService);
+    public FormProcessingService formProcessingService(AbstractFormSubmissionService formSubmissionService, AbstractFormScoreRecordService formScoreRecordService, AbstractStudentService studentService) {
+        return new FormProcessingService(formSubmissionService, formScoreRecordService, studentService);
     }
 
     @Bean

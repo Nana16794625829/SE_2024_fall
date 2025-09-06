@@ -1,7 +1,6 @@
 package com.isslab.se_form_backend.service;
 
 import com.isslab.se_form_backend.entity.FormScoreRecordEntity;
-import com.isslab.se_form_backend.entity.ReviewerGradeEntity;
 import com.isslab.se_form_backend.helper.exception.InvalidSaveGradeException;
 import com.isslab.se_form_backend.model.GradeInput;
 import com.isslab.se_form_backend.service.impl.FormProcessingService;
@@ -12,11 +11,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,12 +25,9 @@ public abstract class AbstractGradeService {
     private static final double zScoreThreshold = 2.5;
     private static final double outlierGrade = 60.0;
 
-    //score 對照 grade
-    private static final Map<String, Double> SCORE_MAP = Map.of(
-            "A", 90.0,
-            "B", 80.0,
-            "C", 70.0
-    );
+    //score 對照 grade，可從 application.yaml 修改
+    @Value("#{${score}}")
+    private Map<String, Double> scoreMap;
 
     private final Map<String, Double> presenterGradeMap = new HashMap<>(); // reviewerId : presenterGradeByReviewer
     private final Map<String, Double> reviewerGradeMap = new HashMap<>(); // reviewerId : reviewerGrade
@@ -59,7 +55,7 @@ public abstract class AbstractGradeService {
             Map.Entry<String, List<FormScoreRecordEntity>> entry = iterator.next();
             this.presenterId = entry.getKey();
 
-            boolean participated = presenterService.checkParticipate(presenterId, week);
+            boolean participated = presenterService.checkParticipated(presenterId, week);
             if(!participated) {
                 iterator.remove();
                 double basicGrade = presenterService.getBasicGrade();
@@ -85,14 +81,14 @@ public abstract class AbstractGradeService {
                     .orElseThrow(() -> new IllegalStateException("找不到對應的 presenterId"));
 
             getAllStudents().stream()
+                    // Filter 負責篩選出有參加評分的 reviewers 以及 presenters
                     .filter(studentId -> {
                         AbstractStudentRoleService role = getServiceByRole(studentId);
-                        // reviewer 沒參加補基本分，presenter 不補
                         return !(role instanceof PresenterService) || gradedStudentIds.contains(studentId);
                     })
                     .forEach(studentId -> {
                         AbstractStudentRoleService roleService = getServiceByRole(studentId);
-                        double grade = assignReviewerGradesByParticipation(roleService, grades, gradedStudentIds, studentId);
+                        double grade = assignGradesByParticipation(roleService, grades, gradedStudentIds, studentId);
                         setGroupsByRoleService(roleService, week, grade, studentId, grouped, currentPresenterId);
                     });
         }
@@ -172,7 +168,7 @@ public abstract class AbstractGradeService {
             String presenterScore = formScoreRecord.getScore();
             String reviewerId = formScoreRecord.getReviewerId();
 
-            double presenterGrade = SCORE_MAP.getOrDefault(presenterScore, 0.0);
+            double presenterGrade = scoreMap.getOrDefault(presenterScore, 0.0);
             presenterGradeMap.put(reviewerId, presenterGrade);
         }
     }
@@ -196,7 +192,7 @@ public abstract class AbstractGradeService {
     }
 
     protected double calculateReviewerGrade(double zScore) {
-        double scoreGap = GradeHelper.getGradeGap(SCORE_MAP);
+        double scoreGap = GradeHelper.getGradeGap(scoreMap);
         double reviewerGrade = 100 - (Math.abs(zScore) / 3) * scoreGap;
 
         // 四捨五入兩次避免精度問題
@@ -290,7 +286,7 @@ public abstract class AbstractGradeService {
         }
     }
 
-    private double assignReviewerGradesByParticipation(AbstractStudentRoleService roleService, Map<String, Double> grades, Set<String> gradedStudentIds, String studentId) {
+    private double assignGradesByParticipation(AbstractStudentRoleService roleService, Map<String, Double> grades, Set<String> gradedStudentIds, String studentId) {
         boolean graded = gradedStudentIds.contains(studentId);
         return graded ? grades.get(studentId) : roleService.getBasicGrade();
     }
@@ -316,7 +312,7 @@ public abstract class AbstractGradeService {
     ) {
         AbstractStudentRoleService roleService = getServiceByRole(studentId);
         if(roleService instanceof ReviewerService)  {
-            double grade = assignReviewerGradesByParticipation(roleService, grades, gradedStudentIds, studentId);
+            double grade = assignGradesByParticipation(roleService, grades, gradedStudentIds, studentId);
             setGroupsByRoleService(roleService, week, grade, studentId, grouped, currentPresenterId);
         }
         setGroupsByRoleService(roleService, week, grades.get(this.presenterId), this.presenterId, grouped, null);

@@ -31,7 +31,7 @@ public class CsvReader {
                 ClassType classType = ClassType.valueOf(parts[3]);
                 String encodedPassword = passwordEncoder.encode(MyConstant.DEFAULT_PASSWORD);
 
-                StudentEntity student = new StudentEntity(studentId, name, email, classType, encodedPassword);
+                StudentEntity student = new StudentEntity(studentId, name, email, classType, encodedPassword, 0);
 
                 StudentEntities.add(student);
             }

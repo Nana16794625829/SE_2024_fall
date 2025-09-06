@@ -6,10 +6,6 @@ import java.util.Collections;
 import java.util.Map;
 
 public class GradeHelper {
-    public static double calculateZScore(int gradeByScore, double presenterGrade, double standardDeviation){
-        return (gradeByScore - presenterGrade) / standardDeviation;
-    }
-
     public static double getGradeGap(Map<String, Double> scoreMap) {
         if (scoreMap.isEmpty()) return 0.0;
 
@@ -17,14 +13,6 @@ public class GradeHelper {
         double min = Collections.min(scoreMap.values());
 
         return max - min;
-    }
-
-    public static double calculateReviewerGrade(double zScore, int gradeGap){
-        return 100 - (Math.abs(zScore) / 3) * gradeGap;
-    }
-
-    public static Boolean isOutlier(double zScore, double zScoreThreshold){
-        return Math.abs(zScore) > zScoreThreshold;
     }
 
     public static double calculatePopulationStandardDeviation(DescriptiveStatistics stats) {

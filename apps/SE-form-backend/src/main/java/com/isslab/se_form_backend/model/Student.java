@@ -14,4 +14,5 @@ public class Student {
     private String email;
     private ClassType classType;
     private String password;
+    private int classSkipped;
 }

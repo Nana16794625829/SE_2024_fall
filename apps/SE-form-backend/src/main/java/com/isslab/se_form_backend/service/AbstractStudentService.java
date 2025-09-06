@@ -1,6 +1,5 @@
 package com.isslab.se_form_backend.service;
 
-import com.isslab.se_form_backend.entity.StudentEntity;
 import com.isslab.se_form_backend.model.Student;
 import com.isslab.se_form_backend.model.StudentUpdate;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,4 +17,6 @@ public abstract class AbstractStudentService {
     public abstract void updateStudentById(StudentUpdate studentInfo);
     public abstract void deleteStudentById(String studentId);
     public abstract String getNameByStudentId(String studentId);
+    public abstract Set<Student> checkEligibility();
+    public abstract void setClassSkipped(String studentId);
 }

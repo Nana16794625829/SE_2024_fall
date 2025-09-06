@@ -43,7 +43,7 @@ public class MockReviewerService extends AbstractStudentRoleService {
     }
 
     @Override
-    public boolean checkParticipate(String studentId, String week) {
+    public boolean checkParticipated(String studentId, String week) {
         return true;
     }
 

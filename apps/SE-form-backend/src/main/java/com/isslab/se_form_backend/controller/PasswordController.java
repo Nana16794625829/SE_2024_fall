@@ -47,12 +47,8 @@ public class PasswordController {
     @PostMapping("/reset")
     public ResponseEntity<?> resetPassword(
             @RequestBody ResetPasswordRequest req,
-            @RequestHeader("Authorization") String authHeader
+            @RequestParam(value = "token") String token
     ) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token validation failed");
-        }
-        String token = authHeader.substring(7);
         String newPassword = req.getNewPassword();
         passwordService.resetPassword(token, newPassword);
 
