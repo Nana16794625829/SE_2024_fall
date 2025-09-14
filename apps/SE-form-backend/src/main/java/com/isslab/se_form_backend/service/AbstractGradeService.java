@@ -47,6 +47,7 @@ public abstract class AbstractGradeService {
     protected FormProcessingService formProcessingService;
 
     public void calculateGradesByWeek(String week) {
+        initGradeVariables();
 
         Map<String, List<FormScoreRecordEntity>> allPresentersRecords = formProcessingService.loadFormScoreRecordsByWeek(week);
 
@@ -96,9 +97,9 @@ public abstract class AbstractGradeService {
         saveGroupedGrades(grouped);
     }
 
-
-
     public Map<String, Double> calculateGradeBySinglePresenter(String week, int presentOrder) {
+        initGradeVariables();
+
         if(presenterService instanceof PresenterService pService) {
             presenterId = pService.getPresenterIdByWeekAndOrder(week, presentOrder);
         }
@@ -251,18 +252,14 @@ public abstract class AbstractGradeService {
         else throw new IllegalArgumentException("無法辨識學生身分: " + studentId);
     }
 
-//    protected void fillBasicGradeForNonAttendeeByWeek(String week) {
-//        if(reviewerService instanceof ReviewerService rService){
-//            List<ReviewerGradeEntity> nonAttendees = rService.findNonAttendeeByWeek(week);
-//            for(ReviewerGradeEntity reviewerGradeEntity : nonAttendees) {
-//                String reviewerId = reviewerGradeEntity.getReviewerId();
-//                rService.saveGradeToReviewer(reviewerId, week, 75.0);
-//            }
-//        }
-//        else {
-//            throw new UnsupportedOperationException("Only ReviewerService supports findNonAttendeeByWeek()");
-//        }
-//    }
+    private void initGradeVariables() {
+        presenterGradeMap.clear();
+        reviewerGradeMap.clear();
+        reviewerZScoreMap.clear();
+        allGradesByPresenter.clear();
+        presenterAvgGrade = 0;
+        stdDev = 0;
+    }
 
     private void saveGroupedGrades(Map<AbstractStudentRoleService, List<GradeInput>> grouped) {
         for (Map.Entry<AbstractStudentRoleService, List<GradeInput>> entry : grouped.entrySet()) {
