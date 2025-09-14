@@ -26,14 +26,17 @@ public class CsvWriter {
         Files.createDirectories(dir);
         LocalDateTime now = LocalDateTime.now();
         String date = now.format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
-        String filePath = Paths.get(fileDir, String.format("presenter_%s.csv", date)).toString();
+        Path filePath = dir.resolve(String.format("presenter_%s.csv", date));
 
-        try (FileWriter writer = new FileWriter(filePath, true)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(
+                filePath,
+                StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.APPEND)) {
+
             for (PresenterGrade pg : grades) {
-                writer.append(pg.getPresenterId())
-                        .append(",")
-                        .append(String.format("%.1f", pg.getGrade()))
-                        .append("\n");
+                writer.write(pg.getPresenterId() + "," + String.format("%.1f", pg.getGrade()));
+                writer.newLine();
             }
 
             log.info("Presenter 成績 CSV 檔案已產生：{}", filePath);
@@ -81,18 +84,24 @@ public class CsvWriter {
         Files.createDirectories(dir);
         LocalDateTime now = LocalDateTime.now();
         String date = now.format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
-        String filePath = Paths.get(fileDir, String.format("form_submissions_%s.csv", date)).toString();
+        Path filePath = dir.resolve(String.format("form_submissions_%s.csv", date));
 
-        try (FileWriter writer = new FileWriter(filePath, true)) {
-            writer.append("reviewerId,submitDateTime,comment\n");
+        try (BufferedWriter writer = Files.newBufferedWriter(
+                filePath,
+                StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.APPEND)) {
+
+            writer.write("reviewerId,submitDateTime,comment");
+            writer.newLine();
 
             for (FormSubmission submission : submissions) {
-                writer.append(submission.getSubmitterId())
-                        .append(",")
-                        .append(submission.getSubmitDateTime())
-                        .append(",")
-                        .append(submission.getComment())
-                        .append("\n");
+                writer.write(
+                        submission.getSubmitterId() + "," +
+                                submission.getSubmitDateTime() + "," +
+                                submission.getComment()
+                );
+                writer.newLine();
             }
 
             log.info("Form submission CSV 檔案已產生：{}", filePath);
@@ -106,10 +115,15 @@ public class CsvWriter {
         Files.createDirectories(dir);
         LocalDateTime now = LocalDateTime.now();
         String date = now.format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
-        String filePath = Paths.get(fileDir, String.format("score_records_%s.csv", date)).toString();
+        Path filePath = dir.resolve(String.format("score_records_%s.csv", date));
 
-        try (FileWriter writer = new FileWriter(filePath, true)) {
-            writer.append("reviewerId, presenterId ,score\n");
+        try (BufferedWriter writer = Files.newBufferedWriter(
+                filePath,
+                StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.APPEND)) {
+            writer.append("reviewerId, presenterId ,score");
+            writer.newLine();
 
             for (FormSubmission scoreRecord : scoreRecords) {
                 String reviewerId = scoreRecord.getSubmitterId();
@@ -118,12 +132,8 @@ public class CsvWriter {
                     String presenterId = record.getPresenterId();
                     String score = record.getScore();
 
-                    writer.append(reviewerId)
-                            .append(",")
-                            .append(presenterId)
-                            .append(",")
-                            .append(score)
-                            .append("\n");
+                    writer.write(reviewerId + "," + presenterId + "," + score);
+                    writer.newLine();
                 }
             }
 

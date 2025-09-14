@@ -96,6 +96,7 @@ public class PresenterService extends AbstractStudentRoleService {
                 .presenterId(presenter.getPresenterId())
                 .presentOrder(Integer.parseInt(presenter.getPresentOrder()))
                 .week(presenter.getPresentWeek())
+                .participate(true)
                 .build();
 
         repository.save(presenterGradeEntity);
