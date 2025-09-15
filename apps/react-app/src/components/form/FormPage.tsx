@@ -28,6 +28,7 @@ import {useNavigate} from "react-router-dom";
 import {ROUTES} from "../../constants/routes.ts";
 import ColorModeSelect from "../../shared-theme/ColorModeSelect.tsx";
 import InfoMobile from "./InfoMobile.tsx";
+import {useAuth} from "../../context/AuthContext.tsx";
 
 const steps = ['README', 'Submit Ratings', 'Comments'];
 
@@ -262,6 +263,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
     };
 
     const navigate = useNavigate();
+    const { logout } = useAuth()
 
     return (
         // <AppTheme {...props}>
@@ -288,6 +290,7 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
                     variant="text"
                     color="primary"
                     onClick={() => {
+                        logout();
                         navigate(ROUTES.SIGN_IN);
                         localStorage.removeItem(TOKEN_STORAGE_KEY);
                         sessionStorage.removeItem(STEP_STORAGE_KEY);
@@ -436,12 +439,10 @@ export default function FormPage(props: { disableCustomTheme?: boolean }) {
 
                         {activeStep === steps.length ? (
                             <Stack spacing={2} useFlexGap>
-                                <Typography variant="h1">📦</Typography>
-                                <Typography variant="h5">Thank you for your rating!</Typography>
+                                <Typography variant="h1">🎉</Typography>
+                                <Typography variant="h5">感謝你的參與</Typography>
                                 <Typography variant="body1" sx={{color: 'text.secondary'}}>
-                                    Your rating has been submitted successfully.
-                                    We have recorded your evaluation
-                                    and will process the results accordingly.
+                                    本周表單已成功送出，同學可以下課啦！
                                 </Typography>
                             </Stack>
                         ) : (

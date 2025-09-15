@@ -1,8 +1,12 @@
 import { AppBar, Toolbar, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import React, {useEffect, useState} from "react";
+import Box from "@mui/material/Box";
+import {useAuth} from "../context/AuthContext.tsx";
 
 export default function Header() {
     const theme = useTheme();
+    const { username } = useAuth();
 
     return (
         <AppBar
@@ -20,11 +24,17 @@ export default function Header() {
                 },
             }}
         >
-            <Toolbar>
-                <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                    ISSLAB
-                </Typography>
-                {/* 右側按鈕/連結 */}
+            <Toolbar sx={{ justifyContent: 'space-between' }}>
+                <Box display="flex" alignItems="center">
+                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                        ISSLAB
+                    </Typography>
+                    {username && (
+                        <Typography variant="body1" sx={{ ml: 2 }}>
+                            Hi, {username}
+                        </Typography>
+                    )}
+                </Box>
             </Toolbar>
         </AppBar>
     );

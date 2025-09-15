@@ -22,6 +22,7 @@ import {ROUTES} from "../../constants/routes.ts";
 import {useNavigate} from "react-router-dom";
 import BackgroundWrapper from "../BackgroundWrpper.tsx";
 import ColorModeSelect from "../../shared-theme/ColorModeSelect.tsx";
+import {useAuth} from "../../context/AuthContext.tsx";
 
 
 export default function ChangePassword(props: { disableCustomTheme?: boolean }) {
@@ -69,6 +70,8 @@ export default function ChangePassword(props: { disableCustomTheme?: boolean }) 
     const STEP_STORAGE_KEY = 'presenter_step';
     const TOKEN_STORAGE_KEY = 'token';
 
+    const { logout } = useAuth();
+
     return (
         <>
         <BackgroundWrapper>
@@ -93,6 +96,7 @@ export default function ChangePassword(props: { disableCustomTheme?: boolean }) 
                     variant="text"
                     color="primary"
                     onClick={() => {
+                        logout();
                         navigate(ROUTES.SIGN_IN);
                         localStorage.removeItem(TOKEN_STORAGE_KEY);
                         sessionStorage.removeItem(STEP_STORAGE_KEY);

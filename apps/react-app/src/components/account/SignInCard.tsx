@@ -21,6 +21,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import Stack from "@mui/material/Stack";
 import SidePageWrapper from "../SidePageWrapper.tsx";
+import {useAuth} from "../../context/AuthContext.tsx";
 
 export default function SignInCard() {
     const navigate = useNavigate();
@@ -75,6 +76,7 @@ export default function SignInCard() {
         event.preventDefault();
     };
 
+    const { setToken, setName } = useAuth();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -87,7 +89,12 @@ export default function SignInCard() {
 
         try {
             const res = await api.post('/api/auth/login', {username, password});
-            localStorage.setItem('token', res.data.token);
+            // localStorage.setItem('token', res.data.token);
+            setToken(res.data.token);
+            const me = await api.get('/api/auth/me');
+            // localStorage.setItem('name', me.data.name);
+            setName(me.data.name);
+
             navigate(ROUTES.FORM);
         } catch (err) {
             // 錯誤處理可補上
